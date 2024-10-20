@@ -1,0 +1,25 @@
+.allCategory.on {
+    display: flex;
+    justify-content: space-between
+}
+
+.allCategory {
+    display: none;
+}
+
+.product-item{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    padding: 0 15px 100px;
+}
+.product{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.product-name{
+    width: 100%;
+    text-align: center;
+}
