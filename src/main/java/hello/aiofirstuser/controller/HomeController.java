@@ -26,7 +26,7 @@ public class HomeController {
 
         model.addAttribute("newProducts",productService.getNewProductDTOS());
 
-        return "views/Layout";
+        return "fragments/home";
     }
 
 

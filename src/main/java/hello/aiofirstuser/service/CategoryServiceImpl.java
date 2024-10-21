@@ -80,7 +80,12 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = result.orElseThrow();
 
-        return entityToDto(category);
+        List<Category> categories = categoryRepository.findByDepNo(category.getId());
+
+        CategoryDTO categoryDTO = entityToDto(category);
+        categoryDTO.setSubCategories(entityListToDtoList(categories));
+
+        return categoryDTO;
     }
 
 }

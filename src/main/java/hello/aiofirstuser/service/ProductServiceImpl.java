@@ -38,6 +38,27 @@ public class ProductServiceImpl implements ProductService {
         ProductDetailDTO productDetailDTO = productDetailDTO(product);
         productDetailDTO.setColorSizePrice(colorSizePrice(resultList));
 
+        List<String> sizePriorityOrder = Arrays.asList("S", "M", "L", "XL","2XL");
+
+        if(!resultList.isEmpty()){
+
+            List<String> sizeList = resultList
+                    .stream().map(ProductVariant::getSize).distinct()
+                    .sorted(Comparator.comparingInt(sizePriorityOrder::indexOf))
+                    .toList();
+
+            log.info("sizeList ={}" ,sizeList);
+            String size = null;
+
+            if(sizeList.size() > 1){
+                size = sizeList.get(0) + "~" + sizeList.get(sizeList.size()-1);
+                productDetailDTO.setSize(size);
+            }else {
+                productDetailDTO.setSize(sizeList.get(0));
+            }
+
+        }
+
         return productDetailDTO;
     }
 

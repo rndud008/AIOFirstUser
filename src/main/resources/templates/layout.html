@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/style/Layout.css">
+</head>
+<body style="margin: 0 auto; width: 1000px; outline: auto">
+
+<!--헤더-->
+<div>
+    <div style="display: flex; flex-direction: column; outline: auto">
+        <div style="display: flex; justify-content: space-between">
+            <h1><a th:href="@{'/'}">SUPERSTAR I</a></h1>
+            <ul style="display: flex; list-style: none">
+                <li style="margin-left: 10px"><a>로그인</a></li>
+                <li style="margin-left: 10px"><a>CART</a></li>
+                <li style="margin-left: 10px; margin-right: 10px"><a>MYPAGE</a></li>
+            </ul>
+        </div>
+        <div style="display: flex; justify-content: space-between">
+            <ul style="display: flex; list-style: none; margin: 0; padding: 0;">
+                <li style="margin-left: 10px"
+                    th:each="category : ${mainCategory}"
+                ><a th:text="${category.categoryName}"
+                    th:href="@{'/product/category?code=' + ${category.id}}"></a></li>
+            </ul>
+            <div style="display: flex">
+                <div style="margin-left: 10px;">검색</div>
+                <div style="margin-left: 10px; margin-right: 10px" onclick="menuBar()">전체메뉴 bar</div>
+            </div>
+        </div>
+    </div>
+    <div id="allCategory" class="allCategory">
+        <div style="display: flex">
+            <div style="display: flex; flex-direction: column;"
+                 th:each="category : ${mainCategory}">
+                <h3><a th:text="${category.categoryName}"
+                       th:href="@{'/product/category?code=' + ${category.id}}"></a></h3>
+                <ul style="margin: 0; padding: 0; list-style: none"
+                    th:if="${category.subCategories != null} ">
+                    <li th:each="subCategory : ${category.subCategories}">
+                        <a th:text="${subCategory.categoryName}"
+                           th:href="@{'/product/category?code=' + ${subCategory.id} + '&decode=' + ${subCategory.depNo}} "></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <div style="display: flex; flex-direction: column;">
+                <h3 th:text="${inqueryCategory.categoryName}"></h3>
+                <ul style="margin: 0; padding: 0; list-style: none"
+                    th:if="${inqueryCategory.subCategories != null} ">
+                    <li th:each="subCategory : ${inqueryCategory.subCategories}"
+                        th:text="${subCategory.categoryName}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--콘텐츠-->
+<div layout:fragment="content">
+
+</div>
+
+
+<!--푸터-->
+
+</body>
+
+<script th:inline="javascript">
+    const product = [[${product}]];
+</script>
+
+<script>
+
+    const menuBar = () => {
+        const allCategory = document.getElementById('allCategory');
+
+        if (allCategory.classList.contains('on')) {
+            allCategory.classList.remove('on');
+        } else {
+            allCategory.classList.add('on');
+        }
+
+    }
+
+    const updateSizePrice = () => {
+        const colorSizePrice = product?.colorSizePrice;
+
+        const color = document.getElementById('colorSelect').value;
+        const sizeSelect = document.getElementById('sizeSelect');
+
+        sizeSelect.innerHTML = '';
+
+        if (color && colorSizePrice[color]) {
+            console.log(color)
+            const sizes = colorSizePrice[color];
+            const defaultOption = document.createElement('option');
+            defaultOption.text = "옵션 선택";
+            defaultOption.value = "";
+            sizeSelect.add(defaultOption);
+
+            Object.entries(sizes).forEach(([size, price]) => {
+                const option = document.createElement('option');
+                option.text = size;
+                option.value = color + ',' + size + ',' + price;
+                sizeSelect.add(option);
+            })
+
+        }
+    }
+
+    const productAdd = () => {
+
+        const value = document.getElementById('sizeSelect').value;
+
+        const color = value.split(',')[0]
+        const size = value.split(',')[1]
+        const price = value.split(',')[2]
+
+        if (!document.getElementById(`${color}-${size}`) && value) {
+            const list = document.getElementById('productAddList');
+            const item = document.createElement('li');
+
+            const sellPrice = product.sellPrice + parseInt(price);
+
+            item.setAttribute('id', `${color}-${size}`)
+
+            item.innerHTML = `
+                <div>
+                    <span >${color}, ${size}</span> <button onclick="deleteItem(this)">x</button>
+                </div>
+                <div>
+                    <input type="number"value="1" oninput="changeValue(this,${sellPrice})"/>
+                    <button onclick="increaseValue(this,${sellPrice})">+</button>
+                    <button onclick="decreaseValue(this,${sellPrice})">-</button>
+                    <span class="price">${sellPrice}원</span>
+                </div>
+                `
+            list.appendChild(item)
+        }
+        updateTotalPrice()
+    }
+
+    const deleteItem = (button) =>{
+        const deleteItem = button.closest('li');
+        if(deleteItem){
+            deleteItem.remove()
+        }
+        updateTotalPrice()
+    }
+
+    const increaseValue = (button,sellPrice) =>{
+        const inputItem = button.parentNode.querySelector('input[type="number"]');
+        const spanItem = button.parentNode.querySelector('span');
+
+        inputItem.value < 0 && (inputItem.value =1)
+
+        inputItem
+        && (inputItem.value = parseInt(inputItem.value) +1)
+        && (spanItem.textContent = (parseInt(sellPrice) * inputItem.value).toLocaleString() +'원');
+
+        updateTotalPrice()
+
+    }
+
+    const decreaseValue = (button,sellPrice) =>{
+        const inputItem = button.parentNode.querySelector('input[type="number"]');
+        const spanItem = button.parentNode.querySelector('span');
+
+        inputItem.value <= 0 && (inputItem.value =1)
+
+        inputItem
+        && inputItem.value  > 1
+        && (inputItem.value = parseInt(inputItem.value) - 1)
+        && (spanItem.textContent = (parseInt(sellPrice) * inputItem.value).toLocaleString() +'원') ||
+        inputItem
+        && inputItem.value === 1
+        && (spanItem.textContent = (parseInt(sellPrice) * inputItem.value).toLocaleString() +'원');
+
+        updateTotalPrice()
+    }
+
+    const changeValue = (input,sellPrice) =>{
+
+        const inputItem = input.parentNode.querySelector('input[type="number"]');
+        inputItem.value <= 0 && (inputItem.value=1);
+
+        const spanItem = input.parentNode.querySelector('span');
+
+        inputItem
+        && (spanItem.textContent = (parseInt(sellPrice) * inputItem.value).toLocaleString() +'원');
+        updateTotalPrice()
+    }
+
+    const updateTotalPrice = () =>{
+        const result = document.getElementsByClassName('price');
+
+        const priceList = Array.from(result).map(span => span.textContent.replace("원",""))
+
+        const totalPrice = priceList.reduce((total,currentValue) =>{
+            return parseInt(total) + parseInt(currentValue.replace(/,/g, ""));
+        },0)
+
+        const totalItem = document.getElementById('totalPrice')
+
+        totalItem.textContent = '총 상품 금액 : ' + totalPrice.toLocaleString() + '원';
+
+    }
+
+    let slideCurrentIndex = 0;
+    const slide = (direction) =>{
+
+        const wrapper = document.querySelector('.sliderWrapper');
+        const items = document.querySelectorAll('.sliderItem');
+        const totalItems = items.length;
+        const maxVisibleItems = 3;
+
+        if( totalItems >  maxVisibleItems){
+
+            slideCurrentIndex += direction;
+
+            if(slideCurrentIndex < 0){
+                slideCurrentIndex =0;
+            }else if(slideCurrentIndex > totalItems - maxVisibleItems){
+                slideCurrentIndex = totalItems - maxVisibleItems;
+            }
+
+        }
+
+        const translateXValue = -(slideCurrentIndex * (items[0].offsetWidth + 10));
+        wrapper.style.transform = `translateX(${translateXValue}px)`;
+
+    }
+
+</script>
+</html>

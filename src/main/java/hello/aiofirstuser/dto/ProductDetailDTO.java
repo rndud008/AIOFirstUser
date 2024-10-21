@@ -23,8 +23,9 @@ public class ProductDetailDTO {
     private int sellPrice;
     private int point;
 
-    private Map<String, Map<String,Integer>> colorSizePrice = new HashMap<>();
+    private String size;
 
+    private Map<String, Map<String,Integer>> colorSizePrice = new HashMap<>();
     private List<ProductVariantDTO> productVariantDTOS = new ArrayList<>();
 
     @Builder.Default

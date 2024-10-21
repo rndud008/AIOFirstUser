@@ -13,6 +13,11 @@
     width: 20%;
     padding: 0 15px 100px;
 }
+
+.product-item a img{
+    width: 100%;
+}
+
 .product{
     display: flex;
     flex-wrap: wrap;
@@ -23,3 +28,47 @@
     width: 100%;
     text-align: center;
 }
+
+.sliderContainer{
+    width: 790px;
+    overflow: hidden;
+    position: relative;
+}
+
+.sliderWrapper{
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    padding: 10px;
+}
+
+.sliderItem{
+    width: 250px;
+    margin-right: 10px;
+}
+
+.sliderItem img{
+    width: 100%;
+}
+
+button.prev , button.next{
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    color: white;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.prev{
+    left: 10px;
+}
+.next{
+    right: 10px;
+}
+
+.consumer{
+    text-decoration: line-through;
+}
+

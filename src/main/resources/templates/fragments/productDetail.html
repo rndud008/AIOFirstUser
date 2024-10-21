@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:text="${product}"></div>
+    <div style="display: flex; flex-direction: column">
+        <div>
+            <img th:src="@{${product.productImgFileNames[0]}}"/>
+        </div>
+        <div style="display: flex" class="sliderContainer">
+            <div class="sliderWrapper">
+                <div class="sliderItem" th:each="img : ${product.productImgFileNames}">
+                    <img th:src="@{${img}}"/>
+                </div>
+            </div>
+            <button class="prev" onclick="slide(-1)"> < </button>
+            <button class="next" onclick="slide(1)"> > </button>
+        </div>
+        <div th:text="${product.productName}">상품이름</div>
+        <div>
+            <span th:text="${product.size}">사이즈</span>
+        </div>
+        <div>
+            <span>소비자가</span>
+            <span class="consumer" th:text="${product.consumerPrice} + '원'"></span>
+        </div>
+        <div>
+            <span>판매가</span>
+            <span th:text="${product.sellPrice} +'원'">판매가</span>
+        </div>
+        <div>
+            <span>
+                적립금
+            </span>
+            <span th:text="${product.point} +'원 적립'">적립금</span>
+        </div>
+        <div>
+            <span>색상</span>
+            <select id="colorSelect" onchange="updateSizePrice()">
+                <option >옵션선택</option>
+                <option th:each="color : ${product.colorSizePrice}"
+                        th:text="${color.key}"
+                        th:value="${color.key}"></option>
+            </select>
+        </div>
+        <div>
+            <span>사이즈</span>
+            <select id="sizeSelect" onchange="productAdd()">
+                <option >옵션선택</option>
+            </select>
+        </div>
+        <div >
+            <ul id="productAddList">
+
+            </ul>
+        </div>
+        <div id="totalPrice">상품 총금액</div>
+
+        <div>장바구니 / 구매하기</div>
+
+        <div id="tab1" style="display: flex; flex-direction: column">
+            <ul style="display: flex; list-style: none; justify-content: space-around; ">
+                <li><a style="text-decoration: none" href="#tab1">상세페이지</a></li>
+                <li><a style="text-decoration: none" href="#tab2">상품리뷰</a></li>
+                <li><a style="text-decoration: none" href="#tab3">상품문의</a></li>
+            </ul>
+            <div style="display: flex; justify-content: center">
+                <img    th:each="img : ${product.productDescriptionImgFileNames}"
+                        th:src="@{${img}}">
+            </div>
+        </div>
+        <div id="tab2">
+            <ul>
+                <li><a href="#tab1">상세페이지</a></li>
+                <li><a href="#tab2">상품리뷰</a></li>
+                <li><a href="#tab3">상품문의</a></li>
+            </ul>
+            상품리뷰
+        </div>
+        <div id="tab3">
+            <ul>
+                <li><a href="#tab1">상세페이지</a></li>
+                <li><a href="#tab2">상품리뷰</a></li>
+                <li><a href="#tab3">상품문의</a></li>
+            </ul>
+            상품문의
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
