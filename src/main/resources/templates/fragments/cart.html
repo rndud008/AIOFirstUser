@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:text="${cartList}"></div>
+    <div>
+        <div>장바구니</div>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <div> 토탈.</div>
+        <div>
+            <div>
+                <div>선택 상품 삭제</div>
+                <div>장바구니 비우기</div>
+            </div>
+            <div>
+                결제 합계금액 50,000원 이상은 무료배송되며, 미만일 경우 3,000원의 배송비가 추가됩니다
+            </div>
+        </div>
+        <div>
+            <div>계속 쇼핑하기</div>
+            <div>선택 상품 주문</div>
+            <div>전체 주문 하기</div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

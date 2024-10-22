@@ -1,9 +1,12 @@
 package hello.aiofirstuser.controller;
 
+import hello.aiofirstuser.service.CartService;
 import hello.aiofirstuser.service.CategoryService;
-import hello.aiofirstuser.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.Banner;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,28 +15,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping
-public class HomeController {
+@RequestMapping("/user/cart")
+public class CartController {
 
     private final CategoryService categoryService;
-    private final ProductService productService;
+    private final CartService cartService;
 
-    @GetMapping("/")
-    public String home(Model model){
-
+    @GetMapping("")
+    public String cartPage(@AuthenticationPrincipal UserDetails userDetails, Model model){
         model.addAttribute("mainCategory",categoryService.mainCategoryInqueryExcludeList());
         model.addAttribute("inqueryCategory",categoryService.InqueryCategory());
 
-        model.addAttribute("newProducts",productService.getNewProductDTOS());
+        model.addAttribute("cartList",cartService.getUsernameOfCartResponseList(userDetails.getUsername()));
 
-        return "fragments/home";
+        return "fragments/cart";
     }
-
-    @GetMapping("/loginForm")
-    public String loginForm(){
-
-        return "loginForm";
-    }
-
-
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -13,9 +13,10 @@
         <div style="display: flex; justify-content: space-between">
             <h1><a th:href="@{'/'}">SUPERSTAR I</a></h1>
             <ul style="display: flex; list-style: none">
-                <li style="margin-left: 10px"><a>로그인</a></li>
-                <li style="margin-left: 10px"><a>CART</a></li>
-                <li style="margin-left: 10px; margin-right: 10px"><a>MYPAGE</a></li>
+                <li style="margin-left: 10px"sec:authorize="isAnonymous()"><a href="/loginForm">로그인</a></li>
+                <li style="margin-left: 10px" sec:authorize="isAuthenticated()"><a href="/loginForm">로그아웃</a></li>
+                <li style="margin-left: 10px" sec:authorize="isAuthenticated()"><a href="/user/cart">CART</a></li>
+                <li style="margin-left: 10px; margin-right: 10px" sec:authorize="isAuthenticated()"><a href="/user/mypage">MYPAGE</a></li>
             </ul>
         </div>
         <div style="display: flex; justify-content: space-between">
@@ -124,6 +125,9 @@
             const list = document.getElementById('productAddList');
             const item = document.createElement('li');
 
+            const index = list.querySelectorAll('li').length;
+            console.log()
+
             const sellPrice = product.sellPrice + parseInt(price);
 
             item.setAttribute('id', `${color}-${size}`)
@@ -133,7 +137,9 @@
                     <span >${color}, ${size}</span> <button onclick="deleteItem(this)">x</button>
                 </div>
                 <div>
-                    <input type="number"value="1" oninput="changeValue(this,${sellPrice})"/>
+                    <input type="hidden" name="productId[${index}]" value="${product.id}" />
+                    <input type="hidden" name="colorSize[${index}]" value="${color}-${size}" />
+                    <input type="number" name="quantity[${index}]" value="1" oninput="changeValue(this,${sellPrice})"/>
                     <button onclick="increaseValue(this,${sellPrice})">+</button>
                     <button onclick="decreaseValue(this,${sellPrice})">-</button>
                     <span class="price">${sellPrice}원</span>
@@ -234,6 +240,58 @@
         wrapper.style.transform = `translateX(${translateXValue}px)`;
 
     }
+
+    const cartPost = async () =>{
+
+        const cartItems = [];
+
+        console.log(document.querySelectorAll('#productAddList li'))
+
+        document.querySelectorAll('#productAddList li').forEach((item,index) =>{
+
+            const productId = item.querySelector(`input[name = "productId[${index}]"]`).value;
+            const colorSize = item.querySelector(`input[name="colorSize[${index}]"]`).value;
+            const quantity = item.querySelector(`input[name="quantity[${index}]"]`).value;
+
+            cartItems.push({
+                productId:productId,
+                colorSize:colorSize,
+                quantity:quantity
+            });
+        });
+
+        const response = await fetch('/user/cart/save',{
+            method:"POST",
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({cartRequestDTOS:cartItems})
+        })
+
+        if(response.status === 200){
+            const modal = document.createElement('div');
+            modal.setAttribute('id','modal')
+
+            modal.style.display = "block";
+
+            modal.innerHTML=`
+            <div class="modalContent">
+                <span> 상품이 장바구니에 담겼습니다.</span>
+                <div>
+                    <button onclick="modalClose()"> 쇼핑 계속하기</button>
+                    <a href="/user/cart"> 장바구니 확인</a>
+                </div>
+            </div>
+`
+        }
+
+    }
+
+    const modalClose = () =>{
+        const modal = document.getElementById('modal');
+        modal.style.display ='none';
+    }
+
 
 </script>
 </html>
