@@ -8,7 +8,7 @@
 <body>
 <div layout:fragment="content">
     <div th:text="${product}"></div>
-    <div style="display: flex; flex-direction: column">
+    <div id="productDetailWrapper" style="display: flex; flex-direction: column">
         <div>
             <img th:src="@{${product.productImgFileNames[0]}}"/>
         </div>

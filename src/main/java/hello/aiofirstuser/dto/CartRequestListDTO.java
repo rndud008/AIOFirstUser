@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.util.KotlinBeanInfoFactory;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ import java.util.List;
 @Builder
 public class CartRequestListDTO {
     List<CartRequestDTO> cartRequestDTOS;
+    Long deleteCartId;
 }

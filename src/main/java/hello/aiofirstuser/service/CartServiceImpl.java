@@ -3,10 +3,7 @@ package hello.aiofirstuser.service;
 import hello.aiofirstuser.domain.Cart;
 import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.domain.ProductVariant;
-import hello.aiofirstuser.dto.CartRequestDTO;
-import hello.aiofirstuser.dto.CartRequestListDTO;
-import hello.aiofirstuser.dto.CartResponseDTO;
-import hello.aiofirstuser.dto.CategoryRequestDTO;
+import hello.aiofirstuser.dto.*;
 import hello.aiofirstuser.repository.CartRepository;
 import hello.aiofirstuser.repository.MemberRepository;
 import hello.aiofirstuser.repository.ProductRepository;
@@ -68,4 +65,40 @@ public class CartServiceImpl implements CartService {
 
         return cartResponseDTOS;
     }
+
+    @Override
+    public Cart findByCartId(Long cartId) {
+        Optional<Cart> result = cartRepository.findById(cartId);
+        Cart cart = result.orElseThrow();
+        return cart;
+    }
+
+    @Override
+    public CartItemModifyResponseDTO getCartItemModifyDTO(Long cartId) {
+
+        Optional<Cart> result = cartRepository.getModifyCartItem(cartId);
+        Cart cart = result.orElseThrow();
+
+        List<ProductVariant> variants = productVariantRepository.findByProductId(cart.getProductVariant().getProduct().getId());
+
+        CartItemModifyResponseDTO cartItemModifyResponseDTO = entityToCartItemModifyResponseDTO(cart);
+
+        cartItemModifyResponseDTO.setColorSizePrice(colorSizePrice(variants));
+
+        return cartItemModifyResponseDTO;
+    }
+
+    @Override
+    @Transactional
+    public void remove(Long cartId) {
+
+        cartRepository.deleteById(cartId);
+    }
+
+    @Override
+    public Cart findByCartIdAndMemberId(Long cartId, Long memberId) {
+        return cartRepository.findByCartIdAndMemberId(cartId,memberId);
+
+    }
+
 }

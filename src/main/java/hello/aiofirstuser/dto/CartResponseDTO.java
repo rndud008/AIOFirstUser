@@ -16,12 +16,14 @@ public class CartResponseDTO {
     private Long cartId;
 
     private int quantity;
-    private int price;
-    private int totalPrice;
+    private String consumerPrice;
+    private String price;
+    private String totalPrice;
+    private String point;
 
     private String productName;
     private String productImg;
-    private String option;
+    private String selectOption;
     private String delivery;
 
 }

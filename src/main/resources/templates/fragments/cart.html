@@ -10,14 +10,70 @@
     <div th:text="${cartList}"></div>
     <div>
         <div>장바구니</div>
-        <table>
+        <table style="padding: 10px">
             <thead>
-            <tr>
-                <th></th>
+            <tr style="line-height: 30px">
+                <th style="width: 30px"><input type="checkbox" oninput="allCheck(this)"></th>
+                <th>사진</th>
+                <th style="width: 300px">제품명</th>
+                <th style="width: 100px">가격</th>
+                <th>수량</th>
+                <th style="width: 100px">합계</th>
+                <th style="width: 50px">적립금</th>
+                <th style="width: 100px">배송비</th>
+                <th>선택</th>
             </tr>
             </thead>
             <tbody>
-
+            <tr th:each="cart:${cartList}">
+                <td><input type="checkbox" th:value="${cart.cartId}"/></td>
+                <td>
+                    <a th:href="@{'/product/detail/'+${cart.productId}}">
+                        <img width="100px" th:src="@{${cart.productImg}}"/>
+                    </a>
+                </td>
+                <td>
+                    <div>
+                        <span th:text="${cart.productName}">제품이름</span>
+                        <p th:text="${cart.selectOption}">옵션</p>
+                        <button onclick="cartOptionModify(this)">옵션변경</button>
+                    </div>
+                </td>
+                <td>
+                    <div style="text-align: center">
+                        <p th:text="${cart.consumerPrice}">소비자가</p>
+                        <span th:text="${cart.price}">판매가</span>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <div style="display: flex">
+                            <button>-</button>
+                            <input style="width: 30px" type="number" th:value="${cart.quantity}"/>
+                            <button>+</button>
+                        </div>
+                    </div>
+                </td>
+                <td  style="text-align: center;" >
+                    <span th:text="${cart.totalPrice}">합계</span>
+                </td>
+                <td style="text-align: center">
+                    <span th:text="${cart.point}">적립금</span>
+                </td>
+                <td style=" text-align: center">
+                    <span >
+                        [기본배송]
+                        <br/>
+                        조건
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; flex-direction: column">
+                        <button style="white-space: nowrap">관심상품 등록</button>
+                        <button>삭제하기</button>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
         <div> 토탈.</div>
