@@ -31,4 +31,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "left join fetch c.productVariant.product.productImgs " +
             "where c.id = :cartId")
     Optional<Cart> getModifyCartItem(@Param("cartId") Long cartId);
+
 }

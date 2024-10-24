@@ -3,10 +3,7 @@ package hello.aiofirstuser.service;
 import hello.aiofirstuser.domain.Cart;
 import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.domain.ProductVariant;
-import hello.aiofirstuser.dto.CartItemModifyResponseDTO;
-import hello.aiofirstuser.dto.CartRequestDTO;
-import hello.aiofirstuser.dto.CartRequestListDTO;
-import hello.aiofirstuser.dto.CartResponseDTO;
+import hello.aiofirstuser.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,14 +17,21 @@ public interface CartService {
 
     void modify(CartRequestDTO cartRequestDTO, Long cartId );
 
-    List<CartResponseDTO> getUsernameOfCartResponseList(String username);
+    CartResponseListDTO getUsernameOfCartResponseList(String username);
 
     Cart findByCartId(Long cartId);
     
     CartItemModifyResponseDTO getCartItemModifyDTO(Long cartId);
 
-    void remove(Long cartId);
+    int remove(Long cartId, Long memberId);
     Cart findByCartIdAndMemberId(Long cartId, Long memberId);
+    void optionModify(CartRequestDTO cartRequestDTO, Long cartId );
+
+    int allRemove(Member member);
+
+    int selectRemove(List<CartRequestDTO> cartRequestDTOS, Member member);
+
+    CartResponseListDTO getCartIdAndQuantity(List<String> cartIdAndQuantity, Member member);
 
     default Cart cartRequestDtoToEntity(CartRequestDTO cartRequestDTO, ProductVariant productVariant, Member member) {
         Cart cart = Cart.builder()
@@ -103,6 +107,48 @@ public interface CartService {
 
         return size;
     }
+    default int getPrice(Cart cart) {
+        return cart.getProductVariant().getProduct().getSellPrice() + cart.getProductVariant().getPrice();
+    }
+
+    default String getTotalString(Long totalPrice){
+        String totalString =  "";
+
+        if(totalPrice >= 50000){
+            totalString = """
+                    
+                        <span>총 상품 금액 </span>
+                        <span>%,d</span>
+                        <span> = </span>
+                        <span>결제 예정금액 </span>
+                        <span>%,d</span>
+                    
+                    """.formatted(totalPrice,totalPrice);
+        }else {
+            totalString = """
+                    
+                        <span>총 상품 금액 </span>
+                        <span>%,d</span>
+                        <span> + </span>
+                        <span>배송료</span>
+                        <span>%,d</span>
+                        <span> = </span>
+                        <span>결제 예정금액 </span>
+                        <span>%,d</span>
+                    
+                    """.formatted(totalPrice,3000,(totalPrice+3000));
+        }
+
+
+        return totalString;
+    }
+
+    default CartResponseListDTO getCategoryResponseListDTO(List<CartResponseDTO> cartResponseDTOS, Long totalPrice){
+        return CartResponseListDTO.builder()
+                .cartResponseDTOS(cartResponseDTOS)
+                .sumTotalString(getTotalString(totalPrice))
+                .build();
+    }
 
     private static String getColorSize(Cart cart) {
         return cart.getProductVariant().getColor() + "," + cart.getProductVariant().getSize();
@@ -112,9 +158,6 @@ public interface CartService {
         return "색상 : " + cart.getProductVariant().getColor() + ", 사이즈 : " + cart.getProductVariant().getSize() + " " + cart.getQuantity() + "개";
     }
 
-    private static int getPrice(Cart cart) {
-        return cart.getProductVariant().getProduct().getSellPrice() + cart.getProductVariant().getPrice();
-    }
 
     private static String getFormat(int price){
         return String.format("%,d",price);

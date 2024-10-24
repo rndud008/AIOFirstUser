@@ -3,11 +3,9 @@ package hello.aiofirstuser.service;
 import hello.aiofirstuser.domain.Cart;
 import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.domain.ProductVariant;
+import hello.aiofirstuser.domain.WishProduct;
 import hello.aiofirstuser.dto.*;
-import hello.aiofirstuser.repository.CartRepository;
-import hello.aiofirstuser.repository.MemberRepository;
-import hello.aiofirstuser.repository.ProductRepository;
-import hello.aiofirstuser.repository.ProductVariantRepository;
+import hello.aiofirstuser.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +22,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final ProductVariantRepository productVariantRepository;
+    private final WishProductRepository wishProductRepository;
     private final MemberRepository memberRepository;
 
     @Override
@@ -36,13 +35,13 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart findByProductValiantIAndMemberIddOfCart(Long productVariantId,Long memberId) {
-        return cartRepository.findByProductVariantId(productVariantId,memberId);
+    public Cart findByProductValiantIAndMemberIddOfCart(Long productVariantId, Long memberId) {
+        return cartRepository.findByProductVariantId(productVariantId, memberId);
     }
 
     @Override
     @Transactional
-    public void modify(CartRequestDTO cartRequestDTO, Long cartId ) {
+    public void modify(CartRequestDTO cartRequestDTO, Long cartId) {
 
         Optional<Cart> result = cartRepository.findById(cartId);
 
@@ -54,16 +53,34 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartResponseDTO> getUsernameOfCartResponseList(String username) {
+    public CartResponseListDTO getUsernameOfCartResponseList(String username) {
         List<Cart> carts = cartRepository.findByMemberUsername(username);
 
         List<CartResponseDTO> cartResponseDTOS = new ArrayList<>();
-        for(Cart cart : carts){
+        Long totalPrice = 0L;
+        for (Cart cart : carts) {
 
-            cartResponseDTOS.add(entityToCartResponseDTO(cart));
+            Optional<WishProduct> result = wishProductRepository
+                    .findByMemberIdAndProductVariantId(cart.getProductVariant().getId(), cart.getMember().getId());
+
+            WishProduct wishProduct = result.orElse(null);
+            CartResponseDTO cartResponseDTO = entityToCartResponseDTO(cart);
+
+            if (wishProduct != null) {
+                cartResponseDTO.setWishItem(true);
+            } else {
+                cartResponseDTO.setWishItem(false);
+            }
+            cartResponseDTOS.add(cartResponseDTO);
+
+            totalPrice += getPrice(cart);
         }
 
-        return cartResponseDTOS;
+
+
+        CartResponseListDTO cartResponseListDTO= getCategoryResponseListDTO(cartResponseDTOS, totalPrice);
+
+        return cartResponseListDTO;
     }
 
     @Override
@@ -90,15 +107,98 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void remove(Long cartId) {
+    public int remove(Long cartId, Long memberId) {
 
-        cartRepository.deleteById(cartId);
+        Cart cart = cartRepository.findByCartIdAndMemberId(cartId, memberId);
+
+        if (cart != null) {
+            cartRepository.deleteById(cartId);
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public Cart findByCartIdAndMemberId(Long cartId, Long memberId) {
-        return cartRepository.findByCartIdAndMemberId(cartId,memberId);
+        return cartRepository.findByCartIdAndMemberId(cartId, memberId);
+    }
 
+    @Override
+    @Transactional
+    public void optionModify(CartRequestDTO cartRequestDTO, Long cartId) {
+        Optional<Cart> result = cartRepository.findById(cartId);
+
+        Cart cart = result.orElseThrow();
+
+        cart.changeQuantity(cartRequestDTO.getQuantity());
+    }
+
+    @Override
+    @Transactional
+    public int allRemove(Member member) {
+
+        List<Cart> carts = cartRepository.findByMemberUsername(member.getUsername());
+
+        if (carts != null && !carts.isEmpty()) {
+            cartRepository.deleteAll(carts);
+            return 1;
+        }
+
+        return 0;
+
+    }
+
+    @Override
+    @Transactional
+    public int selectRemove(List<CartRequestDTO> cartRequestDTOS, Member member) {
+
+        List<Long> cartIds = cartRequestDTOS.stream().map(cartRequestDTO -> cartRequestDTO.getCartId()).toList();
+
+        List<Cart> carts = new ArrayList<>();
+        if(!cartIds.isEmpty()){
+            carts = cartRepository.findAllById(cartIds);
+        }
+
+        if (!carts.isEmpty()) {
+            for (Cart cart : carts) {
+                if (cart.getMember().getId().equals(member.getId())) {
+                    cartRepository.delete(cart);
+                }
+            }
+            return 1;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public CartResponseListDTO getCartIdAndQuantity(List<String> cartIdAndQuantity, Member member) {
+
+        CartResponseListDTO cartResponseListDTO = new CartResponseListDTO();
+        List<CartResponseDTO> cartResponseDTOS = new ArrayList<>();
+
+        for(String value : cartIdAndQuantity){
+
+            Long cartId = Long.valueOf(value.split("-")[0]);
+            int quantity = Integer.parseInt(value.split("-")[1]);
+
+            Cart cart = cartRepository.findByCartIdAndMemberId(cartId, member.getId());
+            if(cart == null){
+                continue;
+            }
+
+            if(cart.getQuantity() != quantity){
+                cart.changeQuantity(quantity);
+            }
+
+            CartResponseDTO cartResponseDTO = entityToCartResponseDTO(cart);
+            cartResponseDTOS.add(cartResponseDTO);
+
+        }
+            cartResponseListDTO.setCartResponseDTOS(cartResponseDTOS);
+
+        return cartResponseListDTO;
     }
 
 }

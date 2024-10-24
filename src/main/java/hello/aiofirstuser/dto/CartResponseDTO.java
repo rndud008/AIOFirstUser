@@ -26,4 +26,6 @@ public class CartResponseDTO {
     private String selectOption;
     private String delivery;
 
+    private boolean wishItem;
+
 }

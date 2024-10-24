@@ -25,8 +25,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="cart:${cartList}">
-                <td><input type="checkbox" th:value="${cart.cartId}"/></td>
+            <tr th:each="cart:${cartList.cartResponseDTOS}">
+                <td><input type="checkbox" th:value="${cart.cartId}" oninput="sumTotalPriceUpdate()"/></td>
                 <td>
                     <a th:href="@{'/product/detail/'+${cart.productId}}">
                         <img width="100px" th:src="@{${cart.productImg}}"/>
@@ -35,30 +35,30 @@
                 <td>
                     <div>
                         <span th:text="${cart.productName}">제품이름</span>
-                        <p th:text="${cart.selectOption}">옵션</p>
+                        <p class="option" th:text="${cart.selectOption}">옵션</p>
                         <button onclick="cartOptionModify(this)">옵션변경</button>
                     </div>
                 </td>
                 <td>
                     <div style="text-align: center">
                         <p th:text="${cart.consumerPrice}">소비자가</p>
-                        <span th:text="${cart.price}">판매가</span>
+                        <span class="price" th:text="${cart.price}">판매가</span>
                     </div>
                 </td>
                 <td>
                     <div>
                         <div style="display: flex">
-                            <button>-</button>
-                            <input style="width: 30px" type="number" th:value="${cart.quantity}"/>
-                            <button>+</button>
+                            <button onclick="cartDecreaseValue(this)">-</button>
+                            <input style="width: 40px" type="number" oninput="cartInputValueChange(this)" th:value="${cart.quantity}"/>
+                            <button onclick="cartIncreaseValue(this)">+</button>
                         </div>
                     </div>
                 </td>
                 <td  style="text-align: center;" >
-                    <span th:text="${cart.totalPrice}">합계</span>
+                    <span class="totalPrice" th:text="${cart.totalPrice}">합계</span>
                 </td>
                 <td style="text-align: center">
-                    <span th:text="${cart.point}">적립금</span>
+                    <span class="point" th:text="${cart.point}">적립금</span>
                 </td>
                 <td style=" text-align: center">
                     <span >
@@ -69,27 +69,29 @@
                 </td>
                 <td>
                     <div style="display: flex; flex-direction: column">
-                        <button style="white-space: nowrap">관심상품 등록</button>
-                        <button>삭제하기</button>
-                    </div>
+                        <input type="hidden" th:value="${cart.productVariantId}">
+                        <button th:if="${cart.wishItem}" style="white-space: nowrap" disabled >이미등록된상품</button>
+                        <button th:unless="${cart.wishItem}" style="white-space: nowrap" onclick="addCartItemToWishlist(this)">관심상품 등록</button>
+                        <button onclick="cartItemDelete(this)">삭제하기</button>
+                    </div >
                 </td>
             </tr>
             </tbody>
         </table>
-        <div> 토탈.</div>
+        <div id="sumTotalPrice" th:utext="${cartList.sumTotalString}"> 토탈</div>
         <div>
             <div>
-                <div>선택 상품 삭제</div>
-                <div>장바구니 비우기</div>
+                <button onclick="selectCartDelete()">선택 상품 삭제</button>
+                <button onclick="cartAllDelete()">장바구니 비우기</button>
             </div>
             <div>
                 결제 합계금액 50,000원 이상은 무료배송되며, 미만일 경우 3,000원의 배송비가 추가됩니다
             </div>
         </div>
         <div>
-            <div>계속 쇼핑하기</div>
-            <div>선택 상품 주문</div>
-            <div>전체 주문 하기</div>
+            <button>계속 쇼핑하기</button>
+            <button onclick="selectOrder()">선택 상품 주문</button>
+            <button onclick="AllOrder()">전체 주문 하기</button>
         </div>
 
     </div>

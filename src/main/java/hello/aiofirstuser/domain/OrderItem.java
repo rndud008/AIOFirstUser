@@ -2,32 +2,26 @@ package hello.aiofirstuser.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ManyToAny;
 
 @Entity
-@Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
-public class Cart {
+@Getter
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_id")
+    @Column(name = "order_item_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_variant_id")
     private ProductVariant productVariant;
 
-    private int quantity;
-
-    public void changeQuantity(int changeQuantity){
-        this.quantity = changeQuantity;
-    }
-
+    private Long quantity;
 }
