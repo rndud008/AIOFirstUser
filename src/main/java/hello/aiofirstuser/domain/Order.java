@@ -24,6 +24,13 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private String paymentOption;
+
+    private String refundOption;
+    private String refundMemberName;
+    private String refundBankName;
+    private String refundBankAccount;
+
     @Enumerated(EnumType.STRING)
     private OrderStauts orderStauts;
 

@@ -40,8 +40,7 @@ public class Member {
     @Builder.Default
     private List<Role> roles= new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(name = "address", joinColumns = @JoinColumn(name = "member_id"))
+    @OneToMany(mappedBy = "member")
     @Builder.Default
     private List<Address> addresses = new ArrayList<>();
 

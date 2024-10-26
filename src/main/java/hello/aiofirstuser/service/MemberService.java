@@ -1,8 +1,10 @@
 package hello.aiofirstuser.service;
 
+import hello.aiofirstuser.domain.Address;
 import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.MemberDTO;
-import hello.aiofirstuser.dto.OAuthResisterMemberDTO;
+import hello.aiofirstuser.dto.*;
+
+import java.util.List;
 
 public interface MemberService {
 
@@ -14,6 +16,14 @@ public interface MemberService {
 
     MemberDTO getWithRoles(String username);
 
+    OrderMemberDTO getOrderMember(String username);
+
+    OrderWriteDeliveryResponseListDTO getOrderMemberAddresses(String username);
+
+    OrderWriteDeliveryResponseDTO getOrderMemberAddress(String username, String status);
+
+    OrderWriteDeliveryResponseDTO getOrderMemberAddressId(String username, Long addressId);
+
     default MemberDTO entityToMemberDTO(Member member){
 
         MemberDTO memberDTO= MemberDTO.builder()
@@ -24,4 +34,57 @@ public interface MemberService {
 
         return memberDTO;
     }
+
+    default OrderMemberDTO entityToOrderMemberDTO(Member member, List<String> phoneNumber){
+        return OrderMemberDTO.builder()
+                .nickname(member.getNickname())
+                .email(member.getEmail() != null ? member.getEmail() : "" )
+                .phoneNumber(phoneNumber.isEmpty() ? List.of("","","") : phoneNumber)
+                .build();
+    }
+
+    default OrderWriteDeliveryResponseDTO addressToOrderWriteDeliveryResponseDTO(Address address){
+
+        return OrderWriteDeliveryResponseDTO.builder()
+                .addressId(address.getId())
+                .deliveryMemberName(address.getNickname())
+                .phoneNumber1(getPhoneNumber(address.getPhoneNumber1()))
+                .phoneNumber2(getPhoneNumber(address.getPhoneNumber2()))
+                .zipcode(address.getZipcode())
+                .addressName(address.getAddressName())
+                .addressNameDetail(address.getAddressNameDetail())
+                .orderMessage(address.getOrderMessage())
+                .bankTransferName(address.getBankTransferDepositor())
+                .home(homeCheck(address.getAddressStatus().name()))
+                .build();
+    }
+
+    private static boolean homeCheck(String name){
+
+        if(name.equals("HOME_ADDRESS")){
+            return true;
+        }
+
+        return false;
+    }
+
+    private static List<String> getPhoneNumber(long value){
+        String number = String.valueOf(value);
+        int numberLength = number.length();
+
+        if(numberLength >= 11){
+            String last = number.substring(numberLength-4,numberLength);
+
+            numberLength -= 4;
+            String middle = number.substring(numberLength-4,numberLength);
+
+            numberLength -= 4;
+            String first = number.substring(0,numberLength);
+
+            return List.of(first,middle,last);
+        }
+
+        return List.of("","","");
+    }
+
 }

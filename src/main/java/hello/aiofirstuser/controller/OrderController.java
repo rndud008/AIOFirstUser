@@ -5,6 +5,7 @@ import hello.aiofirstuser.dto.CartRequestListDTO;
 import hello.aiofirstuser.service.CartService;
 import hello.aiofirstuser.service.CategoryService;
 import hello.aiofirstuser.service.MemberService;
+import hello.aiofirstuser.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,7 @@ public class OrderController {
     private final CategoryService categoryService;
     private final CartService cartService;
     private final MemberService memberService;
+    private final OrderService orderService;
 
 
 
@@ -37,7 +39,8 @@ public class OrderController {
         model.addAttribute("mainCategory",categoryService.mainCategoryInqueryExcludeList());
         model.addAttribute("inqueryCategory",categoryService.InqueryCategory());
 
-        model.addAttribute("cartItemList",cartService.getCartIdAndQuantity(cartIdAndQuantity,member));
+        model.addAttribute("cartItemList",orderService.orderWriteResponseList(cartIdAndQuantity,member));
+        model.addAttribute("orderMember",memberService.getOrderMember(member.getUsername()));
 
 
 

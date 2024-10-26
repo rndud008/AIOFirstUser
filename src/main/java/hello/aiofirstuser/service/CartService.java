@@ -139,7 +139,6 @@ public interface CartService {
                     """.formatted(totalPrice,3000,(totalPrice+3000));
         }
 
-
         return totalString;
     }
 

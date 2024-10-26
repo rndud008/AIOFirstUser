@@ -76,6 +76,8 @@
     const product = [[${product}]];
 </script>
 
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
 <script>
 
     let popupWindow;
@@ -326,14 +328,11 @@
 
         const queryString = new URLSearchParams(requestData).toString();
 
-
         const response = await fetch(`/user/cart/optionmodify?${queryString}`, {
             method: "GET",
         })
 
         const data = await response.json();
-
-        console.log(data)
 
         popupWindow = window.open('', '_blank', 'width=600,height=500');
 
@@ -910,6 +909,363 @@
         window.location.href = `/user/order?${params.toString()}`
 
     }
+
+    // 주문서 작성 화면.
+    const orderMemberInput = (input) =>{
+
+        if(input.checked === true){
+
+            const phoneNumberList = Array.from(document.getElementsByClassName('orderMemberPhoneNumber'));
+
+            const deliveryPhoneNumberList = Array.from(document.getElementsByClassName('deliveryMemberPhoneNumber'));
+
+            deliveryPhoneNumberList.forEach((phoneNumber, index) =>{
+                phoneNumber.value = phoneNumberList[index].value;
+                console.log(phoneNumber.value)
+            })
+
+            const memberName = document.getElementById('orderMemberName');
+
+            const deliveryMemberName = document.getElementById('deliveryMemberName');
+            deliveryMemberName.value = memberName.textContent;
+
+        }
+
+    }
+
+    const popupNewAddress =() => {
+
+        const zoneCodeInput = document.getElementById('zoneCode');
+        const addressNameInput = document.getElementById('addressName');
+
+        new daum.Postcode({
+            oncomplete: function(data) {
+                const zonecode = data.zonecode;
+                const addressName = `${data.address} ${data.buildingName}(${data.autoJibunAddress ? data.autoJibunAddress : data.jibunAddress})`;
+
+                zoneCodeInput.value = zonecode;
+                addressNameInput.value = addressName;
+
+            }
+        }).open();
+
+    }
+
+    const popupAddressList = async () =>{
+
+        const response = await fetch('/user/addresses',{
+            method:'GET'
+        })
+
+        const data = await response.json();
+
+        console.log(data)
+        console.log(data.orderWriteDeliveryResponseDTOS)
+
+        popupWindow = window.open('','_blank','width=600,height=500');
+
+        const checkPopupClosed = setInterval(() => {
+            if (popupWindow.closed) {
+                clearInterval(checkPopupClosed);
+                const inputValue = localStorage.getItem('selectedAddress');
+                getAddressIdFetch(inputValue)
+                localStorage.removeItem('selectedAddress');
+            }
+        }, 1000);
+
+
+            const div = document.createElement('div');
+
+            let html = "";
+            data.orderWriteDeliveryResponseDTOS.forEach(item =>{
+                html +=
+                    `
+                    <div onclick="selectAddress(this)">
+                        <div>
+                            <div>
+                                <input type="hidden" value="${item.addressId}"/>
+                                <span>${item.deliveryMemberName}</span>
+                            </div>
+                            <div>
+                                <span>연락처 1 <span>${item.phoneNumber1.join("-").trim().length === 2 ? "" : item.phoneNumber1.join("-").trim()}</span></span>
+                                <span>연락처 2 <span>${item.phoneNumber2.join("-").trim().length === 2 ? "" : item.phoneNumber1.join("-").trim()}</span></span>
+                            </div>
+                        </div>
+                        <div>
+                            <span>우편번호 <span>${item.zipcode}</span></span>
+                            <span>주소 <span>${item.addressNameDetail} ${item.addressNameDetail}</span></span>
+                        </div>
+                    </div>
+                `
+            })
+
+            div.innerHTML = html;
+
+            popupWindow.document.body.appendChild(div);
+
+            const script = popupWindow.document.createElement('script')
+            script.innerHTML =
+                `
+                    const selectAddress = (div) =>{
+
+                        const input = div.querySelector('input[type="hidden"]');
+                         localStorage.setItem( 'selectedAddress',input.value);
+                        closePopup();
+                    }
+
+                     const closePopup = () =>{
+                        window.close();
+                    }
+
+                    window.onbeforeunload = () =>{ };
+                `
+            popupWindow.document.body.appendChild(script)
+
+
+
+
+    }
+
+    const getAddressIdFetch = async (value) =>{
+
+        const response = await fetch(`/user/addresses/address/${value}`,{
+            method:'GET'
+        })
+
+        const data = await response.json();
+        console.log(data)
+
+        addressFetch(data);
+
+        deliveryValues(data);
+
+        const input = document.getElementById('recentlyAddress');
+        input.checked = true;
+
+    }
+
+    function addressFetch(data) {
+        if (document.getElementById('addressId') !== null) {
+            document.getElementById('addressId').remove();
+        }
+
+        const addressIdInput = document.createElement('input')
+        addressIdInput.setAttribute('id', 'addressId')
+        addressIdInput.type = 'hidden'
+        addressIdInput.value = data.addressId;
+        const items = document.querySelectorAll('input[name="addressType"]');
+        items.item(items.length - 1).appendChild(addressIdInput)
+    }
+
+    const getAddressFetch = async (inputValue) =>{
+
+        const param = new URLSearchParams();
+        param.append('status', inputValue)
+
+        const response = await fetch(`/user/addresses/address?${param}`,{
+            method:'GET'
+        })
+
+        const data = await response.json();
+        console.log(data)
+
+        addressFetch(data);
+
+        deliveryValues(data);
+
+    }
+
+    const newAddress = () =>{
+
+        if(document.getElementById('addressId') !== null){
+            document.getElementById('addressId').remove();
+        }
+
+        deliveryValues();
+
+    }
+
+    const deliveryValues = (data = null) =>{
+        const deliveryMemberName = document.getElementById('deliveryMemberName');
+        deliveryMemberName.value = data !== null ? data.deliveryMemberName : "";
+
+        const deliveryMemberPhoneNumber1 = Array.from(document.getElementsByClassName('deliveryMemberPhoneNumber1'));
+        deliveryMemberPhoneNumber1.forEach((input,index) =>{
+            input.value = data !== null ? data.phoneNumber1[index] : "";
+        })
+
+        const deliveryMemberPhoneNumber2 = Array.from(document.getElementsByClassName('deliveryMemberPhoneNumber2'));
+        deliveryMemberPhoneNumber2.forEach((input,index) =>{
+            input.value = data !== null ? data.phoneNumber2[index] : "";
+        })
+
+        const zoneCode = document.getElementById('zoneCode');
+        zoneCode.value = data !== null ? data.zipcode : "";
+
+        const addressName = document.getElementById('addressName');
+        addressName.value = data !== null ? data.addressName : "";
+
+        const addressNameDetail = document.getElementById('addressNameDetail');
+        addressNameDetail.value = data !== null ? data.addressNameDetail : ""
+
+        const orderMessage = document.querySelector('textarea');
+        orderMessage.value = data !== null ? data.orderMessage : "";
+
+        const bankTransferName = document.getElementById('bankTransferName');
+        bankTransferName.value = data !== null ? data.bankTransferName : "";
+    }
+
+    const postOrderFetch = async () =>{
+
+        let valid = 0;
+
+        const cartIds = Array.from(document.querySelectorAll('tbody tr input[type="hidden"]'))
+            .map(input => input.value);
+
+        let result = document.getElementById('addressId');
+        const addressId = result?.value !== undefined ? result.value : 0;
+
+        result = Array.from(document.querySelectorAll('input[name="addressType"]'));
+        const deliveryPlaceStatus = result.find(input => input.checked) !== undefined ?
+            result.find(input => input.checked).value : result.find(input => {
+                if(input.value === "NEW_ADDRESS"){
+                    input.checked = true
+                    return input;
+                }
+            }).value;
+
+        const deliveryMemberName = document.getElementById('deliveryMemberName').value;
+        if (deliveryMemberName.trim().length === 0){
+            validationCheck(document.getElementById('deliveryMemberName'),'배송받을 이름을 입력해주세요.')
+            valid++;
+        }else {
+            validationRemove(document.getElementById('deliveryMemberName'))
+        }
+
+
+        result = Array.from(document.getElementsByClassName('deliveryMemberPhoneNumber1'))
+            .map(input => input.value).join("").trim();
+        const phoneNumber1 = result ? result : 0;
+
+        result = Array.from(document.getElementsByClassName('deliveryMemberPhoneNumber2'))
+            .map(input => input.value).join("").trim();
+        const phoneNumber2 = result ? result : 0;
+
+        if(phoneNumber1 === 0 && phoneNumber2 === 0){
+            validationCheck(document.getElementsByClassName('deliveryMemberPhoneNumber2').item(0), '하나 이상의 연락처가 입력되어 있어야 합니다.')
+            valid++;
+        }else {
+            validationRemove(document.getElementsByClassName('deliveryMemberPhoneNumber2').item(0))
+
+        }
+
+        if(String(phoneNumber1).trim().length <8 && String(phoneNumber2).trim().length <8){
+            validationCheck(document.getElementsByClassName('deliveryMemberPhoneNumber2').item(0), '연락처를 다시한번 확인해주세요.')
+            valid++;
+        }else {
+            validationRemove(document.getElementsByClassName('deliveryMemberPhoneNumber2').item(0))
+        }
+
+        const zipcode = document.getElementById('zoneCode').value;
+
+        const addressName = document.getElementById('addressName').value;
+
+        const addressNameDetail = document.getElementById('addressNameDetail').value;
+
+        if (zipcode.trim().length === 0 || addressName.trim().length === 0){
+            validationCheck(document.getElementById('addressNameDetail'), '주소를 다시 확인해주세요.')
+            valid ++;
+        }else{
+            validationRemove(document.getElementById('addressNameDetail'))
+        }
+
+        const orderMessage = document.querySelector('textarea').value;
+
+        const bankTransferName = document.getElementById('bankTransferName').value;
+
+        const refundOption = Array.from(document.querySelectorAll('input[name="refun"]')).find(input => input.checked)?.value;
+        if(refundOption === undefined){
+            validationCheck(document.querySelectorAll('input[name="refun"]').item(0), '환불수단을 선택해주세요.')
+            valid++
+        }else {
+            validationRemove(document.querySelectorAll('input[name="refun"]').item(0))
+        }
+
+        const refundMemberName = document.getElementById('refundMemberName').value;
+
+        const refundBankName = document.getElementById('refundBankName').value;
+
+        const refundBankAccount = document.getElementById('refundBankAccount').value;
+
+        const paymentOption = Array.from(document.querySelectorAll('input[name="payment"]')).find(input => input.checked)?.value;
+
+        if(paymentOption === undefined){
+            validationCheck(document.querySelectorAll('input[name="payment"]').item(0), '결제 방법을 선택해 주세요.')
+            valid++;
+        }else {
+            validationRemove(document.querySelectorAll('input[name="payment"]').item(0))
+        }
+
+        const paymentCheck = document.getElementById('paymentCheck')?.checked
+        if(paymentCheck === false){
+            validationCheck(document.getElementById('paymentCheck'), '체크는 필수 입니다.')
+            valid++;
+        }else {
+            validationRemove(document.getElementById('paymentCheck'))
+        }
+
+        if(valid !== 0){
+            return;
+        }
+
+        const item ={
+            cartIds,
+            addressId,
+            deliveryPlaceStatus,
+            deliveryMemberName,
+            phoneNumber1,
+            phoneNumber2,
+            zipcode,
+            addressName,
+            addressNameDetail,
+            orderMessage,
+            bankTransferName,
+            paymentOption,
+            refundOption,
+            refundMemberName,
+            refundBankName,
+            refundBankAccount
+        }
+
+        const response = await fetch('/api/user/order/save',{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(item)
+        })
+
+        const data = await response.text()
+
+
+    }
+
+    const validationCheck = (getElements, errorMessage) => {
+        if(getElements.parentNode.getElementsByClassName('errorSpan').length !== 0){
+            return;
+        }
+
+        const span = document.createElement('span')
+        span.className = 'errorSpan'
+        span.textContent = errorMessage
+
+        getElements.parentNode.appendChild(span);
+    }
+
+    const validationRemove = (getElements) =>{
+        getElements.parentNode.querySelectorAll('.errorSpan').forEach(span => span.remove())
+    }
+
 
 
 
