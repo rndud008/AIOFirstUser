@@ -1,5 +1,6 @@
 package hello.aiofirstuser.service;
 
+import hello.aiofirstuser.config.KakaoPayProperties;
 import hello.aiofirstuser.domain.*;
 import hello.aiofirstuser.dto.*;
 import hello.aiofirstuser.repository.*;
@@ -21,6 +22,8 @@ public class OrderServiceImpl implements OrderService {
     private final AddressRepository addressRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final KakaoPayProperties kakaoPayProperties;
+    private final PaymentRepository paymentRepository;
 
     @Override
     @Transactional
@@ -56,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Long orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO) {
+    public KakaoPayReadyRequestDTO orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO) {
         Member member = memberRepository.findByUsername(username.toUpperCase());
 
         addressLogic(orderWriteRequestDTO, member);
@@ -64,14 +67,19 @@ public class OrderServiceImpl implements OrderService {
         Order order = dtoToOrder(orderWriteRequestDTO, member);
         orderRepository.saveAndFlush(order);
 
-        orderItemsLogic(orderWriteRequestDTO, member, order);
+        Result result = getResultAndOrderItemsSave(orderWriteRequestDTO, member, order);
 
-        return order.getId();
+        return getKakaoPayReadyRequestDTO(order, member, result.itemNames(), result.itemTotalQuantity(), result.itemTotalAmount());
     }
 
-    private void orderItemsLogic(OrderWriteRequestDTO orderWriteRequestDTO, Member member, Order order) {
+    private Result getResultAndOrderItemsSave(OrderWriteRequestDTO orderWriteRequestDTO, Member member, Order order) {
         List<Cart> carts = cartRepository.findByMemberIdAndCartIds(orderWriteRequestDTO.getCartIds(), member.getId());
         List<OrderItem> orderItems = new ArrayList<>();
+
+        String itemNames = "";
+        int itemTotalQuantity = 0;
+        int itemTotalAmount = 0;
+
         for (Cart cart : carts){
             OrderItem orderItem = OrderItem.builder()
                     .productVariant(cart.getProductVariant())
@@ -79,9 +87,38 @@ public class OrderServiceImpl implements OrderService {
                     .quantity(cart.getQuantity())
                     .build();
             orderItems.add(orderItem);
+
+            itemNames += cart.getProductVariant().getProduct().getProductName() +"(" + cart.getQuantity() + ") ";
+            itemTotalQuantity += cart.getQuantity();
+            itemTotalAmount += combineAndQuantityPrice(cart);
         }
+
         orderItemRepository.saveAll(orderItems);
-//        cartRepository.deleteAllInBatch(carts);
+
+        int last = itemNames.length() >=100 ? 99 : itemNames.length();
+
+        itemNames = itemNames.substring(0,last);
+
+        return new Result(itemNames, itemTotalQuantity, itemTotalAmount);
+
+    }
+
+    private record Result(String itemNames, int itemTotalQuantity, int itemTotalAmount) {
+    }
+
+    private KakaoPayReadyRequestDTO getKakaoPayReadyRequestDTO(Order order, Member member, String itemNames, int itemTotalQuantity, int itemTotalAmount) {
+        return KakaoPayReadyRequestDTO.builder()
+                .cid(kakaoPayProperties.getCid())
+                .partner_order_id(String.valueOf(order.getId()))
+                .partner_user_id(String.valueOf(member.getId()))
+                .tax_free_amount(0)
+                .item_name(itemNames)
+                .quantity(itemTotalQuantity)
+                .total_amount(itemTotalAmount)
+                .approval_url("http://localhost:9001/api/kakaopay/success")
+                .cancel_url("http://localhost:9001/api/kakaopay/cancel")
+                .fail_url("http://localhost:9001/api/kakaopay/fail")
+                .build();
     }
 
     private void addressLogic(OrderWriteRequestDTO orderWriteRequestDTO, Member member) {

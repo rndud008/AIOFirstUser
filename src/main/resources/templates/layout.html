@@ -993,7 +993,7 @@
                         </div>
                         <div>
                             <span>우편번호 <span>${item.zipcode}</span></span>
-                            <span>주소 <span>${item.addressNameDetail} ${item.addressNameDetail}</span></span>
+                            <span>주소 <span>${item.addressName} ${item.addressNameDetail}</span></span>
                         </div>
                     </div>
                 `
@@ -1245,7 +1245,16 @@
             body:JSON.stringify(item)
         })
 
-        const data = await response.text()
+        console.log(response)
+
+        if (response.ok){
+            const data = await response.json();
+            console.log(data)
+            window.open(data.next_redirect_pc_url,'_blank', 'width=600px,height=500px')
+
+        }
+
+
 
 
     }

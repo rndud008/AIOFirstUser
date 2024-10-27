@@ -112,11 +112,6 @@ public class MemberServiceImpl implements MemberService {
     public OrderWriteDeliveryResponseDTO getOrderMemberAddress(String username, String status) {
         Member member = memberRepository.getWithAddress(username.toUpperCase(), AddressStatus.valueOf(status));
 
-        if(member == null){
-            status = "HOME_ADDRESS".equals(status) ? "RECENTLY_ADDRESS" : "HOME_ADDRESS";
-            member = memberRepository.getWithAddress(username.toUpperCase(),AddressStatus.valueOf(status));
-        }
-
         if (member != null) {
             Address address = member.getAddresses().get(0);
 

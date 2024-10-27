@@ -1,17 +1,17 @@
 package hello.aiofirstuser.controller;
 
 import hello.aiofirstuser.domain.Member;
+import hello.aiofirstuser.dto.KakaoPayReadyRequestDTO;
+import hello.aiofirstuser.dto.KakaoPayReadyResponseDTO;
 import hello.aiofirstuser.dto.OrderWriteRequestDTO;
+import hello.aiofirstuser.service.KakaoPayService;
 import hello.aiofirstuser.service.MemberService;
 import hello.aiofirstuser.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,12 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderRestController {
     private final MemberService memberService;
     private final OrderService orderService;
+    private final KakaoPayService kakaoPayService;
 
     @PostMapping("/save")
-    public Long orderSave(@AuthenticationPrincipal UserDetails userDetails, @RequestBody OrderWriteRequestDTO orderWriteRequestDTO){
+    public KakaoPayReadyResponseDTO orderSave(@AuthenticationPrincipal UserDetails userDetails, @RequestBody OrderWriteRequestDTO orderWriteRequestDTO){
         log.info("orderWriteRequestDTO ={}",orderWriteRequestDTO);
 
-        return orderService.orderSave(userDetails.getUsername(), orderWriteRequestDTO);
+        KakaoPayReadyRequestDTO kakaoPayReadyRequestDTO = orderService.orderSave(userDetails.getUsername(), orderWriteRequestDTO);
+
+        return kakaoPayService.kakaoPayReadyResponseDTO(kakaoPayReadyRequestDTO);
 
     }
+
+
 }

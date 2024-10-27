@@ -1,9 +1,11 @@
 package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.domain.*;
+import hello.aiofirstuser.dto.KakaoPayReadyRequestDTO;
 import hello.aiofirstuser.dto.OrderWriteRequestDTO;
 import hello.aiofirstuser.dto.OrderWriteResponseDTO;
 import hello.aiofirstuser.dto.OrderWriteResponseListDTO;
+import org.aspectj.weaver.ast.Or;
 
 import java.util.List;
 
@@ -11,7 +13,8 @@ public interface OrderService {
 
     OrderWriteResponseListDTO orderWriteResponseList(List<String> cartIdAndQuantity, Member member);
 
-    Long orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO);
+    KakaoPayReadyRequestDTO orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO);
+
 
     default Order dtoToOrder(OrderWriteRequestDTO orderWriteRequestDTO, Member member){
         return Order.builder()
