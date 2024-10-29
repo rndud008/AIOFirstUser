@@ -3,7 +3,7 @@ package hello.aiofirstuser.service;
 import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.domain.ProductVariant;
 import hello.aiofirstuser.domain.WishProduct;
-import hello.aiofirstuser.dto.WishProductResponseDTO;
+import hello.aiofirstuser.dto.product.WishProductResponseDTO;
 import hello.aiofirstuser.repository.MemberRepository;
 import hello.aiofirstuser.repository.ProductVariantRepository;
 import hello.aiofirstuser.repository.WishProductRepository;

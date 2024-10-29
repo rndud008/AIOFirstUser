@@ -1,6 +1,6 @@
 package hello.aiofirstuser.domain;
 
-import hello.aiofirstuser.dto.OrderWriteRequestDTO;
+import hello.aiofirstuser.dto.order.OrderWriteRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -4,8 +4,15 @@ import hello.aiofirstuser.domain.Address;
 import hello.aiofirstuser.domain.AddressStatus;
 import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.domain.Role;
-import hello.aiofirstuser.dto.*;
+import hello.aiofirstuser.dto.member.MemberDTO;
+import hello.aiofirstuser.dto.member.MyPageMemberDTO;
+import hello.aiofirstuser.dto.member.OAuthResisterMemberDTO;
+import hello.aiofirstuser.dto.member.OrderMemberDTO;
+import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseDTO;
+import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseListDTO;
 import hello.aiofirstuser.repository.MemberRepository;
+import hello.aiofirstuser.repository.OrderItemRepository;
+import hello.aiofirstuser.repository.OrderItemReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +28,8 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final OrderItemReviewRepository orderItemReviewRepository;
+    private final OrderItemRepository orderItemRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -49,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member findByUsername(String username) {
-        Member member = memberRepository.findByUsername(username.toUpperCase());
+        Member member = memberRepository.getWithRoles(username.toUpperCase());
 
         return member;
     }
@@ -83,7 +92,6 @@ public class MemberServiceImpl implements MemberService {
             phoneNumber.add(phoneNumberMiddle);
             phoneNumber.add(phoneNumberFirst);
         }
-
 
         return entityToOrderMemberDTO(member, phoneNumber);
     }
@@ -131,6 +139,15 @@ public class MemberServiceImpl implements MemberService {
        }
 
         return new OrderWriteDeliveryResponseDTO();
+    }
+
+    @Override
+    public MyPageMemberDTO getMyPageMemberDTO(Member member) {
+        int orderItemCount = orderItemRepository.orderItemCount(member.getId());
+        int writtenReviewCount  = orderItemReviewRepository.orderItemReviewCount(member.getId());
+        int unwrittenReviewCount = orderItemCount - writtenReviewCount;
+
+        return entityToMyPageMemberDTO(member, unwrittenReviewCount);
     }
 
 

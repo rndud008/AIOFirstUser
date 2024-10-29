@@ -1,5 +1,6 @@
 package hello.aiofirstuser.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +22,8 @@ public class Order {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     private String paymentOption;
 
@@ -36,8 +37,23 @@ public class Order {
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
     @Column(insertable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist(){
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void changeStatus(OrderStauts orderStauts){
+        this.orderStauts = orderStauts;
+    }
 
 
 }

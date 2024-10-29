@@ -4,8 +4,8 @@ import hello.aiofirstuser.domain.Product;
 import hello.aiofirstuser.domain.ProductDescriptionImg;
 import hello.aiofirstuser.domain.ProductImg;
 import hello.aiofirstuser.domain.ProductVariant;
-import hello.aiofirstuser.dto.ProductDTO;
-import hello.aiofirstuser.dto.ProductDetailDTO;
+import hello.aiofirstuser.dto.product.ProductDTO;
+import hello.aiofirstuser.dto.product.ProductDetailDTO;
 
 import java.util.List;
 import java.util.Map;

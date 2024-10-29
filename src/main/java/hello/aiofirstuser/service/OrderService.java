@@ -1,12 +1,10 @@
 package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.domain.*;
-import hello.aiofirstuser.dto.KakaoPayReadyRequestDTO;
-import hello.aiofirstuser.dto.OrderWriteRequestDTO;
-import hello.aiofirstuser.dto.OrderWriteResponseDTO;
-import hello.aiofirstuser.dto.OrderWriteResponseListDTO;
-import org.aspectj.weaver.ast.Or;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayReadyRequestDTO;
+import hello.aiofirstuser.dto.order.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public interface OrderService {
@@ -15,10 +13,29 @@ public interface OrderService {
 
     KakaoPayReadyRequestDTO orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO);
 
+    List<MyPageRecentlyOrderDTO> getMyPageRecentlyOrderDTO(Member member);
 
-    default Order dtoToOrder(OrderWriteRequestDTO orderWriteRequestDTO, Member member){
+    OrderDetailDTO getOrderDetailDTO(Long orderId,Member member);
+
+    Order getOrderChangeStatus(Long orderId, String username);
+
+    default MyPageRecentlyOrderDTO entityToMyPageRecentlyOrderDTO(Order order, int total, List<String> productNames){
+
+        return MyPageRecentlyOrderDTO.builder()
+                .orderId(order.getId())
+                .orderDateTime(getFormatDateTime(order))
+                .totalPrice(customString(total))
+                .productNames(productNames)
+                .build();
+    }
+
+    default String getFormatDateTime(Order order) {
+        return order.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    default Order dtoToOrder(OrderWriteRequestDTO orderWriteRequestDTO, Address address){
         return Order.builder()
-                .member(member)
+                .address(address)
                 .paymentOption(orderWriteRequestDTO.getPaymentOption())
                 .refundOption(orderWriteRequestDTO.getRefundOption())
                 .refundMemberName(orderWriteRequestDTO.getRefundMemberName())

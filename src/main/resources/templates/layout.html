@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/style/Layout.css">
+    <link rel="stylesheet" href="/style/orderDetail.css">
 </head>
 <body style="margin: 0 auto; width: 1000px; outline: auto">
 
@@ -274,6 +275,7 @@
         if (response.status === 200) {
             const modal = document.createElement('div');
             modal.setAttribute('id', 'modal')
+            modal.onclick = () => modalClose(event);
 
             modal.style.display = "block";
 
@@ -281,7 +283,7 @@
             <div class="modalContent">
                 <span> 상품이 장바구니에 담겼습니다.</span>
                 <div>
-                    <button onclick="modalClose()"> 쇼핑 계속하기</button>
+                    <button onclick="buttonModalClose()"> 쇼핑 계속하기</button>
                     <a href="/user/cart"> 장바구니 확인</a>
                 </div>
             </div>
@@ -292,7 +294,23 @@
 
     }
 
-    const modalClose = () => {
+    const modalClose = (event) => {
+
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+
+        if (event.target === modalContent) {
+            event.stopPropagation();
+            return;
+        }
+
+        if (event.target === modal) {
+            modal.remove();
+        }
+
+    }
+
+    const buttonModalClose = () => {
         const modal = document.getElementById('modal');
         modal.remove();
     }
@@ -1275,6 +1293,128 @@
         getElements.parentNode.querySelectorAll('.errorSpan').forEach(span => span.remove())
     }
 
+    // 마이페이지
+    const getOrderDetail = (div) =>{
+        const inputValue = div.querySelector('input[type="hidden"]').value;
+        window.location.href = `/user/order/detail/${inputValue}`
+    }
+
+    // 주문 상세내역
+    const orderCancel = async () =>{
+        const currentUrl = window.location.href;
+        const orderId = document.getElementById('orderId').textContent;
+
+        const response = await fetch(`/api/kakaopay/refund?orderId=${orderId}`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+
+        if (response.ok){
+            const data = await response.text();
+            alert(data);
+            window.location.href = currentUrl;
+        }
+
+    }
+
+    const reviewWriteModal = (button)=>{
+        const div = button.closest('div')
+
+        const modal = document.createElement('div');
+        modal.setAttribute('id', 'modal')
+        modal.onclick = () => modalClose(event);
+
+        modal.style.display = "block";
+
+        modal.innerHTML = `
+            <div class="modalContent">
+                <div>
+                    <span> 평점 </span>
+                    <div class="starRating">
+                        <input type="radio" id="5Star" name="rating" value="5">
+                        <label for="5Star" >★</label>
+                        <input type="radio" id="4Star" name="rating" value="4">
+                        <label for="4Star" >★</label>
+                        <input type="radio" id="3Star" name="rating" value="3">
+                        <label for="3Star" >★</label>
+                        <input type="radio" id="2Star" name="rating" value="2">
+                        <label for="2Star" >★</label>
+                        <input type="radio" id="1Star" name="rating" value="1">
+                        <label for="1Star" >★</label>
+                    </div>
+                </div>
+                <div>
+                    <textarea ></textarea>
+                </div>
+                <div>
+                    <button onclick="reviewWrite(this)"> 등록</button>
+                    <button onclick="buttonModalClose()"> 취소</button>
+                </div>
+            </div>
+`
+
+        div.insertAdjacentElement('afterend', modal)
+    }
+
+    const reviewWrite = async (button) =>{
+        let valid = 0;
+
+        const modal = document.getElementById('modal');
+
+        const parentDiv = modal.parentNode
+
+        const orderItemId = parentDiv.querySelector("input[type='hidden']").value;
+
+        const inputGrade = Array.from(modal.querySelectorAll("input[name='rating']")).find(input => input.checked);
+
+        if(inputGrade?.value === undefined){
+            validationCheck(modal.querySelectorAll("input[name='rating']").item(0),'평점을 선택해주세요.')
+            valid ++;
+        }else {
+            validationRemove(modal.querySelectorAll("input[name='rating']").item(0))
+        }
+
+        const text = modal.querySelector('textarea');
+        if(!text?.value.trim()){
+            validationCheck(modal.querySelector('textarea'),'댓글 입력은 필수입니다.')
+            valid ++;
+        }else {
+            validationRemove(modal.querySelector('textarea'))
+        }
+
+        const item ={
+            orderItemId,
+            grade:inputGrade?.value,
+            content:text?.value
+        }
+
+        console.log(item)
+        if (valid !== 0){
+            return;
+        }
+
+        const response = await fetch(`/api/user/reviews/save`,{
+            method:"POST",
+            headers:{
+                "Content-type":"application/json"
+            },
+            body:JSON.stringify(item)
+        })
+
+        const resultText = await response.text();
+        if(resultText === "SUCCESS"){
+            buttonModalClose();
+            const reviewButton = parentDiv.querySelector('button');
+            reviewButton.closest('div').remove();
+            alert("리뷰가 저장되었습니다.")
+        }else {
+            alert(resultText)
+        }
+
+
+    }
 
 
 

@@ -1,8 +1,6 @@
 package hello.aiofirstuser.security.auth;
 
-import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.MemberDTO;
-import hello.aiofirstuser.service.MemberService;
+import hello.aiofirstuser.dto.member.MemberDTO;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

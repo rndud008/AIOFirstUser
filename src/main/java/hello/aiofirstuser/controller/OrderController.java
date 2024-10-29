@@ -1,7 +1,6 @@
 package hello.aiofirstuser.controller;
 
 import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.CartRequestListDTO;
 import hello.aiofirstuser.service.CartService;
 import hello.aiofirstuser.service.CategoryService;
 import hello.aiofirstuser.service.MemberService;
@@ -42,9 +41,20 @@ public class OrderController {
         model.addAttribute("cartItemList",orderService.orderWriteResponseList(cartIdAndQuantity,member));
         model.addAttribute("orderMember",memberService.getOrderMember(member.getUsername()));
 
-
-
         return "fragments/order";
+    }
+
+    @GetMapping("/detail/{orderId}")
+    public String orderDetailPage(@PathVariable("orderId") Long orderId, Model model,@AuthenticationPrincipal UserDetails userDetails){
+
+        Member member = memberService.findByUsername(userDetails.getUsername());
+
+        model.addAttribute("mainCategory",categoryService.mainCategoryInqueryExcludeList());
+        model.addAttribute("inqueryCategory",categoryService.InqueryCategory());
+
+        model.addAttribute("orderDetail",orderService.getOrderDetailDTO(orderId,member));
+
+        return "fragments/orderDetail";
     }
 
 }

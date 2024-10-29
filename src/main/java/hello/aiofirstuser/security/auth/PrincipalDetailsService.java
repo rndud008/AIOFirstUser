@@ -1,8 +1,6 @@
 package hello.aiofirstuser.security.auth;
 
-import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.MemberDTO;
-import hello.aiofirstuser.repository.MemberRepository;
+import hello.aiofirstuser.dto.member.MemberDTO;
 import hello.aiofirstuser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

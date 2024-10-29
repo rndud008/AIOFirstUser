@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div>
+            <div>마이페이지</div>
+            <div >
+                <a id="orderList" href="/user/mypage?mypagetype=orderList">주문내역</a>
+                <a id="pointList" href="/user/mypage?mypagetype=pointList">적립금내역</a>
+                <a id="wishList" href="/user/mypage?mypagetype=wishList">관심상품</a>
+                <a id="reviewList" href="/user/mypage?mypagetype=reviewList">내 게시글 보기</a>
+<!--                <a id="memberInfo" href="/user/mypage?mypagetype=memberInfo">회원정보</a>-->
+                <a onclick="">회원탈퇴</a>
+            </div>
+            <div th:text="${member}"></div>
+            <div >
+                <div>
+                    <span th:text="${member.nickname}"></span>
+                    <span>(<span th:text="${member.username}"></span>)</span>
+                </div>
+                <div>
+                    <span>적립금</span>
+                    <span th:text="${member.point}"></span>
+                </div>
+                <div>
+                    <span>작성 가능 리뷰</span>
+                    <span th:text="${member.wirteReviewCount}"></span>
+                </div>
+            </div>
+            <div th:text="${orders}"></div>
+            <div>
+                <div>최근 주문 정보</div>
+                <div>
+                    <div>주문일자</div>
+                    <div>상품명</div>
+                    <div>결제금액</div>
+                </div>
+                <div style="display: flex; padding: 10px" th:each="order : ${orders}" onclick="getOrderDetail(this)">
+                    <input type="hidden" th:value="${order.orderId}">
+                    <div th:text="${order.orderDateTime}"></div>
+                    <div >
+                        <div th:each="productName: ${order.productNames}" th:text="${productName}"></div>
+                    </div>
+                    <div th:text="${order.totalPrice}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,9 +1,8 @@
 package hello.aiofirstuser.controller;
 
-import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.KakaoPayReadyRequestDTO;
-import hello.aiofirstuser.dto.KakaoPayReadyResponseDTO;
-import hello.aiofirstuser.dto.OrderWriteRequestDTO;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayReadyRequestDTO;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayReadyResponseDTO;
+import hello.aiofirstuser.dto.order.OrderWriteRequestDTO;
 import hello.aiofirstuser.service.KakaoPayService;
 import hello.aiofirstuser.service.MemberService;
 import hello.aiofirstuser.service.OrderService;

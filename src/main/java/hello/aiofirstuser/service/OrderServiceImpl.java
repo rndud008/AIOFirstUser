@@ -2,16 +2,18 @@ package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.config.KakaoPayProperties;
 import hello.aiofirstuser.domain.*;
-import hello.aiofirstuser.dto.*;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayReadyRequestDTO;
+import hello.aiofirstuser.dto.order.*;
 import hello.aiofirstuser.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final KakaoPayProperties kakaoPayProperties;
     private final PaymentRepository paymentRepository;
+    private final OrderItemReviewRepository orderItemReviewRepository;
 
     @Override
     @Transactional
@@ -62,14 +65,154 @@ public class OrderServiceImpl implements OrderService {
     public KakaoPayReadyRequestDTO orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO) {
         Member member = memberRepository.findByUsername(username.toUpperCase());
 
-        addressLogic(orderWriteRequestDTO, member);
+        Address address = addressLogic(orderWriteRequestDTO, member);
 
-        Order order = dtoToOrder(orderWriteRequestDTO, member);
+        Order order = dtoToOrder(orderWriteRequestDTO, address);
         orderRepository.saveAndFlush(order);
 
         Result result = getResultAndOrderItemsSave(orderWriteRequestDTO, member, order);
 
         return getKakaoPayReadyRequestDTO(order, member, result.itemNames(), result.itemTotalQuantity(), result.itemTotalAmount());
+    }
+
+    @Override
+    public List<MyPageRecentlyOrderDTO> getMyPageRecentlyOrderDTO(Member member) {
+        List<Order> orders = orderRepository.getRecentlyOrderListTop10(member.getId());
+        List<MyPageRecentlyOrderDTO> myPageRecentlyOrderDTOS = new ArrayList<>();
+
+        for(Order order : orders){
+            List<String> productNames = new ArrayList<>();
+            List<OrderItem> orderItems = orderItemRepository.getOrderItemList(order.getId());
+            int total = 0;
+            for (OrderItem orderItem: orderItems){
+                productNames.add(selectOptionFullString(orderItem));
+                total += getOrderTotal(orderItem);
+            }
+            myPageRecentlyOrderDTOS.add(entityToMyPageRecentlyOrderDTO(order,total,productNames));
+        }
+
+        return myPageRecentlyOrderDTOS;
+    }
+
+    @Override
+    public OrderDetailDTO getOrderDetailDTO(Long orderId, Member member) {
+        Order order = orderRepository.getOrderIdAndMemberId(orderId, member.getId());
+        if(order != null){
+            return getOrderDetailDTO(order);
+        }
+        return new OrderDetailDTO();
+    }
+
+    @Override
+    @Transactional
+    public Order getOrderChangeStatus(Long orderId, String username) {
+
+        Order order = orderRepository.getOrderIdAndMemberUsername(orderId,username);
+
+        if(order == null){
+
+            return null;
+        }
+
+        if (order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name())){
+            order.changeStatus(OrderStauts.ORDER_CANCELED);
+            return order;
+        }
+
+        if(order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name())){
+            order.changeStatus(OrderStauts.ADMIN_ITEM_CHECK);
+            return order;
+        }
+
+        return null;
+
+    }
+
+    private OrderDetailDTO getOrderDetailDTO(Order order) {
+        List<OrderItem> orderItems = orderItemRepository.getOrderItemList(order.getId());
+
+        List<OrderDetailItemDTO> orderDetailItemDTOS = new ArrayList<>();
+
+        boolean refundCheck = order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name()) || order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name()) ;
+        int totalPrice = 0;
+        for(OrderItem orderItem : orderItems){
+            orderDetailItemDTOS.add(getOrderDetailItemDTO(orderItem, order));
+            totalPrice += getOrderTotal(orderItem);
+        }
+
+
+        return OrderDetailDTO.builder()
+                .orderId(order.getId())
+                .refundCheck(refundCheck)
+                .orderDateTime(getFormatDateTime(order))
+                .orderStatus(order.getOrderStauts().getDescription())
+                .deliveryNickname(order.getAddress().getNickname())
+                .phoneNumber(orderDetailPhoneNumber(order))
+                .fullAddressName("우편번호: " + order.getAddress().getZipcode() + " 주소: " + order.getAddress().getAddressName() + " " + order.getAddress().getAddressNameDetail())
+                .lastTotalPrice(this.customString(totalPrice >= 50000 ? totalPrice : totalPrice+3000))
+                .totalPrice(this.customString(totalPrice))
+                .deliveryPrice(this.customString(totalPrice >= 50000 ? 0 : 3000))
+                .totalPoint(this.customString(totalPrice / 100))
+                .orderDetailItemDTOS(orderDetailItemDTOS)
+                .build();
+    }
+
+    private OrderDetailItemDTO getOrderDetailItemDTO(OrderItem orderItem,Order order) {
+        boolean check = orderItemReviewRepository.orderItemReviewCheck(orderItem.getId()) == null
+                && !order.getOrderStauts().name().equals(OrderStauts.ORDER_CANCELED.name())
+                && !order.getOrderStauts().name().equals(OrderStauts.ADMIN_ITEM_CHECK.name()) ;
+
+        return OrderDetailItemDTO.builder()
+                .productId(orderItem.getProductVariant().getProduct().getId())
+                .orderItemId(orderItem.getId())
+                .productName(orderItem.getProductVariant().getProduct().getProductName())
+                .productImg(orderItem.getProductVariant().getProduct().getProductImgs().get(0).getFileName())
+                .selectOption(selectOptionString(orderItem))
+                .combineAndQuantity(this.customString(getOrderTotal(orderItem)))
+                .reviewCheck(check)
+                .build();
+    }
+
+    private List<String> orderDetailPhoneNumber(Order order){
+        List<String> resutNumbers = new ArrayList<>();
+
+        String[] numbers = new String[]{String.valueOf(order.getAddress().getPhoneNumber1()),String.valueOf(order.getAddress().getPhoneNumber2())};
+
+        for (String number: numbers){
+            int numberLength = number.length();
+
+            if(numberLength >= 9){
+                String last = number.substring(numberLength-4,numberLength);
+
+                numberLength -= 4;
+                String middle = number.substring(numberLength-4,numberLength);
+
+                numberLength -= 4;
+                String first = number.substring(0,numberLength);
+
+                resutNumbers.add(first+"-"+middle +"-"+last);
+            }
+        }
+
+        return resutNumbers;
+
+    }
+
+    private static int getOrderTotal(OrderItem orderItem) {
+        return orderItem.getQuantity() * (orderItem.getProductVariant().getPrice() + orderItem.getProductVariant().getProduct().getSellPrice());
+    }
+
+    private static String selectOptionFullString(OrderItem orderItem) {
+        return orderItem.getProductVariant().getProduct().getProductName() +
+                " 색상: " +orderItem.getProductVariant().getColor() +
+                " 사이즈: "+orderItem.getProductVariant().getSize() +
+                " " + orderItem.getQuantity() + "개";
+    }
+
+    private static String selectOptionString(OrderItem orderItem) {
+        return "색상: " +orderItem.getProductVariant().getColor() +
+                " 사이즈: "+orderItem.getProductVariant().getSize() +
+                " " + orderItem.getQuantity() + "개";
     }
 
     private Result getResultAndOrderItemsSave(OrderWriteRequestDTO orderWriteRequestDTO, Member member, Order order) {
@@ -98,6 +241,7 @@ public class OrderServiceImpl implements OrderService {
         int last = itemNames.length() >=100 ? 99 : itemNames.length();
 
         itemNames = itemNames.substring(0,last);
+        itemTotalAmount = itemTotalAmount <50000 ? itemTotalAmount+3000 : itemTotalAmount;
 
         return new Result(itemNames, itemTotalQuantity, itemTotalAmount);
 
@@ -107,6 +251,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private KakaoPayReadyRequestDTO getKakaoPayReadyRequestDTO(Order order, Member member, String itemNames, int itemTotalQuantity, int itemTotalAmount) {
+
         return KakaoPayReadyRequestDTO.builder()
                 .cid(kakaoPayProperties.getCid())
                 .partner_order_id(String.valueOf(order.getId()))
@@ -121,7 +266,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private void addressLogic(OrderWriteRequestDTO orderWriteRequestDTO, Member member) {
+    private Address addressLogic(OrderWriteRequestDTO orderWriteRequestDTO, Member member) {
         if(orderWriteRequestDTO.getAddressId().equals(0L)){
             Address address = addressRepository.findByMemberAddress(member.getId(), AddressStatus.RECENTLY_ADDRESS);
 
@@ -133,6 +278,7 @@ public class OrderServiceImpl implements OrderService {
             Address newAddress = dtoTOAddress(orderWriteRequestDTO,AddressStatus.RECENTLY_ADDRESS, member);
 
             addressRepository.save(newAddress);
+            return newAddress;
 
         }else {
             Address address = addressRepository.findById(orderWriteRequestDTO.getAddressId()).orElse(null);
@@ -143,6 +289,7 @@ public class OrderServiceImpl implements OrderService {
                 address.changeAddress(orderWriteRequestDTO);
             }
                 addressRepository.save(address);
+            return address;
         }
     }
 }

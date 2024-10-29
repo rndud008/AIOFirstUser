@@ -1,6 +1,6 @@
 package hello.aiofirstuser.controller;
 
-import hello.aiofirstuser.dto.CategoryRequestDTO;
+import hello.aiofirstuser.dto.category.CategoryRequestDTO;
 import hello.aiofirstuser.service.CategoryService;
 import hello.aiofirstuser.service.ProductService;
 import lombok.RequiredArgsConstructor;

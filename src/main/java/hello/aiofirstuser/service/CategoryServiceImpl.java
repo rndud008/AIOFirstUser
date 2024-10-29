@@ -1,7 +1,7 @@
 package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.domain.Category;
-import hello.aiofirstuser.dto.CategoryDTO;
+import hello.aiofirstuser.dto.category.CategoryDTO;
 import hello.aiofirstuser.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

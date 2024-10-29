@@ -27,10 +27,17 @@ public class Payment {
     private Integer total_amount;
     private Integer tax_free_amount;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
     @Column(insertable = false)
     private LocalDateTime updateAt;
+
+    public void changeStauts(PaymentStatus paymentStatus){
+        this.paymentStatus = paymentStatus;
+    }
 
     @PrePersist
     public void prePersist(){

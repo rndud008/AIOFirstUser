@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div th:text="${orderDetail}"></div>
+        <div>
+            <div> 주문일 : <span th:text="${orderDetail.orderDateTime}"></span></div>
+            <div> 주문번호 : <span id="orderId" th:text="${orderDetail.orderId}"></span></div>
+        </div>
+        <div>
+            <div>주문상품</div>
+            <div>주문상태 : <span th:text="${orderDetail.orderStatus}"></span> <button th:if="${orderDetail.refundCheck}" onclick="orderCancel()">주문취소</button></div>
+            <div th:each="orderDetailItem : ${orderDetail.orderDetailItemDTOS}">
+                <div><img style="width: 100px" th:src="${orderDetailItem.productImg}"/></div>
+                <div>
+                    <div>상품이름 : <span th:text="${orderDetailItem.productName}"></span></div>
+                    <div>상품옵션 : <span th:text="${orderDetailItem.selectOption}"></span></div>
+                    <div>가격 : <span th:text="${orderDetailItem.combineAndQuantity}"></span></div>
+                </div>
+                <input type="hidden" th:value="${orderDetailItem.orderItemId}">
+                <div th:if="${orderDetailItem.reviewCheck}"><button onclick="reviewWriteModal(this)">리뷰 작성</button></div>
+            </div>
+        </div>
+        <div>
+            <div>배송지</div>
+            <div>배송자명 : <span th:text="${orderDetail.deliveryNickname}"></span></div>
+            <div>연락처 :
+                <th:block th:each="phoneNumber, index : ${orderDetail.phoneNumber}">
+                    <span th:text="${phoneNumber}"></span>
+                    <span th:if="${index.index !=1 && index.size == 2}">|</span>
+                </th:block>
+            </div>
+            <div><span th:text="${orderDetail.fullAddressName}"></span></div>
+        </div>
+        <div>
+            <div>결제정보</div>
+            <div>총금액 + 배송비 <span th:text="${orderDetail.lastTotalPrice}"></span></div>
+            <div>총금액 <span th:text="${orderDetail.totalPrice}"></span></div>
+            <div>배송비 <span th:text="${orderDetail.deliveryPrice}"></span></div>
+        </div>
+        <div>
+            <div>포인트혜택</div>
+            <div>적립포인트 <span th:text="${orderDetail.totalPoint}"></span></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+.starRating{
+    display: flex;
+    flex-direction: row-reverse;
+    font-size: 2rem;
+    justify-content: center;
+}
+
+.starRating input[type="radio"]{
+    display: none;
+}
+
+.starRating label{
+    cursor: pointer;
+    color: lightgray;
+}
+
+.starRating input[type="radio"]:checked ~label,
+.starRating label:hover,
+.starRating label:hover ~ label {
+    color: red;
+}

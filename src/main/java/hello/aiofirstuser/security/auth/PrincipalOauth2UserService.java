@@ -1,23 +1,17 @@
 package hello.aiofirstuser.security.auth;
 
-import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.domain.Role;
-import hello.aiofirstuser.dto.MemberDTO;
-import hello.aiofirstuser.dto.OAuthResisterMemberDTO;
-import hello.aiofirstuser.repository.MemberRepository;
+import hello.aiofirstuser.dto.member.MemberDTO;
+import hello.aiofirstuser.dto.member.OAuthResisterMemberDTO;
 import hello.aiofirstuser.security.provider.oauth.KakaoUserInfo;
 import hello.aiofirstuser.security.provider.oauth.OAuth2UserInfo;
 import hello.aiofirstuser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor

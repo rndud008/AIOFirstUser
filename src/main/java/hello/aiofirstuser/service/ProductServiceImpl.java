@@ -1,10 +1,9 @@
 package hello.aiofirstuser.service;
 
-import hello.aiofirstuser.domain.Category;
 import hello.aiofirstuser.domain.Product;
 import hello.aiofirstuser.domain.ProductVariant;
-import hello.aiofirstuser.dto.ProductDTO;
-import hello.aiofirstuser.dto.ProductDetailDTO;
+import hello.aiofirstuser.dto.product.ProductDTO;
+import hello.aiofirstuser.dto.product.ProductDetailDTO;
 import hello.aiofirstuser.repository.CategoryRepository;
 import hello.aiofirstuser.repository.ProductRepository;
 import hello.aiofirstuser.repository.ProductVariantRepository;
@@ -13,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

@@ -1,7 +1,7 @@
 package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.domain.Category;
-import hello.aiofirstuser.dto.CategoryDTO;
+import hello.aiofirstuser.dto.category.CategoryDTO;
 
 import java.util.ArrayList;
 import java.util.List;

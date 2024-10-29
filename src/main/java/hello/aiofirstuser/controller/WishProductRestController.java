@@ -1,7 +1,7 @@
 package hello.aiofirstuser.controller;
 
 import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.WishProductRequestDTO;
+import hello.aiofirstuser.dto.product.WishProductRequestDTO;
 import hello.aiofirstuser.service.MemberService;
 import hello.aiofirstuser.service.ProductVariantService;
 import hello.aiofirstuser.service.WishProductService;

@@ -2,7 +2,12 @@ package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.domain.Address;
 import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.dto.*;
+import hello.aiofirstuser.dto.member.MemberDTO;
+import hello.aiofirstuser.dto.member.MyPageMemberDTO;
+import hello.aiofirstuser.dto.member.OAuthResisterMemberDTO;
+import hello.aiofirstuser.dto.member.OrderMemberDTO;
+import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseDTO;
+import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseListDTO;
 
 import java.util.List;
 
@@ -23,6 +28,17 @@ public interface MemberService {
     OrderWriteDeliveryResponseDTO getOrderMemberAddress(String username, String status);
 
     OrderWriteDeliveryResponseDTO getOrderMemberAddressId(String username, Long addressId);
+
+    MyPageMemberDTO getMyPageMemberDTO(Member member);
+
+    default MyPageMemberDTO entityToMyPageMemberDTO(Member member, int count){
+     return MyPageMemberDTO.builder()
+             .username(member.getUsername())
+             .nickname(member.getNickname())
+             .point(member.getPoint())
+             .wirteReviewCount(count)
+             .build();
+    }
 
     default MemberDTO entityToMemberDTO(Member member){
 
@@ -72,7 +88,7 @@ public interface MemberService {
         String number = String.valueOf(value);
         int numberLength = number.length();
 
-        if(numberLength >= 11){
+        if(numberLength >= 9){
             String last = number.substring(numberLength-4,numberLength);
 
             numberLength -= 4;

@@ -13,4 +13,6 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
             "where p.member.username = :username " +
             "order by p.createdAt desc limit 1")
     Payment getWithTid(@Param("username") String username);
+
+    Payment findByOrderId(Long orderId);
 }

@@ -1,12 +1,13 @@
 package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.config.KakaoPayProperties;
-import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.domain.Order;
 import hello.aiofirstuser.domain.Payment;
-import hello.aiofirstuser.dto.KakaoPayApproveResponseDTO;
-import hello.aiofirstuser.dto.KakaoPayReadyRequestDTO;
-import hello.aiofirstuser.dto.KakaoPayReadyResponseDTO;
+import hello.aiofirstuser.domain.PaymentStatus;
+import hello.aiofirstuser.dto.kakaopay.KakaoCancelResponseDTO;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayApproveResponseDTO;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayReadyRequestDTO;
+import hello.aiofirstuser.dto.kakaopay.KakaoPayReadyResponseDTO;
 import hello.aiofirstuser.repository.MemberRepository;
 import hello.aiofirstuser.repository.OrderRepository;
 import hello.aiofirstuser.repository.PaymentRepository;
@@ -65,6 +66,8 @@ public class KakaoPayService {
 
         Payment payment = paymentRepository.getWithTid(username.toUpperCase());
 
+        log.info("payment ={}",payment);
+
         HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(getApproveParameters(pagToken, payment),this.getHeaders());
 
         RestTemplate restTemplate = new RestTemplate();
@@ -72,8 +75,42 @@ public class KakaoPayService {
         KakaoPayApproveResponseDTO kakaoPayApproveResponseDTO = restTemplate.postForObject(
                 kakaoPayProperties.getApproveUrl(), requestEntity, KakaoPayApproveResponseDTO.class);
 
+        payment.changeStauts(PaymentStatus.SUCCESS);
 
         return kakaoPayApproveResponseDTO;
+    }
+
+    @Transactional
+    public void kakaoCancel(Order order){
+
+        Payment payment = paymentRepository.findByOrderId(order.getId());
+
+        HttpEntity<Map<String,String >> requestEntity = new HttpEntity<>(getCancelParameters(payment), this.getHeaders());
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        KakaoCancelResponseDTO kakaoCancelResponseDTO =
+                restTemplate.postForObject("https://open-api.kakaopay.com/online/v1/payment/cancel",requestEntity, KakaoCancelResponseDTO.class);
+
+        log.info("kakaoCancelResponseDTO ={}",kakaoCancelResponseDTO);
+        payment.changeStauts(PaymentStatus.CANCEL);
+    }
+
+    private Map<String, String> getCancelParameters(Payment payment) {
+        Map<String,String > parameters = new HashMap<>();
+        parameters.put("cid", kakaoPayProperties.getCid());
+        parameters.put("tid", payment.getTid());
+        parameters.put("cancel_amount", String.valueOf(payment.getTotal_amount()));
+        parameters.put("cancel_tax_free_amount", String.valueOf(payment.getTax_free_amount()));
+        return parameters;
+    }
+
+    @Transactional
+    public void paymentStatusChange(String username, PaymentStatus paymentStatus){
+        Payment payment = paymentRepository.getWithTid(username.toUpperCase());
+        if (payment != null){
+            payment.changeStauts(paymentStatus);
+        }
     }
 
     private Map<String, String> getApproveParameters(String pagToken, Payment payment) {
@@ -82,7 +119,7 @@ public class KakaoPayService {
         parameters.put("cid", kakaoPayProperties.getCid());
         parameters.put("tid",payment.getTid());
         parameters.put("partner_order_id", String.valueOf(payment.getOrder().getId()));
-        parameters.put("partner_user_id", String.valueOf(payment.getOrder().getMember().getId()));
+        parameters.put("partner_user_id", String.valueOf(payment.getOrder().getAddress().getMember().getId()));
         parameters.put("pg_token", pagToken);
 
         return parameters;
@@ -112,7 +149,8 @@ public class KakaoPayService {
                 .tax_free_amount(kakaoPayReadyRequestDTO.getTax_free_amount())
                 .tid(kakaoPayReadyResponseDTO.getTid())
                 .order(order)
-                .member(order.getMember())
+                .member(order.getAddress().getMember())
+                .paymentStatus(PaymentStatus.READY)
                 .build();
     }
 }
