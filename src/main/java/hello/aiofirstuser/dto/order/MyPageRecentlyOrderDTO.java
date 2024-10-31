@@ -13,8 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class MyPageRecentlyOrderDTO {
+    private Long index;
     private Long orderId;
     private List<String> productNames;
     private String totalPrice;
     private String orderDateTime;
+    private String productStatus;
 }

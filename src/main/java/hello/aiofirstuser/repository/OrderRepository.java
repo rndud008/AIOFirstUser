@@ -1,6 +1,7 @@
 package hello.aiofirstuser.repository;
 
 import hello.aiofirstuser.domain.Order;
+import hello.aiofirstuser.domain.PaymentStatus;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,8 +26,19 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     @Query("select o from Order o " +
             "left join fetch o.address " +
             "left join fetch o.address.member " +
+            "left join fetch Payment p on p.order.id = o.id " +
             "where o.address.member.id = :memberId " +
+            "and  p.paymentStatus in(:paymentStatuses) " +
             "order by o.createdAt desc limit 10")
-    List<Order> getRecentlyOrderListTop10(@Param("memberId") Long memberId);
+    List<Order> getRecentlyOrderListTop10(@Param("memberId") Long memberId, @Param("paymentStatuses") List<PaymentStatus> paymentStatuses);
+
+    @Query("select o from Order o " +
+            "left join fetch o.address " +
+            "left join fetch o.address.member " +
+            "left join fetch Payment p on p.order.id = o.id " +
+            "where o.address.member.id = :memberId " +
+            "and  p.paymentStatus in(:paymentStatuses) " +
+            "order by o.createdAt desc ")
+    List<Order> getOrderList(@Param("memberId") Long memberId, @Param("paymentStatuses") List<PaymentStatus> paymentStatuses);
 
 }

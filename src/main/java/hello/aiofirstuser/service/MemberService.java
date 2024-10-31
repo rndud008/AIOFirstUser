@@ -31,11 +31,11 @@ public interface MemberService {
 
     MyPageMemberDTO getMyPageMemberDTO(Member member);
 
-    default MyPageMemberDTO entityToMyPageMemberDTO(Member member, int count){
+    default MyPageMemberDTO entityToMyPageMemberDTO(Member member, int count, long currentPoint){
      return MyPageMemberDTO.builder()
              .username(member.getUsername())
              .nickname(member.getNickname())
-             .point(member.getPoint())
+             .currentPoint(currentPoint)
              .wirteReviewCount(count)
              .build();
     }

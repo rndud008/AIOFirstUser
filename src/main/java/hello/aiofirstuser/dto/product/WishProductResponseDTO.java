@@ -13,6 +13,7 @@ public class WishProductResponseDTO {
 
     private Long wishProductId;
     private Long productId;
+    private Long productVariantId;
 
     private String productImg;
     private String productName;

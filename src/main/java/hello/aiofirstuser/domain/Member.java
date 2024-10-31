@@ -25,8 +25,6 @@ public class Member {
     private String provider;
     private int phoneNumber;
 
-    private int point;
-
     @Column(updatable = false)
     private LocalDate createdAt;
     private LocalDate birthday;

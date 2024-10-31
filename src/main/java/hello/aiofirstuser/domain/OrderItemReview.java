@@ -1,6 +1,7 @@
 package hello.aiofirstuser.domain;
 
 
+import hello.aiofirstuser.dto.custom.PostRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,8 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
-public class OrderItemReview {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class OrderItemReview extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,15 +30,11 @@ public class OrderItemReview {
     private String content;
     private Integer grade;
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    public void prePersist(){
-        this.createdAt = LocalDateTime.now();
+    public void changeValue(PostRequestDTO postRequestDTO){
+        this.content = postRequestDTO.getContent();
+        this.grade = postRequestDTO.getGrade();
     }
+
+
 
 }

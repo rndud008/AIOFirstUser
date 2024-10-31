@@ -1,9 +1,6 @@
 package hello.aiofirstuser.service;
 
-import hello.aiofirstuser.domain.Address;
-import hello.aiofirstuser.domain.AddressStatus;
-import hello.aiofirstuser.domain.Member;
-import hello.aiofirstuser.domain.Role;
+import hello.aiofirstuser.domain.*;
 import hello.aiofirstuser.dto.member.MemberDTO;
 import hello.aiofirstuser.dto.member.MyPageMemberDTO;
 import hello.aiofirstuser.dto.member.OAuthResisterMemberDTO;
@@ -13,6 +10,7 @@ import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseListDTO;
 import hello.aiofirstuser.repository.MemberRepository;
 import hello.aiofirstuser.repository.OrderItemRepository;
 import hello.aiofirstuser.repository.OrderItemReviewRepository;
+import hello.aiofirstuser.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -30,6 +29,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final OrderItemReviewRepository orderItemReviewRepository;
     private final OrderItemRepository orderItemRepository;
+    private final PointRepository pointRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -143,11 +143,20 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MyPageMemberDTO getMyPageMemberDTO(Member member) {
-        int orderItemCount = orderItemRepository.orderItemCount(member.getId());
-        int writtenReviewCount  = orderItemReviewRepository.orderItemReviewCount(member.getId());
+        List<OrderStauts> exCludeOrderStauts = new ArrayList<>();
+        exCludeOrderStauts.addAll(List.of(OrderStauts.ORDER_CANCELED,OrderStauts.ADMIN_ITEM_CHECK));
+        int orderItemCount = orderItemRepository.orderItemCount(member.getId(),exCludeOrderStauts);
+        int writtenReviewCount  = orderItemReviewRepository.orderItemReviewCount(member.getId(),exCludeOrderStauts);
         int unwrittenReviewCount = orderItemCount - writtenReviewCount;
 
-        return entityToMyPageMemberDTO(member, unwrittenReviewCount);
+        long currentPoint = 0L;
+        Optional<Point> result = pointRepository.findCurrentPointByMemberId(member.getId());
+        Point point = result.orElse(null);
+        if(point != null){
+            currentPoint = point.getCurrentPoint();
+        }
+
+        return entityToMyPageMemberDTO(member, unwrittenReviewCount, currentPoint);
     }
 
 

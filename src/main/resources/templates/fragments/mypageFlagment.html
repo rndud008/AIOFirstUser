@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <th:block th:fragment="mypage">
+        <div th:text="${member}"></div>
+        <div >
+            <div>
+                <span th:text="${member.nickname}"></span>
+                <span>(<span th:text="${member.username}"></span>)</span>
+            </div>
+            <div>
+                <span>적립금</span>
+                <span th:text="${member.currentPoint}"></span>
+            </div>
+            <div>
+                <span>작성 가능 리뷰</span>
+                <span th:text="${member.wirteReviewCount}"></span>
+            </div>
+        </div>
+        <div th:text="${orders}"></div>
+        <div>
+            <div>최근 주문 정보</div>
+            <div>
+                <div>주문일자</div>
+                <div>상품명</div>
+                <div>결제금액</div>
+            </div>
+            <th:block th:if="${!#lists.isEmpty(orders)}">
+                <div style="display: flex; padding: 10px" th:each="order : ${orders}" onclick="getOrderDetail(this)">
+                    <input type="hidden" th:value="${order.orderId}">
+                    <div th:text="${order.orderDateTime}"></div>
+                    <div >
+                        <div th:each="productName: ${order.productNames}" th:text="${productName}"></div>
+                    </div>
+                    <div th:text="${order.totalPrice}"></div>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${!#lists.isEmpty(orders)}">
+                <div>
+                    <span>구매 내역이 없습니다.</span>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="point">
+        <div>
+            <div th:text="${member}"></div>
+            <span>[<span th:text="${member.nickname}"></span>] 의 적립금내역</span>
+        </div>
+        <div>
+            <div th:text="${pointList}"></div>
+            <div style="display: flex">
+                <div>날짜</div>
+                <div>적립내역</div>
+                <div>상태</div>
+                <div>현재 적립금</div>
+            </div>
+            <th:block th:if="${!#lists.isEmpty(pointList)}">
+                <div style="display: flex" th:each="point : ${pointList}">
+                    <div><span th:text="${point.createdAt}"></span></div>
+                    <div><span th:text="${point.point}"></span></div>
+                    <div><span th:text="${point.status}"></span></div>
+                    <div><span th:text="${point.currentPoint}"></span></div>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${!#lists.isEmpty(pointList)}">
+                <div>
+                    <span>적립내역이 없습니다.</span>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="wishProduct">
+        <div>
+            <div th:text="${member}"></div>
+            <span>[<span th:text="${member.nickname}"></span>] 의 관심상품 내역</span>
+        </div>
+        <div>
+            <div th:text="${wishList}"></div>
+            <div style="display: flex">
+                <div>
+                    <input type="checkbox" oninput="wishProductAllCheck(this)">
+                </div>
+                <div>사진</div>
+                <div>상품명</div>
+                <div>수량</div>
+                <div>재고</div>
+                <div>적립금</div>
+                <div>가격</div>
+                <div>장바구니</div>
+            </div>
+            <th:block th:if="${!#lists.isEmpty(wishList)}">
+                <div class="item"  style="display: flex" th:each="wish : ${wishList}">
+                    <div>
+                        <input type="checkbox" th:value="${wish.wishProductId}">
+                        <input type="hidden" th:value="${wish.productVariantId}">
+                    </div>
+                    <div>
+                        <a th:href="@{'/product/detail/' + ${wish.productId}}">
+                            <img style="width: 100px" th:src="${wish.productImg}"/>
+                        </a>
+                    </div>
+                    <div style="display: flex; flex-direction: column">
+                        <span th:text="${wish.productName}"></span>
+                        <span class="option" th:text="${wish.option}"></span>
+                    </div>
+                    <div>
+                        <input type="number" min="1" value="1"  />
+                    </div>
+                    <div>
+                        <span th:text="${wish.stock}"></span>
+                    </div>
+                    <div>
+                        <span th:text="${wish.point}"></span>
+                    </div>
+                    <div>
+                        <span th:text="${wish.combinePrice}"></span>
+                    </div>
+                    <div>
+                        <button type="button" onclick="wishProductCartSave(this)">장바구니</button>
+                        <button type="button" onclick="deleteWishProduct(this)" >삭제</button>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" onclick="wiShProductSelectDelete(this)">선택상품 삭제</button>
+                    <button type="button" onclick="wiShProductSelectDelete(this,false)">전체상품 삭제</button>
+                    <button type="button" onclick="wishProductSelectCartSave()">선택상품 장바구니</button>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${!#lists.isEmpty(wishList)}">
+                <div>
+                    <span>등록된 상품이 없습니다.</span>
+                </div>
+            </th:block>
+
+        </div>
+    </th:block>
+
+    <th:block th:fragment="postList">
+        <div>
+            <div th:text="${member}"></div>
+            <span>[<span th:text="${member.nickname}"></span>] 의 작성된 글 목록 </span>
+        </div>
+
+        <div>
+            <div th:text="${postList}"></div>
+            <div style="display: flex">
+                <div>#</div>
+                <div>게시글 종류</div>
+                <div>내용</div>
+                <div>수정</div>
+                <div>작성일</div>
+            </div>
+            <th:block th:if="${!#lists.isEmpty(postList)}">
+                <div style="display: flex" th:each="post : ${postList}">
+                    <input type="hidden" th:value="${post.id}">
+                    <div><span th:text="${post.index}">게시글 번호</span></div>
+                    <div><span id="type" th:text="${post.type}">게시글 종류</span></div>
+                    <div><span id="content" th:text="${post.content}">내용</span></div>
+                    <div><button onclick="postModifyModal(this)">수정</button></div>
+                    <div><span th:text="${post.createdAt}">작성일</span></div>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${!#lists.isEmpty(postList)}">
+                <div>
+                    <span>등록된 게시글이 없습니다.</span>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="orderList">
+        <div>
+            <div th:text="${member}"></div>
+            <span>[<span th:text="${member.nickname}"></span>] 의 주문한 내역 </span>
+        </div>
+
+        <div th:text="${orders}"></div>
+        <div>
+            <div>
+                <div>#</div>
+                <div>주문일자</div>
+                <div>상품명</div>
+                <div>결제금액</div>
+                <div>상품상태</div>
+            </div>
+            <th:block th:if="${!#lists.isEmpty(orders)}">
+                <div style="display: flex; padding: 10px" th:each="order : ${orders}" onclick="getOrderDetail(this)">
+                    <input type="hidden" th:value="${order.orderId}">
+                    <div th:text="${order.index}">#</div>
+                    <div th:text="${order.orderDateTime}"></div>
+                    <div >
+                        <div th:each="productName: ${order.productNames}" th:text="${productName}"></div>
+                    </div>
+                    <div th:text="${order.totalPrice}"></div>
+                    <div th:text="${order.productStatus}"></div>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${!#lists.isEmpty(orders)}">
+                <div>
+                    <span>구매 내역이 없습니다.</span>
+                </div>
+            </th:block>
+        </div>
+
+
+    </th:block>
+
+</body>
+</html>

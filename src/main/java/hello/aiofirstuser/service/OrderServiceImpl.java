@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +25,7 @@ public class OrderServiceImpl implements OrderService {
     private final KakaoPayProperties kakaoPayProperties;
     private final PaymentRepository paymentRepository;
     private final OrderItemReviewRepository orderItemReviewRepository;
+    private final PointRepository pointRepository;
 
     @Override
     @Transactional
@@ -37,17 +36,17 @@ public class OrderServiceImpl implements OrderService {
         int totalPrice = 0;
         int totalPoint = 0;
 
-        for(String value : cartIdAndQuantity){
+        for (String value : cartIdAndQuantity) {
 
             Long cartId = Long.valueOf(value.split("-")[0]);
             int quantity = Integer.parseInt(value.split("-")[1]);
 
             Cart cart = cartRepository.findByCartIdAndMemberId(cartId, member.getId());
-            if(cart == null){
+            if (cart == null) {
                 continue;
             }
 
-            if(cart.getQuantity() != quantity){
+            if (cart.getQuantity() != quantity) {
                 cart.changeQuantity(quantity);
             }
 
@@ -55,10 +54,10 @@ public class OrderServiceImpl implements OrderService {
             orderWriteResponseDTOS.add(orderWriteResponseDTO);
 
             totalPrice += combineAndQuantityPrice(cart);
-            totalPoint += combineAndQuantityPrice(cart)/100;
+            totalPoint += combineAndQuantityPrice(cart) / 100;
         }
 
-        return createOrderWriteResponseListDTO(orderWriteResponseDTOS,totalPrice, totalPoint);
+        return createOrderWriteResponseListDTO(orderWriteResponseDTOS, totalPrice, totalPoint);
     }
 
     @Override
@@ -75,20 +74,57 @@ public class OrderServiceImpl implements OrderService {
         return getKakaoPayReadyRequestDTO(order, member, result.itemNames(), result.itemTotalQuantity(), result.itemTotalAmount());
     }
 
+    private void pointSaveLogic(Member member, int itemTotalAmount, Order order) {
+        Point point = pointRepository.findCurrentPointByMemberId(member.getId()).orElse(null);
+        Point newPoint;
+        if (point == null) {
+            newPoint = Point.builder()
+                    .member(member)
+                    .order(order)
+                    .pointStatus(PointStatus.PENDING)
+                    .point(itemTotalAmount / 100)
+                    .currentPoint(0)
+                    .build();
+        } else {
+            newPoint = Point.builder()
+                    .member(member)
+                    .order(order)
+                    .pointStatus(PointStatus.PENDING)
+                    .point(itemTotalAmount / 100)
+                    .currentPoint(point.getCurrentPoint())
+                    .build();
+        }
+
+        pointRepository.save(newPoint);
+    }
+
     @Override
-    public List<MyPageRecentlyOrderDTO> getMyPageRecentlyOrderDTO(Member member) {
-        List<Order> orders = orderRepository.getRecentlyOrderListTop10(member.getId());
+    public List<MyPageRecentlyOrderDTO> getOrderList(Member member, boolean top10) {
+
+        List<PaymentStatus> paymentStatuses = List.of(PaymentStatus.SUCCESS, PaymentStatus.CANCEL);
+        List<Order> orders;
+
+        if (top10){
+            orders = orderRepository.getRecentlyOrderListTop10(member.getId(), paymentStatuses);
+        }else {
+            orders = orderRepository.getOrderList(member.getId(), paymentStatuses);
+        }
+
         List<MyPageRecentlyOrderDTO> myPageRecentlyOrderDTOS = new ArrayList<>();
 
-        for(Order order : orders){
-            List<String> productNames = new ArrayList<>();
-            List<OrderItem> orderItems = orderItemRepository.getOrderItemList(order.getId());
-            int total = 0;
-            for (OrderItem orderItem: orderItems){
-                productNames.add(selectOptionFullString(orderItem));
-                total += getOrderTotal(orderItem);
+        if(!orders.isEmpty()){
+            long index = orders.size();
+            for (Order order : orders) {
+                List<String> productNames = new ArrayList<>();
+                List<OrderItem> orderItems = orderItemRepository.getOrderItemList(order.getId());
+                int total = 0;
+                for (OrderItem orderItem : orderItems) {
+                    productNames.add(selectOptionFullString(orderItem));
+                    total += getOrderTotal(orderItem);
+                }
+                myPageRecentlyOrderDTOS.add(entityToMyPageRecentlyOrderDTO(order, total, productNames,index));
+                index--;
             }
-            myPageRecentlyOrderDTOS.add(entityToMyPageRecentlyOrderDTO(order,total,productNames));
         }
 
         return myPageRecentlyOrderDTOS;
@@ -97,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDetailDTO getOrderDetailDTO(Long orderId, Member member) {
         Order order = orderRepository.getOrderIdAndMemberId(orderId, member.getId());
-        if(order != null){
+        if (order != null) {
             return getOrderDetailDTO(order);
         }
         return new OrderDetailDTO();
@@ -107,19 +143,19 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order getOrderChangeStatus(Long orderId, String username) {
 
-        Order order = orderRepository.getOrderIdAndMemberUsername(orderId,username);
+        Order order = orderRepository.getOrderIdAndMemberUsername(orderId, username);
 
-        if(order == null){
+        if (order == null) {
 
             return null;
         }
 
-        if (order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name())){
+        if (order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name())) {
             order.changeStatus(OrderStauts.ORDER_CANCELED);
             return order;
         }
 
-        if(order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name())){
+        if (order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name())) {
             order.changeStatus(OrderStauts.ADMIN_ITEM_CHECK);
             return order;
         }
@@ -133,9 +169,9 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderDetailItemDTO> orderDetailItemDTOS = new ArrayList<>();
 
-        boolean refundCheck = order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name()) || order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name()) ;
+        boolean refundCheck = order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name()) || order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name());
         int totalPrice = 0;
-        for(OrderItem orderItem : orderItems){
+        for (OrderItem orderItem : orderItems) {
             orderDetailItemDTOS.add(getOrderDetailItemDTO(orderItem, order));
             totalPrice += getOrderTotal(orderItem);
         }
@@ -149,7 +185,7 @@ public class OrderServiceImpl implements OrderService {
                 .deliveryNickname(order.getAddress().getNickname())
                 .phoneNumber(orderDetailPhoneNumber(order))
                 .fullAddressName("우편번호: " + order.getAddress().getZipcode() + " 주소: " + order.getAddress().getAddressName() + " " + order.getAddress().getAddressNameDetail())
-                .lastTotalPrice(this.customString(totalPrice >= 50000 ? totalPrice : totalPrice+3000))
+                .lastTotalPrice(this.customString(totalPrice >= 50000 ? totalPrice : totalPrice + 3000))
                 .totalPrice(this.customString(totalPrice))
                 .deliveryPrice(this.customString(totalPrice >= 50000 ? 0 : 3000))
                 .totalPoint(this.customString(totalPrice / 100))
@@ -157,10 +193,10 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderDetailItemDTO getOrderDetailItemDTO(OrderItem orderItem,Order order) {
+    private OrderDetailItemDTO getOrderDetailItemDTO(OrderItem orderItem, Order order) {
         boolean check = orderItemReviewRepository.orderItemReviewCheck(orderItem.getId()) == null
                 && !order.getOrderStauts().name().equals(OrderStauts.ORDER_CANCELED.name())
-                && !order.getOrderStauts().name().equals(OrderStauts.ADMIN_ITEM_CHECK.name()) ;
+                && !order.getOrderStauts().name().equals(OrderStauts.ADMIN_ITEM_CHECK.name());
 
         return OrderDetailItemDTO.builder()
                 .productId(orderItem.getProductVariant().getProduct().getId())
@@ -173,24 +209,24 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private List<String> orderDetailPhoneNumber(Order order){
+    private List<String> orderDetailPhoneNumber(Order order) {
         List<String> resutNumbers = new ArrayList<>();
 
-        String[] numbers = new String[]{String.valueOf(order.getAddress().getPhoneNumber1()),String.valueOf(order.getAddress().getPhoneNumber2())};
+        String[] numbers = new String[]{String.valueOf(order.getAddress().getPhoneNumber1()), String.valueOf(order.getAddress().getPhoneNumber2())};
 
-        for (String number: numbers){
+        for (String number : numbers) {
             int numberLength = number.length();
 
-            if(numberLength >= 9){
-                String last = number.substring(numberLength-4,numberLength);
+            if (numberLength >= 9) {
+                String last = number.substring(numberLength - 4, numberLength);
 
                 numberLength -= 4;
-                String middle = number.substring(numberLength-4,numberLength);
+                String middle = number.substring(numberLength - 4, numberLength);
 
                 numberLength -= 4;
-                String first = number.substring(0,numberLength);
+                String first = number.substring(0, numberLength);
 
-                resutNumbers.add(first+"-"+middle +"-"+last);
+                resutNumbers.add(first + "-" + middle + "-" + last);
             }
         }
 
@@ -204,14 +240,14 @@ public class OrderServiceImpl implements OrderService {
 
     private static String selectOptionFullString(OrderItem orderItem) {
         return orderItem.getProductVariant().getProduct().getProductName() +
-                " 색상: " +orderItem.getProductVariant().getColor() +
-                " 사이즈: "+orderItem.getProductVariant().getSize() +
+                " 색상: " + orderItem.getProductVariant().getColor() +
+                " 사이즈: " + orderItem.getProductVariant().getSize() +
                 " " + orderItem.getQuantity() + "개";
     }
 
     private static String selectOptionString(OrderItem orderItem) {
-        return "색상: " +orderItem.getProductVariant().getColor() +
-                " 사이즈: "+orderItem.getProductVariant().getSize() +
+        return "색상: " + orderItem.getProductVariant().getColor() +
+                " 사이즈: " + orderItem.getProductVariant().getSize() +
                 " " + orderItem.getQuantity() + "개";
     }
 
@@ -223,7 +259,7 @@ public class OrderServiceImpl implements OrderService {
         int itemTotalQuantity = 0;
         int itemTotalAmount = 0;
 
-        for (Cart cart : carts){
+        for (Cart cart : carts) {
             OrderItem orderItem = OrderItem.builder()
                     .productVariant(cart.getProductVariant())
                     .order(order)
@@ -231,17 +267,19 @@ public class OrderServiceImpl implements OrderService {
                     .build();
             orderItems.add(orderItem);
 
-            itemNames += cart.getProductVariant().getProduct().getProductName() +"(" + cart.getQuantity() + ") ";
+            itemNames += cart.getProductVariant().getProduct().getProductName() + "(" + cart.getQuantity() + ") ";
             itemTotalQuantity += cart.getQuantity();
             itemTotalAmount += combineAndQuantityPrice(cart);
         }
 
         orderItemRepository.saveAll(orderItems);
 
-        int last = itemNames.length() >=100 ? 99 : itemNames.length();
+        pointSaveLogic(member, itemTotalAmount, order);
 
-        itemNames = itemNames.substring(0,last);
-        itemTotalAmount = itemTotalAmount <50000 ? itemTotalAmount+3000 : itemTotalAmount;
+        int last = itemNames.length() >= 100 ? 99 : itemNames.length();
+
+        itemNames = itemNames.substring(0, last);
+        itemTotalAmount = itemTotalAmount < 50000 ? itemTotalAmount + 3000 : itemTotalAmount;
 
         return new Result(itemNames, itemTotalQuantity, itemTotalAmount);
 
@@ -267,28 +305,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Address addressLogic(OrderWriteRequestDTO orderWriteRequestDTO, Member member) {
-        if(orderWriteRequestDTO.getAddressId().equals(0L)){
+        if (orderWriteRequestDTO.getAddressId().equals(0L)) {
             Address address = addressRepository.findByMemberAddress(member.getId(), AddressStatus.RECENTLY_ADDRESS);
 
-            if(address != null){
+            if (address != null) {
                 address.changeAddressStatus(AddressStatus.OTHER_ADDRESS);
                 addressRepository.save(address);
             }
 
-            Address newAddress = dtoTOAddress(orderWriteRequestDTO,AddressStatus.RECENTLY_ADDRESS, member);
+            Address newAddress = dtoTOAddress(orderWriteRequestDTO, AddressStatus.RECENTLY_ADDRESS, member);
 
             addressRepository.save(newAddress);
             return newAddress;
 
-        }else {
+        } else {
             Address address = addressRepository.findById(orderWriteRequestDTO.getAddressId()).orElse(null);
 
-            if(address == null){
-                address = dtoTOAddress(orderWriteRequestDTO,AddressStatus.valueOf(orderWriteRequestDTO.getDeliveryPlaceStatus()), member);
-            }else {
+            if (address == null) {
+                address = dtoTOAddress(orderWriteRequestDTO, AddressStatus.valueOf(orderWriteRequestDTO.getDeliveryPlaceStatus()), member);
+            } else {
                 address.changeAddress(orderWriteRequestDTO);
             }
-                addressRepository.save(address);
+            addressRepository.save(address);
             return address;
         }
     }

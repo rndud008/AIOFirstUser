@@ -13,19 +13,21 @@ public interface OrderService {
 
     KakaoPayReadyRequestDTO orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO);
 
-    List<MyPageRecentlyOrderDTO> getMyPageRecentlyOrderDTO(Member member);
+    List<MyPageRecentlyOrderDTO> getOrderList(Member member,boolean top10);
 
     OrderDetailDTO getOrderDetailDTO(Long orderId,Member member);
 
     Order getOrderChangeStatus(Long orderId, String username);
 
-    default MyPageRecentlyOrderDTO entityToMyPageRecentlyOrderDTO(Order order, int total, List<String> productNames){
+    default MyPageRecentlyOrderDTO entityToMyPageRecentlyOrderDTO(Order order, int total, List<String> productNames,long index){
 
         return MyPageRecentlyOrderDTO.builder()
+                .index(index)
                 .orderId(order.getId())
                 .orderDateTime(getFormatDateTime(order))
                 .totalPrice(customString(total))
                 .productNames(productNames)
+                .productStatus(order.getOrderStauts().getDescription())
                 .build();
     }
 
