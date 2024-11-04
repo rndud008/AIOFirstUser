@@ -1,4 +1,4 @@
-package hello.aiofirstuser.dto.category;
+package hello.aiofirstuser.dto.inquiry;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryRequestDTO {
-    private Long code;
-    private Long decode;
+public class InquiryCheckResponseDTO {
     private String categoryName;
+    private Long inquiryId;
+    private Long categoryId;
+    private Long depno;
 }

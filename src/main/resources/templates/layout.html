@@ -55,8 +55,10 @@
                 <h3 th:text="${inqueryCategory.categoryName}"></h3>
                 <ul style="margin: 0; padding: 0; list-style: none"
                     th:if="${inqueryCategory.subCategories != null} ">
-                    <li th:each="subCategory : ${inqueryCategory.subCategories}"
-                        th:text="${subCategory.categoryName}"></li>
+                    <a th:each="subCategory : ${inqueryCategory.subCategories}"
+                       th:href="@{'/inquiry?code='+${subCategory.id} + '&categoryName=' +${subCategory.categoryName} } ">
+                        <li th:text="${subCategory.categoryName}"></li>
+                    </a>
                 </ul>
             </div>
         </div>
@@ -1702,6 +1704,221 @@
         }else {
             alert("잘못된 요청입니다.")
         }
+
+    }
+
+    // 고객센터 페이지
+
+    const inquirySave = async () =>{
+
+        const categoryId = document.querySelector('input[type="hidden"]').value;
+        console.log(categoryId)
+        const name = document.getElementById('name').value;
+        console.log(name)
+        const password = document.getElementById('password').value;
+        console.log(password)
+        const title = document.getElementById('title').value;
+        console.log(title)
+        const content = document.querySelector('textarea').value;
+        console.log(content)
+
+        const items ={
+            categoryId,
+            name,
+            password,
+            title,
+            content
+        }
+
+        const response = await fetch(`/api/inquiry/save`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(items)
+        })
+
+        const data = await response.json()
+        console.log(data)
+        console.log(response.status)
+
+        if (response.status === 200){
+            console.log(data)
+            alert("저장 완료.")
+            window.location.href =`/inquiry?code=${data.id}&categoryName=고객센터&decode=${data.depNo}`
+        }else {
+            alert("잘못된 요청입니다.")
+        }
+
+    }
+
+    const inquiryItem = async () => {
+        const inquiryId = document.querySelector('input[type="hidden"]').value;
+        const password = document.querySelector('input[type="password"]').value;
+
+        const item ={
+            inquiryId,
+            password
+        }
+        console.log(item)
+
+        const response = await fetch(`/api/inquiry/detail`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(item)
+        })
+
+        const data = await response.json();
+
+        if(response.status === 200){
+            console.log(data)
+            const div = document.getElementById('inquiry');
+            const childDiv= document.createElement('div')
+            const modify = document.createElement('button')
+            modify.textContent = "수정"
+            modify.setAttribute('id','modify')
+            modify.onclick = inquiryModifyForm;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.setAttribute('id','delete')
+            deleteButton.textContent = '삭제'
+            deleteButton.onclick = deleteInquiry;
+
+            const list = div.querySelector('a');
+            list.textContent="목록"
+            div.innerHTML =
+                `
+                    <div >
+        <div>
+            <input type="hidden" value="${data.inquiryId}">
+            <div><span>NAME</span></div>
+            <div id="name"><span>${data.name}</span></div>
+        </div>
+        <div>
+            <div><span>TITLE</span></div>
+            <div id="title"><span>${data.title}</span></div>
+        </div>
+        <div>
+            <div><span>CONTENT</span></div>
+            <div id="content">
+                <textarea disabled>${data.content}</textarea>
+            </div>
+        </div>
+    </div>
+                `
+
+            childDiv.append(list)
+            childDiv.append(modify)
+            childDiv.append(deleteButton)
+            div.appendChild(childDiv)
+
+            alert("호출완료")
+        }else {
+            alert("잘못된 요청입니다.")
+        }
+
+    }
+
+    const inquiryModifyForm = () =>{
+        const titleDiv = document.getElementById('title');
+        const titleInput = document.createElement('input')
+        titleInput.value = titleDiv.querySelector('span').textContent;
+        titleDiv.innerHTML ='';
+        titleDiv.append(titleInput);
+        const textarea = document.querySelector('textarea');
+        textarea.disabled =false
+        const button = document.getElementById('modify');
+        button.textContent = '수정완료'
+        button.onclick = inquiryModify;
+
+        const cancelButton = document.getElementById('delete');
+        cancelButton.textContent = '취소'
+        cancelButton.onclick = inquiryModifyCancel;
+        const buttonDiv = button.parentNode
+        buttonDiv.append(cancelButton);
+    }
+
+    const inquiryModifyCancel = () =>{
+        const titleDiv = document.getElementById('title');
+        const titleInput = document.createElement('span')
+        titleInput.textContent = titleDiv.querySelector('input').value;
+        titleDiv.innerHTML ='';
+        titleDiv.append(titleInput);
+
+        const textarea = document.querySelector('textarea');
+        textarea.disabled =true
+        const modifyButton = document.getElementById('modify');
+        modifyButton.textContent = '수정'
+        modifyButton.onclick = inquiryModifyForm;
+
+        const cancelButton = document.getElementById('delete');
+        cancelButton.textContent = '삭제'
+        cancelButton.onclick = deleteInquiry;
+
+    }
+
+    const inquiryModify = async () =>{
+        const inquiryId = document.querySelector('input[type="hidden"]').value;
+        const title = document.getElementById('title').querySelector('input').value;
+        const content = document.querySelector('textarea').value;
+        const name = document.getElementById('name').querySelector('span').textContent;
+
+        const item ={
+            inquiryId,
+            title,
+            content,
+            name
+        }
+
+        const response = await fetch(`/api/inquiry/modify`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(item)
+        })
+
+        const data = await response.json();
+
+        if(response.status === 200){
+            alert("수정완료")
+            document.querySelector('textarea').disabled = true;
+            const span = document.createElement('span')
+            span.textContent = title;
+            document.getElementById('title').innerHTML='';
+            document.getElementById('title').append(span);
+            const a = document.getElementById('inquiry').querySelector('a');
+            const div = a.closest('div');
+            div.innerHTML='';
+            const modifyButton = document.createElement('button');
+            modifyButton.setAttribute('id','modify')
+            modifyButton.textContent = '수정'
+            modifyButton.onclick = inquiryModifyForm;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.setAttribute('id','delete')
+            deleteButton.textContent = '삭제'
+            deleteButton.onclick = deleteInquiry;
+
+            div.append(a)
+            div.append(modifyButton)
+            div.append(deleteButton)
+
+        }else {
+            alert("잘못된 요청입니다.")
+        }
+
+    }
+
+    const deleteInquiry = async () =>{
+
+        const a = document.getElementById('inquiry').querySelector('a');
+
+        const response = await fetch()
+
+
 
     }
 

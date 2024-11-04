@@ -1,8 +1,7 @@
 package hello.aiofirstuser.repository;
 
-import hello.aiofirstuser.domain.OrderItem;
 import hello.aiofirstuser.domain.OrderItemReview;
-import hello.aiofirstuser.domain.OrderStauts;
+import hello.aiofirstuser.domain.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,8 +13,8 @@ public interface OrderItemReviewRepository extends JpaRepository<OrderItemReview
     @Query("select count (oir) from OrderItemReview oir " +
             "join oir.member m " +
             "join oir.orderItem.order o " +
-            "where m.id = :memberId and o.orderStauts not in(:exCludeOrderStauts)")
-    int orderItemReviewCount(@Param("memberId") Long memberId, @Param("exCludeOrderStauts")List<OrderStauts> exCludeOrderStauts);
+            "where m.id = :memberId and o.orderStatus not in(:exCludeOrderStauts)")
+    int orderItemReviewCount(@Param("memberId") Long memberId, @Param("exCludeOrderStauts")List<OrderStatus> exCludeOrderStauts);
 
     @Query("select oir from OrderItemReview oir " +
             "left join fetch oir.orderItem oi " +

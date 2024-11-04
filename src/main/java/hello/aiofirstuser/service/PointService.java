@@ -15,7 +15,6 @@ public interface PointService {
         return MyPagePointDTO.builder()
                 .createdAt(point.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:MM")))
                 .point(String.format("%,d",point.getPoint()))
-                .currentPoint(String.format("%,d",point.getCurrentPoint()))
                 .status(point.getPointStatus().getDescription())
                 .build();
     }

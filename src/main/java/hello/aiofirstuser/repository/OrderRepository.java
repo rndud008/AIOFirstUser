@@ -27,8 +27,8 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             "left join fetch o.address " +
             "left join fetch o.address.member " +
             "left join fetch Payment p on p.order.id = o.id " +
-            "where o.address.member.id = :memberId " +
             "and  p.paymentStatus in(:paymentStatuses) " +
+            "where o.address.member.id = :memberId " +
             "order by o.createdAt desc limit 10")
     List<Order> getRecentlyOrderListTop10(@Param("memberId") Long memberId, @Param("paymentStatuses") List<PaymentStatus> paymentStatuses);
 
@@ -36,8 +36,8 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             "left join fetch o.address " +
             "left join fetch o.address.member " +
             "left join fetch Payment p on p.order.id = o.id " +
-            "where o.address.member.id = :memberId " +
             "and  p.paymentStatus in(:paymentStatuses) " +
+            "where o.address.member.id = :memberId " +
             "order by o.createdAt desc ")
     List<Order> getOrderList(@Param("memberId") Long memberId, @Param("paymentStatuses") List<PaymentStatus> paymentStatuses);
 

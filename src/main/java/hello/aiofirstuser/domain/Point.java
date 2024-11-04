@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class Point extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "point_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,14 +26,13 @@ public class Point extends BaseEntity{
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
     private long point;
-    private long currentPoint;
+
     @Enumerated(EnumType.STRING)
     private PointStatus pointStatus;
 
-
     public void changeValue(long value, PointStatus pointStatus){
-        this.currentPoint = this.currentPoint + value;
         this.pointStatus = pointStatus;
     }
 

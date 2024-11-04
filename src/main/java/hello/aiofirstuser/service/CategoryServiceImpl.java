@@ -78,7 +78,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO getCategory(Long id) {
         Optional<Category> result = categoryRepository.findById(id);
 
-        Category category = result.orElseThrow();
+        Category category = result.orElse(new Category());
+        if (category.getId() == null){
+            return new CategoryDTO();
+        }
 
         List<Category> categories = categoryRepository.findByDepNo(category.getId());
 
@@ -86,6 +89,31 @@ public class CategoryServiceImpl implements CategoryService {
         categoryDTO.setSubCategories(entityListToDtoList(categories));
 
         return categoryDTO;
+    }
+
+    @Override
+    public CategoryDTO getCategory(String str) {
+        Category category = categoryRepository.findByCategoryName(str).orElse(null);
+
+        if (category == null) {
+            return new CategoryDTO();
+        }
+
+        return entityToDto(category);
+    }
+
+    @Override
+    public List<CategoryDTO> getSubCategoryList(Long depno) {
+        List<Category> categories = categoryRepository.findByDepNo(depno);
+
+        List<CategoryDTO> categoryDTOS = new ArrayList<>();
+        if(!categories.isEmpty()){
+            for(Category category: categories){
+                categoryDTOS.add(entityToDto(category));
+            }
+        }
+
+        return categoryDTOS;
     }
 
 }

@@ -17,6 +17,10 @@ public interface CategoryService {
 
     CategoryDTO getCategory(Long id);
 
+    CategoryDTO getCategory(String str);
+
+    List<CategoryDTO> getSubCategoryList(Long depno);
+
     default List<CategoryDTO> entityListToDtoList(List<Category> categories){
 
         List<CategoryDTO> categoryDTOS = new ArrayList<>();

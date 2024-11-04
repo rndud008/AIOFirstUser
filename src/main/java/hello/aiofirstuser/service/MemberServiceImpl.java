@@ -67,6 +67,10 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getWithRoles(String username) {
         Member member = memberRepository.getWithRoles(username.toUpperCase());
 
+        if (member == null){
+            return null;
+        }
+
         return entityToMemberDTO(member);
     }
 
@@ -143,17 +147,23 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MyPageMemberDTO getMyPageMemberDTO(Member member) {
-        List<OrderStauts> exCludeOrderStauts = new ArrayList<>();
-        exCludeOrderStauts.addAll(List.of(OrderStauts.ORDER_CANCELED,OrderStauts.ADMIN_ITEM_CHECK));
+        List<OrderStatus> exCludeOrderStauts = new ArrayList<>();
+        exCludeOrderStauts.addAll(List.of(OrderStatus.ORDER_CANCELED, OrderStatus.ADMIN_ITEM_CHECK));
         int orderItemCount = orderItemRepository.orderItemCount(member.getId(),exCludeOrderStauts);
         int writtenReviewCount  = orderItemReviewRepository.orderItemReviewCount(member.getId(),exCludeOrderStauts);
         int unwrittenReviewCount = orderItemCount - writtenReviewCount;
 
         long currentPoint = 0L;
-        Optional<Point> result = pointRepository.findCurrentPointByMemberId(member.getId());
-        Point point = result.orElse(null);
-        if(point != null){
-            currentPoint = point.getCurrentPoint();
+        List<Point> points = pointRepository.getStatusList(member.getId(), List.of(PointStatus.EARNED,PointStatus.USED));
+
+        if(!points.isEmpty()){
+            for(Point point: points){
+                if (point.getPointStatus().equals(PointStatus.EARNED)){
+                    currentPoint+= point.getPoint();
+                } else if (point.getPointStatus().equals(PointStatus.USED)) {
+                    currentPoint-= point.getPoint();
+                }
+            }
         }
 
         return entityToMyPageMemberDTO(member, unwrittenReviewCount, currentPoint);

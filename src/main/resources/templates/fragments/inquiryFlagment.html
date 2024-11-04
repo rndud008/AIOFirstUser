@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<th:block th:fragment="notice">
+
+</th:block>
+
+<th:block th:fragment="productReviews">
+
+</th:block>
+
+<th:block th:fragment="product">
+    <div th:text="${subCategory}"></div>
+    <ul>
+        <a th:each="subCategory: ${subCategoryList}"
+           th:href="@{'/inquiry?code=' + ${subCategory.id} + '&categoryName=고객센터&decode=' + ${subCategory.depNo}}">
+            <li th:text="${subCategory.categoryName}"></li>
+        </a>
+    </ul>
+    <div th:text="${inquiryList}"></div>
+    <div>
+        <div>
+            <div>#</div>
+            <div>Title</div>
+            <div>Name</div>
+            <div>Date</div>
+        </div>
+        <th:block th:if="${!#lists.isEmpty(inquiryList)}">
+            <div th:each="inquiry:${inquiryList}">
+                <div ><span th:text="${inquiry.index}"></span></div>
+                <div>
+                    <a th:href="@{'/inquiry/detail/'+${inquiry.inquiryId}}">
+                        <span th:text="${inquiry.title}"></span>
+                    </a>
+                </div>
+                <div> <span th:text="${inquiry.name}"></span></div>
+                <div> <span th:text="${inquiry.createdAt}"></span></div>
+            </div>
+        </th:block>
+        <th:block th:unless="${!#lists.isEmpty(inquiryList)}">
+            <div> 작성된 게시글이 없습니다.</div>
+        </th:block>
+        <a th:href="@{'/inquiry/saveform?code=' + ${categoryDTO.id} }" th:text="글쓰기"></a>
+    </div>
+</th:block>
+
+<th:block th:fragment="productSaveForm">
+    <div>상품문의</div>
+    <div >
+        <div>
+            <input type="hidden" th:value="${categoryDTO.id}">
+            <div><span>NAME</span></div>
+            <div><input id="name" type="text" th:value="${productSaveForm.name}"/></div>
+            <div><span>PASSWORD</span></div>
+            <div><input id="password" type="password"/></div>
+        </div>
+        <div>
+            <div><span>TITLE</span></div>
+            <div><input id="title" type="text"/></div>
+        </div>
+        <div>
+            <div><span>CONTENT</span></div>
+            <div>
+                <textarea>
+아아
+아아ㅏ
+아아아ㅏ아아
+                </textarea>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div th:text="${categoryDTO}"></div>
+        <button onclick="inquirySave()">작성완료</button>
+        <a th:href="@{'/inquiry?code=' + ${categoryDTO.id} + '&categoryName=고객센터&decode=' + ${categoryDTO.depNo}}">목록으로</a>
+    </div>
+</th:block>
+
+<th:block th:fragment="inquiryCheck">
+    <div>
+        <div><span th:text="${inquiry.categoryName}"></span></div>
+        <div id="inquiry">
+            <div>
+                <input type="hidden" th:value="${inquiry.inquiryId}">
+                <span>비밀번호</span>
+                <input type="password"/>
+            </div>
+            <div>
+                <button onclick="inquiryItem()">확인</button>
+                <a th:href="@{'/inquiry?code=' + ${inquiry.categoryId} + '&categoryName=고객센터&decode=' + ${inquiry.depno}}">취소</a>
+            </div>
+        </div>
+
+    </div>
+
+</th:block>
+
+<th:block th:fragment="delivery">
+
+</th:block>
+
+<th:block th:fragment="deliveryCancelAndModify">
+
+</th:block>
+
+<th:block th:fragment="faq">
+
+</th:block>
+
+<th:block th:fragment="depositAndBesides">
+
+</th:block>
+
+</body>
+</html>

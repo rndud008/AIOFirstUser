@@ -27,7 +27,7 @@ public interface OrderService {
                 .orderDateTime(getFormatDateTime(order))
                 .totalPrice(customString(total))
                 .productNames(productNames)
-                .productStatus(order.getOrderStauts().getDescription())
+                .productStatus(order.getOrderStatus().getDescription())
                 .build();
     }
 
@@ -43,7 +43,7 @@ public interface OrderService {
                 .refundMemberName(orderWriteRequestDTO.getRefundMemberName())
                 .refundBankName(orderWriteRequestDTO.getRefundBankName())
                 .refundBankAccount(orderWriteRequestDTO.getRefundBankAccount())
-                .orderStauts(OrderStauts.PREPARING_ITEM)
+                .orderStatus(OrderStatus.PREPARING_ITEM)
                 .build();
     }
 

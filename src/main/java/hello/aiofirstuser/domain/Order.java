@@ -1,10 +1,8 @@
 package hello.aiofirstuser.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,7 +31,7 @@ public class Order {
     private String refundBankAccount;
 
     @Enumerated(EnumType.STRING)
-    private OrderStauts orderStauts;
+    private OrderStatus orderStatus;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -51,8 +49,8 @@ public class Order {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void changeStatus(OrderStauts orderStauts){
-        this.orderStauts = orderStauts;
+    public void changeStatus(OrderStatus orderStatus){
+        this.orderStatus = orderStatus;
     }
 
 

@@ -1,8 +1,7 @@
 package hello.aiofirstuser.controller;
 
 import hello.aiofirstuser.domain.Order;
-import hello.aiofirstuser.domain.OrderStauts;
-import hello.aiofirstuser.domain.Payment;
+import hello.aiofirstuser.domain.OrderStatus;
 import hello.aiofirstuser.domain.PaymentStatus;
 import hello.aiofirstuser.dto.kakaopay.KakaoPayApproveResponseDTO;
 import hello.aiofirstuser.service.KakaoPayService;
@@ -47,12 +46,12 @@ public class KakaoPayRestController {
 
         Order order = orderService.getOrderChangeStatus(orderId,userDetails.getUsername());
 
-        if (order!= null && order.getOrderStauts().name().equals(OrderStauts.ORDER_CANCELED.name())){
+        if (order!= null && order.getOrderStatus().name().equals(OrderStatus.ORDER_CANCELED.name())){
             kakaoPayService.kakaoCancel(order);
             return "주문취소 완료";
         }
 
-        if (order!= null && order.getOrderStauts().name().equals(OrderStauts.ADMIN_ITEM_CHECK.name())){
+        if (order!= null && order.getOrderStatus().name().equals(OrderStatus.ADMIN_ITEM_CHECK.name())){
 
             return "관리자의 확인이 필요합니다.";
         }

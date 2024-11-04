@@ -35,8 +35,8 @@ public interface MemberService {
      return MyPageMemberDTO.builder()
              .username(member.getUsername())
              .nickname(member.getNickname())
-             .currentPoint(currentPoint)
              .wirteReviewCount(count)
+             .currentPoint(currentPoint)
              .build();
     }
 

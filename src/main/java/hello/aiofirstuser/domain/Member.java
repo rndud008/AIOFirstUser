@@ -60,8 +60,5 @@ public class Member {
         addresses.add(address);
     }
 
-//    public void modifyAddress(Address address){
-//
-//    }
 
 }

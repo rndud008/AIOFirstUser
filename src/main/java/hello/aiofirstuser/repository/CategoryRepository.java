@@ -14,7 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("select c from Category c where c.depNo = 0 and c.id <> :id")
     List<Category> getMainCategoryExcludeInquery(@Param("id") Long id);
-
     List<Category> findByDepNo(Long id);
 
 }

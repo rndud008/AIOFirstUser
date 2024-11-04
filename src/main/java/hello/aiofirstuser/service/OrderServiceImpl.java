@@ -83,7 +83,6 @@ public class OrderServiceImpl implements OrderService {
                     .order(order)
                     .pointStatus(PointStatus.PENDING)
                     .point(itemTotalAmount / 100)
-                    .currentPoint(0)
                     .build();
         } else {
             newPoint = Point.builder()
@@ -91,7 +90,6 @@ public class OrderServiceImpl implements OrderService {
                     .order(order)
                     .pointStatus(PointStatus.PENDING)
                     .point(itemTotalAmount / 100)
-                    .currentPoint(point.getCurrentPoint())
                     .build();
         }
 
@@ -150,13 +148,13 @@ public class OrderServiceImpl implements OrderService {
             return null;
         }
 
-        if (order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name())) {
-            order.changeStatus(OrderStauts.ORDER_CANCELED);
+        if (order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM.name())) {
+            order.changeStatus(OrderStatus.ORDER_CANCELED);
             return order;
         }
 
-        if (order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name())) {
-            order.changeStatus(OrderStauts.ADMIN_ITEM_CHECK);
+        if (order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM_CHECK.name())) {
+            order.changeStatus(OrderStatus.ADMIN_ITEM_CHECK);
             return order;
         }
 
@@ -169,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderDetailItemDTO> orderDetailItemDTOS = new ArrayList<>();
 
-        boolean refundCheck = order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM.name()) || order.getOrderStauts().name().equals(OrderStauts.PREPARING_ITEM_CHECK.name());
+        boolean refundCheck = order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM.name()) || order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM_CHECK.name());
         int totalPrice = 0;
         for (OrderItem orderItem : orderItems) {
             orderDetailItemDTOS.add(getOrderDetailItemDTO(orderItem, order));
@@ -181,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
                 .orderId(order.getId())
                 .refundCheck(refundCheck)
                 .orderDateTime(getFormatDateTime(order))
-                .orderStatus(order.getOrderStauts().getDescription())
+                .orderStatus(order.getOrderStatus().getDescription())
                 .deliveryNickname(order.getAddress().getNickname())
                 .phoneNumber(orderDetailPhoneNumber(order))
                 .fullAddressName("우편번호: " + order.getAddress().getZipcode() + " 주소: " + order.getAddress().getAddressName() + " " + order.getAddress().getAddressNameDetail())
@@ -195,8 +193,8 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDetailItemDTO getOrderDetailItemDTO(OrderItem orderItem, Order order) {
         boolean check = orderItemReviewRepository.orderItemReviewCheck(orderItem.getId()) == null
-                && !order.getOrderStauts().name().equals(OrderStauts.ORDER_CANCELED.name())
-                && !order.getOrderStauts().name().equals(OrderStauts.ADMIN_ITEM_CHECK.name());
+                && !order.getOrderStatus().name().equals(OrderStatus.ORDER_CANCELED.name())
+                && !order.getOrderStatus().name().equals(OrderStatus.ADMIN_ITEM_CHECK.name());
 
         return OrderDetailItemDTO.builder()
                 .productId(orderItem.getProductVariant().getProduct().getId())
