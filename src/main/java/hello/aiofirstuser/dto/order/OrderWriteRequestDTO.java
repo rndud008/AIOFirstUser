@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class OrderWriteRequestDTO {
     private List<Long> cartIds;
+    private List<OrderProductVariantRequestDTO> orderProductVariantRequestDTOS;
 
     private Long addressId;
     private String deliveryPlaceStatus;

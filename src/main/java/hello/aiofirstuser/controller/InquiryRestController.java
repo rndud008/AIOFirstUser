@@ -36,7 +36,7 @@ public class InquiryRestController {
     @PostMapping("/detail")
     public ResponseEntity<?> inquiryDetail(@RequestBody InquiryDetailRequestDTO inquiryDetailRequestDTO){
 
-        InquiryDTO inquiryDTO = inquiryService.getInquiryDTO(inquiryDetailRequestDTO);
+        InquiryDTO inquiryDTO = inquiryService.getInquiryDTO(inquiryDetailRequestDTO,false);
 
         if(inquiryDTO.getInquiryId() == null){
             return ResponseEntity.status(404).body("FAIL");

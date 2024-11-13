@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -34,22 +35,22 @@ public class ProductServiceImpl implements ProductService {
         ProductDetailDTO productDetailDTO = productDetailDTO(product);
         productDetailDTO.setColorSizePrice(colorSizePrice(resultList));
 
-        List<String> sizePriorityOrder = Arrays.asList("S", "M", "L", "XL","2XL");
+        List<String> sizePriorityOrder = Arrays.asList("S", "M", "L", "XL", "2XL");
 
-        if(!resultList.isEmpty()){
+        if (!resultList.isEmpty()) {
 
             List<String> sizeList = resultList
                     .stream().map(ProductVariant::getSize).distinct()
                     .sorted(Comparator.comparingInt(sizePriorityOrder::indexOf))
                     .toList();
 
-            log.info("sizeList ={}" ,sizeList);
+            log.info("sizeList ={}", sizeList);
             String size = null;
 
-            if(sizeList.size() > 1){
-                size = sizeList.get(0) + "~" + sizeList.get(sizeList.size()-1);
+            if (sizeList.size() > 1) {
+                size = sizeList.get(0) + "~" + sizeList.get(sizeList.size() - 1);
                 productDetailDTO.setSize(size);
-            }else {
+            } else {
                 productDetailDTO.setSize(sizeList.get(0));
             }
 
@@ -62,10 +63,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDTO> getCategoryProductDTOS(Long id, boolean mainCategory) {
         List<Product> products = new ArrayList<>();
 
-        if(mainCategory){
+        if (mainCategory) {
             products = productRepository.findByCategoryDepNo(id);
 
-        }else {
+        } else {
             products = productRepository.findByCategoryId(id);
 
         }
@@ -78,10 +79,25 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> getNewProductDTOS() {
 
-        LocalDate twoWeekAgo = LocalDate.now().minusWeeks(2);
+        LocalDateTime twoWeekAgo = LocalDateTime.now().minusWeeks(2);
         List<Product> products = productRepository.findByCreatedAtAfter(twoWeekAgo);
 
-        List<ProductDTO> productDTOS = getProductDTOS(products);
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        if (!products.isEmpty()) {
+            productDTOS = getProductDTOS(products);
+        }
+
+        return productDTOS;
+    }
+
+    @Override
+    public List<ProductDTO> getSearchProductDTOS(String search) {
+
+        List<Product> products = productRepository.getProducts(search);
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        if (!products.isEmpty()) {
+            productDTOS = getProductDTOS(products);
+        }
 
         return productDTOS;
     }
@@ -89,26 +105,26 @@ public class ProductServiceImpl implements ProductService {
     private List<ProductDTO> getProductDTOS(List<Product> products) {
         List<ProductDTO> productDTOS = new ArrayList<>();
 
-        List<String> sizePriorityOrder = Arrays.asList("S", "M", "L", "XL","2XL");
+        List<String> sizePriorityOrder = Arrays.asList("S", "M", "L", "XL", "2XL");
 
-        for(Product product : products){
+        for (Product product : products) {
             ProductDTO productDTO = productDTO(product);
             List<ProductVariant> productVariants = productVariantRepository.findByProductId(product.getId());
 
-            if(!productVariants.isEmpty()){
+            if (!productVariants.isEmpty()) {
 
                 List<String> sizeList = productVariants
                         .stream().map(ProductVariant::getSize).distinct()
                         .sorted(Comparator.comparingInt(sizePriorityOrder::indexOf))
                         .toList();
 
-                log.info("sizeList ={}" ,sizeList);
+                log.info("sizeList ={}", sizeList);
                 String size = null;
 
-                if(sizeList.size() > 1){
-                    size = sizeList.get(0) + "~" + sizeList.get(sizeList.size()-1);
+                if (sizeList.size() > 1) {
+                    size = sizeList.get(0) + "~" + sizeList.get(sizeList.size() - 1);
                     productDTO.setSize(size);
-                }else {
+                } else {
                     productDTO.setSize(sizeList.get(0));
                 }
 

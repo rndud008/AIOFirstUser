@@ -8,6 +8,7 @@ import hello.aiofirstuser.dto.custom.PostRequestDTO;
 import hello.aiofirstuser.dto.custom.PostResponseDTO;
 import hello.aiofirstuser.dto.order.OrderItemReviewDTO;
 import hello.aiofirstuser.dto.order.OrderItemReviewRequestDTO;
+import hello.aiofirstuser.dto.product.ProductDetailReviewDTO;
 import hello.aiofirstuser.repository.MemberRepository;
 import hello.aiofirstuser.repository.OrderItemRepository;
 import hello.aiofirstuser.repository.OrderItemReviewRepository;
@@ -68,7 +69,6 @@ public class OrderItemReviewServiceImpl implements OrderItemReviewService {
     public List<PostResponseDTO> getPostResponseDTOList(Member member) {
         List<OrderItemReview> orderItemReviews = orderItemReviewRepository.findByMemberId(member.getId());
 
-
         List<BaseEntity> baseEntities = new ArrayList<>();
         baseEntities.addAll(orderItemReviews);
 
@@ -98,6 +98,22 @@ public class OrderItemReviewServiceImpl implements OrderItemReviewService {
         }
 
         return entityToOrderItemReviewDTO(orderItemReview);
+    }
+
+    @Override
+    public List<ProductDetailReviewDTO> getProductDetailReviewDTOS(Long productId) {
+        List<OrderItemReview> orderItemReviews = orderItemReviewRepository.findOrderItemReviews(productId);
+
+        List<ProductDetailReviewDTO> productDetailReviewDTOS = new ArrayList<>();
+        if (!orderItemReviews.isEmpty()){
+            long index = orderItemReviews.size();
+            for (OrderItemReview orderItemReview : orderItemReviews){
+                productDetailReviewDTOS.add(entityToProductDetailReviewDTO(orderItemReview,index));
+                index--;
+            }
+        }
+        
+        return productDetailReviewDTOS;
     }
 
 

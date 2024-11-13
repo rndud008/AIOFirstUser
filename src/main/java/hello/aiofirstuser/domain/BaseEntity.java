@@ -1,9 +1,6 @@
 package hello.aiofirstuser.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
@@ -27,4 +24,10 @@ public class BaseEntity {
     public void prePersist(){
         this.createdAt = LocalDateTime.now();
     }
+
+    @PreUpdate
+    public void preUpdate(){
+        this.createdAt = LocalDateTime.now();
+    }
+
 }

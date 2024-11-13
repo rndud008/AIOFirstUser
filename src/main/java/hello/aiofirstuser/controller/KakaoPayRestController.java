@@ -51,7 +51,7 @@ public class KakaoPayRestController {
             return "주문취소 완료";
         }
 
-        if (order!= null && order.getOrderStatus().name().equals(OrderStatus.ADMIN_ITEM_CHECK.name())){
+        if (order!= null && order.isAdminCheck()){
 
             return "관리자의 확인이 필요합니다.";
         }

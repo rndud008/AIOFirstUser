@@ -3,6 +3,9 @@ package hello.aiofirstuser.controller;
 import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseDTO;
 import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseListDTO;
 import hello.aiofirstuser.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +47,35 @@ public class MemberRestController {
 
         return ResponseEntity.ok(orderWriteDeliveryResponseDTO);
 
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
+        cookieReset(response);
+
+        return ResponseEntity.status(200).body("SUCCESS");
+    }
+
+    private static void cookieReset(HttpServletResponse response) {
+        Cookie cookie = new Cookie("accessToken",null);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        cookie = new Cookie("refreshToken",null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        cookie = new Cookie("JSESSIONID",null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
 

@@ -14,7 +14,9 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
     @Query("select count(oi) from OrderItem oi " +
             "join  oi.order o " +
             "join  o.address.member m " +
-            "where m.id = :memberId and o.orderStatus not in(:exCludeOrderStatus)")
+            "where m.id = :memberId " +
+            "and o.orderStatus not in(:exCludeOrderStatus) " +
+            "and o.adminCheck = false ")
     int orderItemCount(@Param("memberId") Long memberId, @Param("exCludeOrderStatus")List<OrderStatus> exCludeOrderStatus);
 
     @Query(value = "select oi from OrderItem oi " +

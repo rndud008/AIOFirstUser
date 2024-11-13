@@ -6,15 +6,19 @@
     <title>Title</title>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div th:text="${orderDetail}"></div>
+<div layout:fragment="content">
+    <div id="orderDetail">
         <div>
             <div> 주문일 : <span th:text="${orderDetail.orderDateTime}"></span></div>
             <div> 주문번호 : <span id="orderId" th:text="${orderDetail.orderId}"></span></div>
         </div>
         <div>
-            <div>주문상품</div>
-            <div>주문상태 : <span th:text="${orderDetail.orderStatus}"></span> <button th:if="${orderDetail.refundCheck}" onclick="orderCancel()">주문취소</button></div>
+            <h3>주문상품</h3>
+            <div>주문상태 :
+                <span th:if="${orderDetail.adminCheck}" th:text="${orderDetail.orderStatus}"></span>
+                <span th:unless="${orderDetail.adminCheck}"> 관리자 확인필요</span>
+                <button th:if="${orderDetail.refundCheck}" onclick="orderCancel()">주문취소</button>
+            </div>
             <div th:each="orderDetailItem : ${orderDetail.orderDetailItemDTOS}">
                 <div><img style="width: 100px" th:src="${orderDetailItem.productImg}"/></div>
                 <div>
@@ -23,11 +27,13 @@
                     <div>가격 : <span th:text="${orderDetailItem.combineAndQuantity}"></span></div>
                 </div>
                 <input type="hidden" th:value="${orderDetailItem.orderItemId}">
-                <div th:if="${orderDetailItem.reviewCheck}"><button onclick="reviewWriteModal(this)">리뷰 작성</button></div>
+                <div th:if="${orderDetailItem.reviewCheck}">
+                    <button onclick="reviewWriteModal(this)">리뷰 작성</button>
+                </div>
             </div>
         </div>
         <div>
-            <div>배송지</div>
+            <h3>배송지</h3>
             <div>배송자명 : <span th:text="${orderDetail.deliveryNickname}"></span></div>
             <div>연락처 :
                 <th:block th:each="phoneNumber, index : ${orderDetail.phoneNumber}">
@@ -38,15 +44,16 @@
             <div><span th:text="${orderDetail.fullAddressName}"></span></div>
         </div>
         <div>
-            <div>결제정보</div>
-            <div>총금액 + 배송비 <span th:text="${orderDetail.lastTotalPrice}"></span></div>
-            <div>총금액 <span th:text="${orderDetail.totalPrice}"></span></div>
-            <div>배송비 <span th:text="${orderDetail.deliveryPrice}"></span></div>
+            <h3>결제정보</h3>
+            <div><span>주문금액</span><span th:text="${orderDetail.lastTotalPrice} + '원'"></span></div>
+            <div><span>상품금액</span><span th:text="${orderDetail.totalPrice} + '원'"></span></div>
+            <div><span>배송비</span><span th:text="${orderDetail.deliveryPrice} + '원'"></span></div>
         </div>
         <div>
-            <div>포인트혜택</div>
-            <div>적립포인트 <span th:text="${orderDetail.totalPoint}"></span></div>
+            <h3>포인트혜택</h3>
+            <div><span>적립포인트</span><span th:text="${orderDetail.totalPoint} + '원'"></span></div>
         </div>
     </div>
+</div>
 </body>
 </html>

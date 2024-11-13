@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class MyPageMemberDTO {
     private String nickname;
     private String username;
-    private long currentPoint;
-    private int wirteReviewCount;
+    private String currentPoint;
+    private int writeReviewCount;
 }

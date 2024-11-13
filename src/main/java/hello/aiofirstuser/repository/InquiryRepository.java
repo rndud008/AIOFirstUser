@@ -16,11 +16,19 @@ public interface InquiryRepository extends JpaRepository<Inquiry,Long> {
             "order by i.createdAt desc ")
     List<Inquiry> getInquiryList(@Param("categoryId") Long categoryId);
 
+    @Query("select i from Inquiry i " +
+            "left join fetch i.category " +
+            "left join fetch i.product " +
+            "where i.product.id = :productId " +
+            "order by i.createdAt desc ")
+    List<Inquiry> getProductInquiryList(@Param("productId") Long productId);
 
     @Query("select i from Inquiry i " +
             "left join fetch i.category " +
             "where i.id = :inquiryId")
     Inquiry getInquiry(@Param("inquiryId") Long inquiryId);
+
+
     @Query(value = "select i from Inquiry i " +
             "left join fetch i.category " +
             "where i.id = :inquiryId and i.name = :name" )

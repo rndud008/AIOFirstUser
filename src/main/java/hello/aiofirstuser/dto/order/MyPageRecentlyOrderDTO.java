@@ -18,5 +18,6 @@ public class MyPageRecentlyOrderDTO {
     private List<String> productNames;
     private String totalPrice;
     private String orderDateTime;
-    private String productStatus;
+    private String orderStatus;
+    private boolean adminCheck;
 }

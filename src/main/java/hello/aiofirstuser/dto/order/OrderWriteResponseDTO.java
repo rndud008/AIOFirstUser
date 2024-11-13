@@ -17,6 +17,7 @@ public class OrderWriteResponseDTO {
 
     private Long cartId;
     private Long productId;
+    private Long productVariantId;
     private int quantity;
 
     private String combineAndQuantityPrice;

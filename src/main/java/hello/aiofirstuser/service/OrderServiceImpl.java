@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final OrderItemReviewRepository orderItemReviewRepository;
     private final PointRepository pointRepository;
+    private final ProductVariantRepository productVariantRepository;
 
     @Override
     @Transactional
@@ -55,6 +57,27 @@ public class OrderServiceImpl implements OrderService {
 
             totalPrice += combineAndQuantityPrice(cart);
             totalPoint += combineAndQuantityPrice(cart) / 100;
+        }
+
+        return createOrderWriteResponseListDTO(orderWriteResponseDTOS, totalPrice, totalPoint);
+    }
+
+    @Override
+    public OrderWriteResponseListDTO orderWriteResponseList(List<OrderRequestDTO> orderRequestDTOS) {
+        List<OrderWriteResponseDTO> orderWriteResponseDTOS = new ArrayList<>();
+
+        int totalPrice = 0;
+        int totalPoint = 0;
+
+        for (OrderRequestDTO orderRequestDTO : orderRequestDTOS){
+
+            ProductVariant productVariant = productVariantRepository
+                    .findByProductIdAndColorAndSize(orderRequestDTO.getProductId(),orderRequestDTO.getColor(),orderRequestDTO.getSize());
+
+            orderWriteResponseDTOS.add(productVariantEntityToOrderWriteResponseDTO(productVariant, orderRequestDTO.getQuantity()));
+
+            totalPrice += (int) (orderRequestDTO.getQuantity() * (productVariant.getPrice() + productVariant.getProduct().getSellPrice()));
+            totalPoint += (int) (orderRequestDTO.getQuantity() * (productVariant.getPrice() + productVariant.getProduct().getSellPrice()) /100);
         }
 
         return createOrderWriteResponseListDTO(orderWriteResponseDTOS, totalPrice, totalPoint);
@@ -144,7 +167,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.getOrderIdAndMemberUsername(orderId, username);
 
         if (order == null) {
-
             return null;
         }
 
@@ -154,7 +176,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if (order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM_CHECK.name())) {
-            order.changeStatus(OrderStatus.ADMIN_ITEM_CHECK);
+            order.changeAdmin(true);
+
             return order;
         }
 
@@ -167,7 +190,8 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderDetailItemDTO> orderDetailItemDTOS = new ArrayList<>();
 
-        boolean refundCheck = order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM.name()) || order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM_CHECK.name());
+        boolean refundCheck = !order.getOrderStatus().equals(OrderStatus.ORDER_CANCELED) && !order.isAdminCheck();
+        boolean adminCheck = !order.isAdminCheck();
         int totalPrice = 0;
         for (OrderItem orderItem : orderItems) {
             orderDetailItemDTOS.add(getOrderDetailItemDTO(orderItem, order));
@@ -178,11 +202,12 @@ public class OrderServiceImpl implements OrderService {
         return OrderDetailDTO.builder()
                 .orderId(order.getId())
                 .refundCheck(refundCheck)
+                .adminCheck(adminCheck)
                 .orderDateTime(getFormatDateTime(order))
                 .orderStatus(order.getOrderStatus().getDescription())
                 .deliveryNickname(order.getAddress().getNickname())
                 .phoneNumber(orderDetailPhoneNumber(order))
-                .fullAddressName("우편번호: " + order.getAddress().getZipcode() + " 주소: " + order.getAddress().getAddressName() + " " + order.getAddress().getAddressNameDetail())
+                .fullAddressName("주소: " + "("+ order.getAddress().getZipcode() +") " + order.getAddress().getAddressName() + " " + order.getAddress().getAddressNameDetail())
                 .lastTotalPrice(this.customString(totalPrice >= 50000 ? totalPrice : totalPrice + 3000))
                 .totalPrice(this.customString(totalPrice))
                 .deliveryPrice(this.customString(totalPrice >= 50000 ? 0 : 3000))
@@ -194,7 +219,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailItemDTO getOrderDetailItemDTO(OrderItem orderItem, Order order) {
         boolean check = orderItemReviewRepository.orderItemReviewCheck(orderItem.getId()) == null
                 && !order.getOrderStatus().name().equals(OrderStatus.ORDER_CANCELED.name())
-                && !order.getOrderStatus().name().equals(OrderStatus.ADMIN_ITEM_CHECK.name());
+                && !order.isAdminCheck();
 
         return OrderDetailItemDTO.builder()
                 .productId(orderItem.getProductVariant().getProduct().getId())
@@ -250,24 +275,50 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Result getResultAndOrderItemsSave(OrderWriteRequestDTO orderWriteRequestDTO, Member member, Order order) {
-        List<Cart> carts = cartRepository.findByMemberIdAndCartIds(orderWriteRequestDTO.getCartIds(), member.getId());
-        List<OrderItem> orderItems = new ArrayList<>();
 
+        List<OrderItem> orderItems = new ArrayList<>();
         String itemNames = "";
         int itemTotalQuantity = 0;
         int itemTotalAmount = 0;
 
-        for (Cart cart : carts) {
-            OrderItem orderItem = OrderItem.builder()
-                    .productVariant(cart.getProductVariant())
-                    .order(order)
-                    .quantity(cart.getQuantity())
-                    .build();
-            orderItems.add(orderItem);
+        if (!orderWriteRequestDTO.getCartIds().isEmpty()){
+            List<Cart> carts = cartRepository.findByMemberIdAndCartIds(orderWriteRequestDTO.getCartIds(), member.getId());
+            for (Cart cart : carts) {
+                OrderItem orderItem = OrderItem.builder()
+                        .productVariant(cart.getProductVariant())
+                        .order(order)
+                        .quantity(cart.getQuantity())
+                        .build();
+                orderItems.add(orderItem);
 
-            itemNames += cart.getProductVariant().getProduct().getProductName() + "(" + cart.getQuantity() + ") ";
-            itemTotalQuantity += cart.getQuantity();
-            itemTotalAmount += combineAndQuantityPrice(cart);
+                itemNames += cart.getProductVariant().getProduct().getProductName() + "(" + cart.getQuantity() + ") ";
+                itemTotalQuantity += cart.getQuantity();
+                itemTotalAmount += combineAndQuantityPrice(cart);
+            }
+
+        } else if (!orderWriteRequestDTO.getOrderProductVariantRequestDTOS().isEmpty()) {
+            for (OrderProductVariantRequestDTO orderProductVariantRequestDTO : orderWriteRequestDTO.getOrderProductVariantRequestDTOS()){
+                Optional<ProductVariant> result = productVariantRepository.findById(orderProductVariantRequestDTO.getProductVariantId());
+                ProductVariant productVariant = result.orElse(new ProductVariant());
+
+                if (productVariant.getId() == null){
+                    continue;
+
+                }
+
+                OrderItem orderItem = OrderItem.builder()
+                        .productVariant(productVariant)
+                        .order(order)
+                        .quantity(Math.toIntExact(orderProductVariantRequestDTO.getQuantity()))
+                        .build();
+                orderItems.add(orderItem);
+
+                itemNames += productVariant.getProduct().getProductName() + "(" + orderProductVariantRequestDTO.getQuantity() + ") ";
+                itemTotalQuantity += orderProductVariantRequestDTO.getQuantity();
+                itemTotalAmount += (int) (orderProductVariantRequestDTO.getQuantity() * (productVariant.getPrice() + productVariant.getProduct().getSellPrice()));
+
+            }
+
         }
 
         orderItemRepository.saveAll(orderItems);
@@ -303,7 +354,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Address addressLogic(OrderWriteRequestDTO orderWriteRequestDTO, Member member) {
-        if (orderWriteRequestDTO.getAddressId().equals(0L)) {
+
+
+        if (orderWriteRequestDTO.getAddressId() !=null && orderWriteRequestDTO.getAddressId().equals(0L)) {
             Address address = addressRepository.findByMemberAddress(member.getId(), AddressStatus.RECENTLY_ADDRESS);
 
             if (address != null) {
@@ -317,13 +370,14 @@ public class OrderServiceImpl implements OrderService {
             return newAddress;
 
         } else {
-            Address address = addressRepository.findById(orderWriteRequestDTO.getAddressId()).orElse(null);
-
-            if (address == null) {
-                address = dtoTOAddress(orderWriteRequestDTO, AddressStatus.valueOf(orderWriteRequestDTO.getDeliveryPlaceStatus()), member);
-            } else {
+            Address address;
+            if (orderWriteRequestDTO.getAddressId() != null){
+                address = addressRepository.findById(orderWriteRequestDTO.getAddressId()).orElse(null);
                 address.changeAddress(orderWriteRequestDTO);
+            }else {
+                address = dtoTOAddress(orderWriteRequestDTO, AddressStatus.valueOf(orderWriteRequestDTO.getDeliveryPlaceStatus()), member);
             }
+
             addressRepository.save(address);
             return address;
         }

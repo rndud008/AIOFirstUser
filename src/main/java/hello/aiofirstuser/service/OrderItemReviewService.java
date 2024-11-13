@@ -7,6 +7,7 @@ import hello.aiofirstuser.dto.custom.PostRequestDTO;
 import hello.aiofirstuser.dto.custom.PostResponseDTO;
 import hello.aiofirstuser.dto.order.OrderItemReviewDTO;
 import hello.aiofirstuser.dto.order.OrderItemReviewRequestDTO;
+import hello.aiofirstuser.dto.product.ProductDetailReviewDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -19,6 +20,8 @@ public interface OrderItemReviewService {
     List<PostResponseDTO> getPostResponseDTOList(Member member);
 
     OrderItemReviewDTO getOrderItemReviewDTO(Member member, PostRequestDTO postRequestDTO);
+
+    List<ProductDetailReviewDTO> getProductDetailReviewDTOS(Long productId);
 
     default OrderItemReviewDTO entityToOrderItemReviewDTO(OrderItemReview orderItemReview){
         return OrderItemReviewDTO.builder()
@@ -45,6 +48,15 @@ public interface OrderItemReviewService {
                 .type(str)
                 .content(orderItemReview.getContent())
                 .createdAt(orderItemReview.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .build();
+    }
+
+    default ProductDetailReviewDTO entityToProductDetailReviewDTO(OrderItemReview orderItemReview,long index){
+        return ProductDetailReviewDTO.builder()
+                .createdAt(orderItemReview.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-HH-dd")))
+                .content(orderItemReview.getContent())
+                .nickname(orderItemReview.getMember().getNickname())
+                .index(index)
                 .build();
     }
 

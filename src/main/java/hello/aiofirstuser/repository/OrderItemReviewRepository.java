@@ -13,7 +13,9 @@ public interface OrderItemReviewRepository extends JpaRepository<OrderItemReview
     @Query("select count (oir) from OrderItemReview oir " +
             "join oir.member m " +
             "join oir.orderItem.order o " +
-            "where m.id = :memberId and o.orderStatus not in(:exCludeOrderStauts)")
+            "where m.id = :memberId " +
+            "and o.orderStatus not in(:exCludeOrderStauts) " +
+            "and o.adminCheck = false ")
     int orderItemReviewCount(@Param("memberId") Long memberId, @Param("exCludeOrderStauts")List<OrderStatus> exCludeOrderStauts);
 
     @Query("select oir from OrderItemReview oir " +
@@ -30,5 +32,13 @@ public interface OrderItemReviewRepository extends JpaRepository<OrderItemReview
             "left join fetch oir.member " +
             "where oir.member.id = :memberId and oir.id = :orderItemReviewId")
     OrderItemReview findByMemberIdAndId(@Param("memberId") Long memberId, @Param("orderItemReviewId") Long orderItemReviewId);
+
+    @Query("select oir from OrderItemReview oir " +
+            "left join fetch oir.orderItem " +
+            "left join fetch oir.orderItem.productVariant " +
+            "left join fetch oir.orderItem.productVariant.product " +
+            "left join fetch oir.member " +
+            "where oir.orderItem.productVariant.product.id = :productId")
+    List<OrderItemReview> findOrderItemReviews(@Param("productId") Long productId);
 
 }

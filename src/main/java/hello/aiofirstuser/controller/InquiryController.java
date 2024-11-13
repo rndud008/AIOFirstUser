@@ -38,26 +38,29 @@ public class InquiryController {
         model.addAttribute("inqueryCategory", categoryService.InqueryCategory());
 
         if (categoryRequestDTO.getCategoryName().equals("고객센터")) {
+
             if (categoryRequestDTO.getDecode() == null) {
                 CategoryDTO categoryDTO = categoryService.getCategory(categoryRequestDTO.getCode());
                 if (categoryDTO.getId() == null) {
-                    return "layout";
+                    return "fragments/home";
                 }
                 model.addAttribute("productCheck", true);
                 model.addAttribute("subCategoryList", categoryService.getSubCategoryList(categoryDTO.getId()));
                 categoryDTO = categoryService.getCategory("상품문의");
-                model.addAttribute("productInquiryList", inquiryService.getInquiryDTOList(categoryDTO.getId()));
+                model.addAttribute("inquiryList", inquiryService.getInquiryDTOList(categoryDTO.getId()));
                 model.addAttribute("categoryDTO", categoryDTO);
+
             } else {
+
                 CategoryDTO categoryDTO = categoryService.getCategory(categoryRequestDTO.getDecode());
                 if (categoryDTO.getId() == null) {
-                    return "layout";
+                    return "fragments/home";
                 }
                 model.addAttribute("subCategoryList", categoryService.getSubCategoryList(categoryDTO.getId()));
 
                 categoryDTO = categoryService.getCategory(categoryRequestDTO.getCode());
                 if (categoryDTO.getId() == null) {
-                    return "layout";
+                    return "fragments/home";
                 }
 
                 if (categoryDTO.getCategoryName().equals("상품문의")) {
@@ -82,7 +85,7 @@ public class InquiryController {
         } else if (categoryRequestDTO.getCategoryName().equals("상품리뷰")) {
 
         } else {
-            return "layout";
+            return "fragments/home";
         }
 
         return "fragments/inquiry";
@@ -122,8 +125,9 @@ public class InquiryController {
 
         InquiryCheckResponseDTO inquiryCheckResponseDTO = inquiryService.getInquiryCheckResponseDTO(inquiryId);
         if (inquiryCheckResponseDTO.getInquiryId() == null){
-            return "layout";
+            return "fragments/home";
         }
+
         model.addAttribute("inquiry",inquiryCheckResponseDTO) ;
 
         return "fragments/inquiry";

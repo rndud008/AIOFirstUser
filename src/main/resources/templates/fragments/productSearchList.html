@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <span id="searchText">총 <span th:text="${products.size()}"></span>개의 상품이 검색되었습니다.</span>
+    <div class="product">
+        <div id="productItems">
+            <div class="product-item" th:each="product:${products}">
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
+                <span class="size" th:if="${product.size}" th:text="${product.size}"></span>
+                <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
+                <span class="sellPrice" th:text="${product.sellPrice}"></span>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -4,45 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="/style/Layout.css">
-    <link rel="stylesheet" href="/style/orderDetail.css">
+    <script src="https://kit.fontawesome.com/fcca3fae9a.js" crossorigin="anonymous"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/orderDetail.css">
 </head>
-<body style="margin: 0 auto; width: 1000px; outline: auto">
+<body>
 
 <!--헤더-->
-<div>
-    <div style="display: flex; flex-direction: column; outline: auto">
-        <div style="display: flex; justify-content: space-between">
+<div id="header">
+    <div id="category">
+        <div class="subCategory">
             <h1><a th:href="@{'/'}">SUPERSTAR I</a></h1>
-            <ul style="display: flex; list-style: none">
-                <li style="margin-left: 10px" sec:authorize="isAnonymous()"><a href="/loginForm">로그인</a></li>
-                <li style="margin-left: 10px" sec:authorize="isAuthenticated()"><a href="/loginForm">로그아웃</a></li>
-                <li style="margin-left: 10px" sec:authorize="isAuthenticated()"><a href="/user/cart">CART</a></li>
-                <li style="margin-left: 10px; margin-right: 10px" sec:authorize="isAuthenticated()"><a
-                        href="/user/mypage">MYPAGE</a></li>
+            <ul id="loginHeader">
+                <li><a href="/oauth2/authorization/kakao">카카오로그인</a></li>
             </ul>
         </div>
-        <div style="display: flex; justify-content: space-between">
-            <ul style="display: flex; list-style: none; margin: 0; padding: 0;">
-                <li style="margin-left: 10px"
-                    th:each="category : ${mainCategory}"
+        <div class="subCategory">
+            <ul>
+                <li th:each="category : ${mainCategory}"
                 ><a th:text="${category.categoryName}"
                     th:href="@{'/product/category?code=' + ${category.id}}"></a></li>
             </ul>
-            <div style="display: flex">
-                <div style="margin-left: 10px;">검색</div>
-                <div style="margin-left: 10px; margin-right: 10px" onclick="menuBar()">전체메뉴 bar</div>
+            <div>
+                <div>
+                    <input id="searchParam" type="text" onkeydown="enterCheck(event)"/>
+                    <button onclick="searchProduct()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+                <div id="menu" onclick="menuBar()"><i class="fa-solid fa-bars"></i></div>
             </div>
         </div>
     </div>
     <div id="allCategory" class="allCategory">
-        <div style="display: flex">
-            <div style="display: flex; flex-direction: column;"
-                 th:each="category : ${mainCategory}">
+        <div>
+            <div th:each="category : ${mainCategory}">
                 <h3><a th:text="${category.categoryName}"
                        th:href="@{'/product/category?code=' + ${category.id}}"></a></h3>
-                <ul style="margin: 0; padding: 0; list-style: none"
-                    th:if="${category.subCategories != null} ">
+                <ul th:if="${category.subCategories != null} ">
                     <li th:each="subCategory : ${category.subCategories}">
                         <a th:text="${subCategory.categoryName}"
                            th:href="@{'/product/category?code=' + ${subCategory.id} + '&decode=' + ${subCategory.depNo}} "></a>
@@ -51,14 +49,13 @@
             </div>
         </div>
         <div>
-            <div style="display: flex; flex-direction: column;">
+            <div>
                 <h3 th:text="${inqueryCategory.categoryName}"></h3>
-                <ul style="margin: 0; padding: 0; list-style: none"
-                    th:if="${inqueryCategory.subCategories != null} ">
-                    <a th:each="subCategory : ${inqueryCategory.subCategories}"
-                       th:href="@{'/inquiry?code='+${subCategory.id} + '&categoryName=' +${subCategory.categoryName} } ">
-                        <li th:text="${subCategory.categoryName}"></li>
-                    </a>
+                <ul th:if="${inqueryCategory.subCategories != null} ">
+                    <li th:each="subCategory : ${inqueryCategory.subCategories}">
+                        <a th:text="${subCategory.categoryName}"
+                           th:href="@{'/inquiry?code='+${subCategory.id} + '&categoryName=' +${subCategory.categoryName} } "></a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -66,9 +63,11 @@
 </div>
 
 <!--콘텐츠-->
-<div layout:fragment="content">
+<div id="content" layout:fragment="content">
 
 </div>
+
+<button onclick="topScroll()"><i class="fa-solid fa-chevron-up"></i></button>
 
 
 <!--푸터-->
@@ -79,19 +78,97 @@
     const product = [[${product}]];
 </script>
 
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
 <script>
 
-    let popupWindow;
+    let popupWindow = '';
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        accessTokenCheck();
+        subCategoryNameCheck();
+    })
+
+    function accessTokenCheck() {
+        const cookies = document.cookie.split(";");
+
+        cookies.forEach(cookie => {
+            const [name, value] = cookie.split('=')
+
+            if (name === "accessToken") {
+                const loginHeader = document.getElementById('loginHeader');
+                loginHeader.innerHTML =
+                    `
+                     <li style="margin-left: 10px" ><a onclick="logout()">로그아웃</a></li>
+                    <li style="margin-left: 10px" ><a href="/user/cart">CART</a></li>
+                    <li style="margin-left: 10px; margin-right: 10px" ><a href="/user/mypage">MYPAGE</a></li>
+                    `
+            }
+
+        })
+    }
+
+    function subCategoryNameCheck() {
+        const currentUrl = window.location.href;
+        const params = currentUrl.substring(currentUrl.indexOf("?"))
+        const subCategoryCheck = params.split("&").length > 1 && params.indexOf("code") > -1 && params.indexOf("decode") > -1
+        if (subCategoryCheck) {
+
+            // const checkedCategory = Array.from(document.getElementsByClassName('subCategoryName.on'));
+            //
+            // if (checkedCategory.length > 0){
+            //     checkedCategory.forEach(item =>{
+            //         item.classList.remove("on")
+            //     })
+            // }
+
+            Array.from(document.getElementsByClassName('subCategoryName')).forEach(item => {
+
+                if (item.href.substring(item.href.indexOf("?")) === params) {
+                    item.classList.add("on")
+                }
+            })
+
+        }
+    }
+
+    const topScroll = () =>{
+        window.scrollTo(0,0)
+    }
+
+    const enterCheck = (event)=>{
+        if(event.key === 'Enter'){
+            searchProduct();
+        }
+    }
+
+    const searchProduct = () =>{
+        const search = document.getElementById('searchParam').value
+        window.location.href = `/product/search?search=${search}`
+    }
+
+
+    const logout = async () => {
+
+        const response = await fetch("/user/logout", {
+            method: "POST"
+        })
+
+        if (response.status === 200) {
+            window.location.href = "/"
+        }
+
+    }
 
     const menuBar = () => {
         const allCategory = document.getElementById('allCategory');
+        const menu = document.getElementById('menu')
 
         if (allCategory.classList.contains('on')) {
             allCategory.classList.remove('on');
+            menu.innerHTML = `<i class="fa-solid fa-bars"></i>`
         } else {
             allCategory.classList.add('on');
+            menu.innerHTML = `<i class="fa-solid fa-xmark"></i>`
         }
 
     }
@@ -136,21 +213,23 @@
             const index = list.querySelectorAll('li').length;
             console.log()
 
-            const sellPrice = product.sellPrice + parseInt(price);
+            const sellPrice = parseInt(product.sellPrice.substring(0, product.sellPrice.indexOf("원")).replace(",", "")) + parseInt(price);
+
+            console.log(sellPrice)
 
             item.setAttribute('id', `${color}-${size}`)
 
             item.innerHTML = `
                 <div>
-                    <span >${color}, ${size}</span> <button onclick="deleteItem(this)">x</button>
+                    <span >${color}, ${size}</span> <button onclick="deleteItem(this)"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div>
                     <input type="hidden" name="productId[${index}]" value="${product.id}" />
                     <input type="hidden" name="colorSize[${index}]" value="${color}-${size}" />
                     <input type="number" name="quantity[${index}]" value="1" oninput="changeValue(this,${sellPrice})"/>
-                    <button onclick="increaseValue(this,${sellPrice})">+</button>
-                    <button onclick="decreaseValue(this,${sellPrice})">-</button>
-                    <span class="price">${sellPrice}원</span>
+                    <button onclick="increaseValue(this,${sellPrice})"><i class="fa-solid fa-plus"></i></button>
+                    <button onclick="decreaseValue(this,${sellPrice})"><i class="fa-solid fa-minus"></i></button>
+                    <span class="price">${sellPrice.toLocaleString()}원</span>
                 </div>
                 `
             list.appendChild(item)
@@ -296,6 +375,63 @@
 
     }
 
+
+    const orderPage = async () =>{
+        const productAddList = Array.from(document.getElementById('productAddList').querySelectorAll('li'));
+
+        const items=[];
+
+        productAddList.forEach(li =>{
+            let item ={
+                productId : 0,
+                size : '',
+                color : '',
+                quantity : 0
+            }
+
+            li.querySelectorAll('input').forEach(input =>{
+                console.log(input.name,input.value)
+
+                if (input.name.includes('productId')){
+                    item.productId = input.value;
+                }else if (input.name.includes('colorSize')){
+                    item.color = input.value.split('-')[0];
+                    item.size = input.value.split('-')[1];
+                }else if(input.name.includes('quantity')){
+                    item.quantity = input.value
+                }
+
+            })
+
+            items.push(item);
+        })
+
+        console.log(items)
+
+        const response = await fetch(`/user/order`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(items)
+        })
+
+        if (response.ok){
+            const data = await response.text();
+            console.log(data)
+            document.open()
+            document.write(data)
+            document.close()
+
+            accessTokenCheck();
+            subCategoryNameCheck();
+            window.history.pushState({},'','/user/order')
+        }
+
+
+
+    }
+
     const modalClose = (event) => {
 
         const modal = document.getElementById('modal');
@@ -316,6 +452,7 @@
         const modal = document.getElementById('modal');
         modal.remove();
     }
+
 
     //     카트 페이지
     const allCheck = (input) => {
@@ -632,6 +769,10 @@
     }
 
 
+    const historyBack = ()=>{
+        window.history.back();
+    }
+
     const cartIncreaseValue = (button) => {
         const tr = button.closest('tr');
 
@@ -645,7 +786,7 @@
         const last = p.textContent.lastIndexOf("개")
         const firstText = p.textContent.substring(0, start);
 
-        (parseInt(input.value) > 1 || isNaN(parseInt(input.value)))
+        (parseInt(input.value) >= 1 || isNaN(parseInt(input.value)))
         && (input.value = parseInt(input.value) + 1)
         || (input.value = 1)
 
@@ -1137,8 +1278,22 @@
 
         let valid = 0;
 
-        const cartIds = Array.from(document.querySelectorAll('tbody tr input[type="hidden"]'))
-            .map(input => input.value);
+        const cartInput = Array.from(document.querySelectorAll('tbody tr input[name="cartId"]'))
+        let cartIds =[];
+        if(cartInput.length >0){
+            cartIds = cartInput.map(input => input.value);
+        }
+
+        const productVariantInput = Array.from(document.querySelectorAll('tbody tr input[name="productVariantId"]'))
+        let orderProductVariantRequestDTOS = [];
+        if(productVariantInput.length >0){
+            Array.from(document.querySelectorAll('tbody tr')).forEach(tr =>{
+                orderProductVariantRequestDTOS.push({
+                    productVariantId:tr.querySelector('input[name="productVariantId"]').value,
+                    quantity:tr.getElementsByClassName('quantity').item(0).textContent
+                })
+            })
+        }
 
         let result = document.getElementById('addressId');
         const addressId = result?.value !== undefined ? result.value : 0;
@@ -1238,6 +1393,7 @@
 
         const item = {
             cartIds,
+            orderProductVariantRequestDTOS,
             addressId,
             deliveryPlaceStatus,
             deliveryMemberName,
@@ -1254,6 +1410,8 @@
             refundBankName,
             refundBankAccount
         }
+
+        console.log(item)
 
         const response = await fetch('/api/user/order/save', {
             method: "POST",
@@ -1671,37 +1829,37 @@
 
     }
 
-    const postModify = async () =>{
+    const postModify = async () => {
         const parentDivContent = document.getElementById('modal').parentNode.querySelector('#content');
 
         const div = document.getElementById('modal')
 
         const id = div.querySelector('input[type="hidden"]').value
         const grade = Array.from(div.querySelectorAll('input[type="radio"]')).find(input => input.checked === true).value
-        const content =  div.querySelector('textarea').value
+        const content = div.querySelector('textarea').value
 
-        const item ={
+        const item = {
             id,
             grade,
             content,
-            type:"리뷰"
+            type: "리뷰"
         }
         console.log(item)
 
-        const response = await fetch(`/api/user/combines/modify`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
+        const response = await fetch(`/api/user/combines/modify`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body:JSON.stringify(item)
+            body: JSON.stringify(item)
         })
 
         const data = await response.text();
-        if(data === "SUCCESS"){
+        if (data === "SUCCESS") {
             alert("수정이 완료되었습니다.")
             parentDivContent.textContent = content
             buttonModalClose();
-        }else {
+        } else {
             alert("잘못된 요청입니다.")
         }
 
@@ -1709,7 +1867,7 @@
 
     // 고객센터 페이지
 
-    const inquirySave = async () =>{
+    const inquirySave = async () => {
 
         const categoryId = document.querySelector('input[type="hidden"]').value;
         console.log(categoryId)
@@ -1722,7 +1880,7 @@
         const content = document.querySelector('textarea').value;
         console.log(content)
 
-        const items ={
+        const items = {
             categoryId,
             name,
             password,
@@ -1730,23 +1888,23 @@
             content
         }
 
-        const response = await fetch(`/api/inquiry/save`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
+        const response = await fetch(`/api/inquiry/save`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body:JSON.stringify(items)
+            body: JSON.stringify(items)
         })
 
         const data = await response.json()
         console.log(data)
         console.log(response.status)
 
-        if (response.status === 200){
+        if (response.status === 200) {
             console.log(data)
             alert("저장 완료.")
-            window.location.href =`/inquiry?code=${data.id}&categoryName=고객센터&decode=${data.depNo}`
-        }else {
+            window.location.href = `/inquiry?code=${data.id}&categoryName=고객센터&decode=${data.depNo}`
+        } else {
             alert("잘못된 요청입니다.")
         }
 
@@ -1756,79 +1914,146 @@
         const inquiryId = document.querySelector('input[type="hidden"]').value;
         const password = document.querySelector('input[type="password"]').value;
 
-        const item ={
+        const item = {
             inquiryId,
             password
         }
         console.log(item)
 
-        const response = await fetch(`/api/inquiry/detail`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
+        const response = await fetch(`/api/inquiry/detail`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body:JSON.stringify(item)
+            body: JSON.stringify(item)
         })
 
         const data = await response.json();
 
-        if(response.status === 200){
+        if (response.status === 200) {
             console.log(data)
             const div = document.getElementById('inquiry');
-            const childDiv= document.createElement('div')
+            const childDiv = document.createElement('div')
             const modify = document.createElement('button')
             modify.textContent = "수정"
-            modify.setAttribute('id','modify')
+            modify.setAttribute('id', 'modify')
             modify.onclick = inquiryModifyForm;
 
             const deleteButton = document.createElement('button');
-            deleteButton.setAttribute('id','delete')
+            deleteButton.setAttribute('id', 'delete')
             deleteButton.textContent = '삭제'
             deleteButton.onclick = deleteInquiry;
 
             const list = div.querySelector('a');
-            list.textContent="목록"
+            list.textContent = "목록"
             div.innerHTML =
                 `
-                    <div >
-        <div>
-            <input type="hidden" value="${data.inquiryId}">
-            <div><span>NAME</span></div>
-            <div id="name"><span>${data.name}</span></div>
-        </div>
-        <div>
-            <div><span>TITLE</span></div>
-            <div id="title"><span>${data.title}</span></div>
-        </div>
-        <div>
-            <div><span>CONTENT</span></div>
-            <div id="content">
-                <textarea disabled>${data.content}</textarea>
-            </div>
-        </div>
-    </div>
+                    <div style="display: flex">
+                        <div>
+                            <input type="hidden" value="${data.inquiryId}">
+                            <div><span>NAME</span></div>
+                            <div id="name"><span>${data.name}</span></div>
+                        </div>
+                        <div>
+                            <div><span>TITLE</span></div>
+                            <div id="title"><span>${data.title}</span></div>
+                        </div>
+                        <div>
+                            <div><span>CONTENT</span></div>
+                            <div id="content">
+                                <textarea disabled>${data.content}</textarea>
+                            </div>
+                        </div>
+                    </div>
                 `
 
             childDiv.append(list)
+            console.log(data)
+
             childDiv.append(modify)
             childDiv.append(deleteButton)
+
+
             div.appendChild(childDiv)
 
             alert("호출완료")
-        }else {
+        } else {
             alert("잘못된 요청입니다.")
         }
 
     }
 
-    const inquiryModifyForm = () =>{
+    const inquiryAnswerItem = async () => {
+        const inquiryId = document.querySelector('input[type="hidden"]').value;
+        const password = document.querySelector('input[type="password"]').value;
+
+        const item = {
+            inquiryId,
+            password
+        }
+        console.log(item)
+
+        const response = await fetch(`/api/inquiryanswer/detail`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(item)
+        })
+
+        const data = await response.json();
+
+        if (response.status === 200) {
+            console.log(data)
+            const div = document.getElementById('inquiry');
+            const childDiv = document.createElement('div')
+
+
+            const list = div.querySelector('a');
+            list.textContent = "목록"
+            div.innerHTML =
+                `
+                    <div style="display: flex">
+                        <div>
+                            <input type="hidden" value="${data.inquiryId}">
+                            <div><span>NAME</span></div>
+                            <div id="name"><span>${data.name}</span></div>
+                        </div>
+                        <div>
+                            <div><span>TITLE</span></div>
+                            <div id="title"><span>${data.title}</span></div>
+                        </div>
+                        <div>
+                            <div><span>CONTENT</span></div>
+                            <div id="content">
+                                <textarea disabled>${data.content}</textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <div><span>관리자의 답변</span></div>
+                            <div><span>${data.adminContent}</span></div>
+                        </div>
+                    </div>
+                `
+
+            childDiv.append(list)
+            div.appendChild(childDiv)
+
+            alert("호출완료")
+        } else {
+            alert("잘못된 요청입니다.")
+        }
+
+    }
+
+    const inquiryModifyForm = () => {
         const titleDiv = document.getElementById('title');
         const titleInput = document.createElement('input')
         titleInput.value = titleDiv.querySelector('span').textContent;
-        titleDiv.innerHTML ='';
+        titleDiv.innerHTML = '';
         titleDiv.append(titleInput);
         const textarea = document.querySelector('textarea');
-        textarea.disabled =false
+        textarea.disabled = false
         const button = document.getElementById('modify');
         button.textContent = '수정완료'
         button.onclick = inquiryModify;
@@ -1840,15 +2065,15 @@
         buttonDiv.append(cancelButton);
     }
 
-    const inquiryModifyCancel = () =>{
+    const inquiryModifyCancel = () => {
         const titleDiv = document.getElementById('title');
         const titleInput = document.createElement('span')
         titleInput.textContent = titleDiv.querySelector('input').value;
-        titleDiv.innerHTML ='';
+        titleDiv.innerHTML = '';
         titleDiv.append(titleInput);
 
         const textarea = document.querySelector('textarea');
-        textarea.disabled =true
+        textarea.disabled = true
         const modifyButton = document.getElementById('modify');
         modifyButton.textContent = '수정'
         modifyButton.onclick = inquiryModifyForm;
@@ -1859,46 +2084,46 @@
 
     }
 
-    const inquiryModify = async () =>{
+    const inquiryModify = async () => {
         const inquiryId = document.querySelector('input[type="hidden"]').value;
         const title = document.getElementById('title').querySelector('input').value;
         const content = document.querySelector('textarea').value;
         const name = document.getElementById('name').querySelector('span').textContent;
 
-        const item ={
+        const item = {
             inquiryId,
             title,
             content,
             name
         }
 
-        const response = await fetch(`/api/inquiry/modify`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
+        const response = await fetch(`/api/inquiry/modify`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            body:JSON.stringify(item)
+            body: JSON.stringify(item)
         })
 
         const data = await response.json();
 
-        if(response.status === 200){
+        if (response.status === 200) {
             alert("수정완료")
             document.querySelector('textarea').disabled = true;
             const span = document.createElement('span')
             span.textContent = title;
-            document.getElementById('title').innerHTML='';
+            document.getElementById('title').innerHTML = '';
             document.getElementById('title').append(span);
             const a = document.getElementById('inquiry').querySelector('a');
             const div = a.closest('div');
-            div.innerHTML='';
+            div.innerHTML = '';
             const modifyButton = document.createElement('button');
-            modifyButton.setAttribute('id','modify')
+            modifyButton.setAttribute('id', 'modify')
             modifyButton.textContent = '수정'
             modifyButton.onclick = inquiryModifyForm;
 
             const deleteButton = document.createElement('button');
-            deleteButton.setAttribute('id','delete')
+            deleteButton.setAttribute('id', 'delete')
             deleteButton.textContent = '삭제'
             deleteButton.onclick = deleteInquiry;
 
@@ -1906,18 +2131,17 @@
             div.append(modifyButton)
             div.append(deleteButton)
 
-        }else {
+        } else {
             alert("잘못된 요청입니다.")
         }
 
     }
 
-    const deleteInquiry = async () =>{
+    const deleteInquiry = async () => {
 
         const a = document.getElementById('inquiry').querySelector('a');
 
         const response = await fetch()
-
 
 
     }

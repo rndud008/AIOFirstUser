@@ -18,13 +18,14 @@ public interface ProductService {
     List<ProductDTO> getCategoryProductDTOS(Long id, boolean mainCategory);
 
     List<ProductDTO> getNewProductDTOS();
+    List<ProductDTO> getSearchProductDTOS(String search);
 
     default ProductDTO productDTO(Product product){
         ProductDTO productDTO = ProductDTO.builder()
                 .id(product.getId())
                 .productName(product.getProductName())
-                .consumerPrice(product.getConsumerPrice())
-                .sellPrice(product.getSellPrice())
+                .consumerPrice(String.format("%,d",product.getConsumerPrice()) + "원")
+                .sellPrice(String.format("%,d",product.getSellPrice()) +"원")
                 .productImgFileNames(product.getProductImgs().stream().map(ProductImg::getFileName).toList().get(0))
                 .build();
 
@@ -35,11 +36,11 @@ public interface ProductService {
         ProductDetailDTO productDetailDTO = ProductDetailDTO.builder()
                 .id(product.getId())
                 .productName(product.getProductName())
-                .consumerPrice(product.getConsumerPrice())
-                .sellPrice(product.getSellPrice())
+                .consumerPrice(String.format("%,d",product.getConsumerPrice()) + "원")
+                .sellPrice(String.format("%,d",product.getSellPrice()) +  "원")
                 .productImgFileNames(product.getProductImgs().stream().map(ProductImg::getFileName).toList())
                 .productDescriptionImgFileNames(product.getProductDescriptionImgs().stream().map(ProductDescriptionImg::getDescriptionFileName).toList())
-                .point(product.getSellPrice()/100)
+                .point(String.format("%,d",product.getSellPrice()/100) + "원 적립")
                 .build();
 
         return productDetailDTO;

@@ -1,0 +1,1380 @@
+body{
+    margin: 0 auto;
+    width: 1000px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3), 0px 2px 4px rgba(0, 0, 0, 0.2);
+
+}
+body> button{
+    position: fixed;
+    border: 1px solid black;
+    background-color: white;
+    top: 800px;
+    right: 250px;
+    font-size: xx-large;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#category{
+    display: flex;
+    flex-direction: column;
+}
+
+.subCategory{
+    display: flex;
+    justify-content: space-between;
+}
+.subCategory h1{
+    margin-left: 10px;
+    margin-bottom: 0;
+}
+
+.subCategory h1 > a{
+    text-decoration: none;
+    color: black;
+}
+.subCategory ul{
+    display: flex;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+.subCategory ul > li{
+    margin-left: 10px
+}
+
+.subCategory ul > li:last-child{
+    margin-right: 10px;
+
+}
+
+.subCategory ul > li > a{
+    text-decoration: none;
+    color: black;
+}
+
+.subCategory > div{
+    display: flex;
+}
+
+.subCategory > div >div {
+    margin-left: 10px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.subCategory > div > div:first-child {
+    border-bottom: 1px solid black;
+    padding-bottom: 5px;
+}
+
+.subCategory > div >div:last-child{
+    margin-right: 10px;
+    font-size: xx-large;
+    cursor: pointer;
+}
+
+.subCategory > div > div >input{
+    border: none;
+}
+
+.subCategory > div > div >input:focus{
+    outline: none;
+}
+
+.subCategory > div > div > button{
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: large;
+}
+
+#loginHeader a {
+    color: #888888;
+    cursor: pointer;
+}
+
+.allCategory.on {
+    display: flex;
+    justify-content: space-between
+}
+
+.allCategory {
+    display: none;
+    background-color: white;
+}
+
+.allCategory a{
+    text-decoration: none;
+}
+
+.allCategory > div{
+    display: flex;
+}
+
+.allCategory >div >div {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    width: 150px;
+    align-items: center;
+}
+
+.allCategory >div >div >h3 >a {
+    color: black;
+}
+
+.allCategory >div >div:last-child {
+
+    margin-right: 10px;
+}
+
+.allCategory >div >div >ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.allCategory >div >div >ul > li > a{
+    color: #888888;
+}
+#searchText{
+    margin: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    border-bottom: 1px solid lightgray;
+}
+
+#productItems{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 30px 0 0 70px;
+    width: 930px;
+}
+
+.product-item{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    padding: 0 15px 100px;
+}
+
+.product-item a {
+    text-decoration: none;
+    color: black;
+}
+
+.product-item a img{
+    width: 200px;
+    height: 300px;
+}
+
+.product{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.product-name{
+    width: 100%;
+    padding-left: 40px;
+}
+
+.product-name > a:first-child {
+    color: black;
+    margin-left: 10px;
+}
+
+.product-name > a {
+    text-decoration: none;
+    color: #888888;
+    margin-left: 10px;
+}
+
+.product-name > a:first-child >h3{
+    display: inline-block;
+}
+
+.subCategoryName.on {
+    font-size: 18px;
+    color: black;
+}
+
+.consumerPrice{
+    font-size: 13px;
+    color: #666;
+    font-weight: 300;
+    text-decoration: line-through;
+}
+
+.sellPrice{
+    font-weight: 600;
+}
+
+.size{
+    color: #888888;
+}
+
+#productDetailWrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#productDetailWrapper > div > img{
+    margin-top: 30px;
+    width: 700px;
+}
+
+.sliderContainer{
+    width: 900px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.sliderWrapper{
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    padding: 10px;
+    margin-left: 100px;
+}
+
+.sliderItem{
+    width: 250px;
+    margin-right: 10px;
+}
+
+.sliderItem img{
+    width: 200px;
+    height: 300px;
+}
+
+button.prev , button.next{
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    color: white;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.prev{
+    left: 10px;
+}
+
+.next{
+    right: 10px;
+}
+
+#productInfo{
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+#productInfo > div{
+    display: flex;
+}
+
+#productInfo label{
+    width: 100px;
+}
+
+#productInfo >div{
+    margin-top: 10px;
+}
+
+#productInfo >div:last-child >button{
+    border: 1px solid black;
+    background: none;
+    height: 30px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+#productInfo >div:last-child >button:hover{
+    background-color: #414b5a;
+    color: white;
+}
+
+#productInfo >div:last-child >button:first-child{
+    width: 200px;
+    margin-right: 10px;
+}
+
+#productInfo >div:last-child >button:last-child{
+    width: 100px;
+}
+
+#productInfo >div >select{
+    width: 200px;
+    border: 1px solid lightgray;
+    height: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#productInfo >div >select >option{
+    text-align: center;
+}
+
+#productAddList {
+    list-style: none;
+    padding: 0;
+}
+
+
+#productAddList >li {
+    margin-top: 10px;
+}
+
+#productAddList >li >div:first-child {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+#productAddList >li >div >button{
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: larger;
+}
+
+#productAddList >li >div >input[type='number']{
+    width: 100px;
+    border: 1px solid lightgray;
+    height: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#tab1 ,
+#tab2 ,
+#tab3 {
+    display: flex;
+    flex-direction: column;
+    width: 700px;
+}
+
+#tab1 >ul,
+#tab2 >ul,
+#tab3 >ul{
+    display: flex;
+    list-style: none;
+    justify-content: space-around;
+}
+
+#tab1 > div,
+#tab2 > div,
+#tab3 > div {
+    display: flex;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+}
+
+#tab1 > div >img{
+    width: 700px;
+}
+
+#tab2 > div >div,
+#tab3 > div >div
+{
+    padding-left: 5px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.productReviewIndex{
+    width: 50px;
+    border-right: 1px solid lightgray;
+}
+.productReviewContent{
+    width: 400px;
+    border-right: 1px solid lightgray;
+}
+.productReviewNickname{
+    width: 100px;
+    border-right: 1px solid lightgray;
+}
+.productReviewCreatedAt{
+    width: 150px;
+}
+
+.inquiryIndex{
+    width: 50px;
+    border-right: 1px solid lightgray;
+}
+.inquiryTitle{
+    width: 400px;
+    border-right: 1px solid lightgray;
+}
+.inquiryNickname{
+    width: 100px;
+    border-right: 1px solid lightgray;
+}
+.inquiryCreatedAt{
+    width: 150px;
+}
+
+.tab{
+    color: #888888;
+    text-decoration: none;
+}
+
+.tab.on{
+    color: black;
+
+}
+
+#modal{
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modalContent{
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+#inquiryCategoryHeader{
+    display: flex;
+    list-style: none;
+}
+
+#inquiryCategoryHeader >li{
+    margin-left: 10px;
+}
+
+#inquiryCategoryHeader >li >a{
+    text-decoration: none;
+    color: white;
+    background-color: #414b5a;
+    border-radius: 10px;
+    height: 30px;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#inquiryList{
+    padding-left: 10px;
+}
+
+#inquiryList > div:not(div:last-child){
+    display: flex;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    height: 40px;
+    margin: 0 auto 10px auto;
+    width: 700px;
+    border-radius: 10px;
+}
+
+#inquiryList > div:last-child{
+    display: flex;
+    justify-content: flex-end;
+    height: 40px;
+    margin: 0 auto 10px auto;
+    padding-bottom: 10px;
+    width: 700px;
+}
+
+#inquiryList > div > a{
+    text-decoration: none;
+    display: flex;
+    padding: 10px;
+    color: white;
+    background-color: #414b5a;
+    border-radius: 10px;
+}
+
+#inquiryList > div > div{
+    display: flex;
+    padding-left: 5px;
+    align-items: center;
+}
+
+.inquiryListIndex {
+    width: 50px;
+    border-right: 1px solid lightgray;
+}
+
+.inquiryListTitle{
+    width: 300px;
+    border-right: 1px solid lightgray;
+}
+
+.inquiryListTitle >a{
+    text-decoration: none;
+    color: black;
+}
+
+.inquiryListName{
+    width: 100px;
+    border-right: 1px solid lightgray;
+}
+.inquiryListDate{
+    width: 200px;
+}
+
+#cart >h2{
+    text-align: center;
+}
+#cart >div{
+    padding-left: 10px;
+}
+
+#cart >div:last-child {
+    display: flex;
+    justify-content:center ;
+}
+
+#cart >div:last-child > button{
+    border: none;
+    background-color: #414b5a;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+#cart >div:last-child > button:not(button:last-child){
+    margin-right: 10px;
+}
+
+#cart > table{
+    padding: 10px;
+}
+
+#cart > table >thead > tr{
+    line-height: 30px
+}
+
+#cart > table >thead > tr > th:not(th:last-child){
+    border-right: 1px solid lightgray;
+}
+
+#cart > table >thead > tr > th{
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+}
+
+#cart > table >tbody > tr > td:not(td:last-child){
+    border-right: 1px solid lightgray;
+}
+
+#cart > table >tbody > tr > td{
+    border-bottom: 1px solid lightgray;
+}
+.cartCheckbox{
+    width: 30px
+}
+.cartProductName{
+    width: 300px
+}
+
+.cartProductName > div> button{
+    border: none;
+    background-color: #414b5a;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.cartProductPrice{
+    width: 100px
+}
+.cartProductPrice > div {
+    text-align: center;
+}
+
+.cartTotalPrice{
+    width: 100px;
+    text-align: center;
+}
+
+.cartPoint{
+    width: 50px;
+    text-align: center;
+}
+.cartDelivery{
+    width: 100px;
+    text-align: center;
+}
+
+.cartProductImg > a > img{
+    width: 100px;
+}
+
+.cartProductQuantity >div > div{
+    display: flex;
+}
+
+.cartProductQuantity >div > div >input{
+    width: 40px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    text-align: center;
+}
+
+.cartProductQuantity >div > div >button{
+    font-size: large;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.cartSelect > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.cartSelect > div > button{
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+    padding: 10px;
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.cartSelect > div > button:first-child{
+
+}
+
+#sumTotalPrice{
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: antiquewhite;
+    margin: 10px;
+}
+
+#cartSelectDelete{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#cartSelectDelete > div:first-child > button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#cartSelectDelete > div:last-child{
+    margin-right: 10px;
+}
+#order > div {
+    width: 800px;
+    margin: 0 auto;
+}
+
+#order > div > h2{
+    text-align: center;
+}
+
+#order > div > table {
+    padding: 10px;
+}
+
+#order > div:first-child > div {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid lightgray;
+
+}
+
+#order > div > table > thead > tr {
+    line-height: 30px;
+}
+
+#order > div > table > thead > tr > th:not(th:last-child){
+    border-right: 1px solid lightgray;
+}
+
+#order > div > table > thead > tr > th{
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid black;
+}
+
+#order > div > table > tbody > tr > td:not(td:last-child){
+    border-right: 1px solid lightgray;
+}
+
+#order > div > table > tbody > tr > td{
+    border-bottom: 1px solid lightgray;
+}
+
+#order > div > table > tbody > tr > td:not(td:first-child){
+    text-align: center;
+}
+
+.orderProductName {
+    width: 500px;
+}
+
+.orderProductName > div{
+    display: flex;
+    align-items: center;
+}
+
+.orderProductName >div > div:last-child{
+    margin-left: 10px;
+}
+
+.orderProductName >div > div:last-child > a{
+    text-decoration: none;
+    color: black;
+}
+
+.orderProductQuantity{
+    width: 100px;
+}
+
+.orderProductPrice{
+    width: 100px;
+}
+.orderProductPoint{
+    width: 100px;
+}
+
+#orderMember >div{
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 10px;
+}
+
+#orderMember >div:nth-child(2){
+    border-top: 1px solid black;
+    padding-top: 10px;
+}
+
+#orderMember >div >label{
+    width: 100px;
+}
+
+#orderMember > div >input{
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 30px;
+}
+
+#orderMember > div:last-child >span{
+    margin: 0 5px;
+    font-size: x-large;
+}
+
+#deliveryOrderInfo > div{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+#deliveryOrderInfo > div:first-child{
+    margin: 18px 0;
+}
+
+#deliveryOrderInfo > div > h3{
+    margin: 0;
+}
+
+#deliveryOrderInfo >div:nth-child(2){
+    border-top: 1px solid black;
+    padding-top: 10px;
+}
+
+#deliveryOrderInfo > div:not(div:nth-child(5)){
+    align-items: center;
+}
+
+#deliveryOrderInfo > div:first-child{
+    align-items: center;
+    justify-content: space-between;
+}
+
+#deliveryOrderInfo > div >label{
+    width: 100px;
+}
+#deliveryOrderInfo > div > input{
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 30px;
+}
+
+#deliveryOrderInfo > div > div {
+   display: flex;
+    align-items: center;
+}
+
+#deliveryOrderInfo > div:nth-child(3) > div > label{
+    width: 100px;
+}
+
+#deliveryOrderInfo > div:nth-child(3) > div > input{
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 30px;
+}
+
+#deliveryOrderInfo > div:nth-child(3) > div > span{
+    margin: 0 5px;
+    font-size: x-large;
+}
+
+#deliveryOrderInfo > div:nth-child(3) > div:last-child > label{
+    margin-left: 10px;
+}
+
+#deliveryOrderInfo > div:nth-child(4) > div > button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#deliveryOrderInfo > div:nth-child(4) > div > input{
+    margin-left: 10px;
+}
+
+#deliveryOrderInfo > div:nth-child(5){
+    flex-direction: column;
+}
+
+#deliveryOrderInfo > div:nth-child(5) > div{
+    margin-bottom: 10px;
+}
+
+#deliveryOrderInfo > div:nth-child(5) > div > label{
+    width: 100px;
+}
+
+#deliveryOrderInfo > div:nth-child(5) > div > input{
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 30px;
+}
+
+#deliveryOrderInfo > div:nth-child(5) > div > button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#deliveryOrderInfo > div:nth-child(5) > div:last-child > input:first-child{
+    margin: 0 10px 0 100px;
+}
+
+#deliveryOrderInfo > div:nth-child(5) > div:last-child > input{
+    width: 300px;
+}
+
+#deliveryOrderInfo > div:nth-child(6) > div {
+    flex-direction: column;
+}
+
+#deliveryOrderInfo > div:nth-child(6) > textarea {
+    width: 620px;
+    height: 70px;
+    border-radius: 10px;
+    border: 1px solid lightgray;
+}
+
+#deliveryOrderInfo > div:nth-child(6) > div >label {
+   width: 100px;
+}
+
+#deliveryOrderInfo > div:nth-child(7) > div {
+    flex-direction: column;
+}
+
+#deliveryOrderInfo > div:nth-child(7) > div >label {
+    width: 100px;
+    font-size: 13px;
+}
+
+#deliveryOrderInfo > div:nth-child(7) > div >input {
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 30px;
+}
+
+#deliveryOrderInfo > div:nth-child(7) > div >span {
+    margin-left: 10px;
+}
+
+#orderPlusInfo > div  {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 10px;
+}
+
+#orderPlusInfo >div:nth-child(2){
+    border-top: 1px solid black;
+    padding-top: 10px;
+}
+
+
+#orderPlusInfo > div > div {
+    display: flex;
+    flex-direction: column;
+}
+
+#orderPlusInfo > div > div >label{
+    width: 100px;
+    font-size: 13px;
+}
+
+#orderPlusInfo > div > input[id='refun2'] {
+    margin-left: 10px;
+}
+
+#orderPlusInfo > div > input[type='text']  {
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 30px;
+    width: 300px;
+}
+
+#orderPlusInfo > div > span  {
+    margin-left: 10px;
+    font-size: 13px;
+}
+
+#orderItemTotalPrice > div {
+    background-color: antiquewhite;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#orderItemTotalPrice > h3 {
+    padding-bottom: 18px;
+    border-bottom: 1px solid black;
+}
+
+#orderPayInfo >div{
+    display: flex;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+#orderPayInfo >div:nth-child(2){
+    border-top: 1px solid black;
+    padding-top: 10px;
+}
+
+#orderPayInfo > div:not(div:nth-child(3)) > label{
+    width: 100px;
+}
+#orderPayInfo > div:nth-child(3) > label{
+    margin-left: 10px;
+}
+
+#orderPayInfo >div >div{
+    margin-left: 10px;
+}
+
+#orderPayInfo > div:nth-child(4) > div> h2{
+    margin: 0;
+}
+
+#orderPayInfo > div:nth-child(5) {
+   justify-content: center;
+}
+
+#orderPayInfo > div > button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#orderPayInfo > div > button:last-child{
+    margin-left: 10px;
+}
+
+#myPage > h2{
+    text-align: center;
+}
+
+#myPage > div:nth-child(2){
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px;
+    margin: 10px;
+}
+
+#myPage > div:nth-child(2) > a{
+    text-decoration: none;
+    color: black;
+
+}
+
+#myPageMember {
+    display: flex;
+    padding: 10px;
+    justify-content: space-around;
+}
+
+#myPageOrders >div{
+    display: flex;
+    padding: 10px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 800px;
+    margin: 0 auto 10px auto;
+    align-items: center;
+}
+
+#myPageOrders >div:not(div:nth-child(2)){
+    cursor: pointer;
+}
+
+#myPageOrders > h3{
+    margin-left: 10px;
+}
+
+#myPageOrders >div >div{
+    margin-left: 5px;
+}
+
+.myPageOrderDate{
+    width: 200px;
+
+}
+.myPageOrderProductName{
+    width: 400px;
+    border-right: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    display: flex;
+    padding-left: 5px;
+    flex-direction: column;
+}
+
+.myPageOrderProductName > span{
+   margin-bottom: 5px;
+}
+.myPageOrderTotalPrice{
+    width: 200px;
+}
+
+#orderDetail {
+    width: 800px;
+    padding:10px;
+    margin: 10px auto 0 auto;
+}
+
+#orderDetail > div{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding:10px;
+}
+
+#orderDetail > div:first-child > div:first-child{
+    margin-bottom: 10px;
+}
+
+#orderDetail > div:nth-child(2) >div{
+    margin-bottom: 10px;
+    display: flex;
+}
+
+#orderDetail > div:nth-child(2) >div:nth-child(2){
+    align-items: center;
+}
+
+#orderDetail > div:nth-child(2) >div > button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#orderDetail > div:nth-child(2) > div > div:not(div:first-child){
+    margin-left: 10px;
+}
+
+#orderDetail > div:nth-child(2) > div > div:not(div:first-child) >button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#orderDetail > div:nth-child(3) >div {
+    margin-bottom: 10px;
+}
+
+#orderDetail > div:nth-child(4) >div {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+#orderDetail > div:nth-child(5) >div {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.myPageMember2{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#orderList{
+    width: 800px;
+    margin: 0 auto;
+    padding:10px;
+}
+
+#orderList >div{
+    display: flex;
+    padding: 10px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+#orderList >div:not(div:first-child){
+    cursor: pointer;
+}
+#orderList >div >div{
+    margin-left: 5px;
+    display: flex;
+}
+
+#orderList >div >div:not(div:nth-child(4)){
+    align-items: center;
+}
+
+#orderList >div >div:nth-child(4){
+    flex-direction: column;
+    justify-content: center;
+}
+#orderList >div >div:nth-child(4) > div:not(div:last-child){
+    margin-bottom: 10px;
+}
+
+#orderList >div >div:not(div:last-child){
+    border-right: 1px solid lightgray;
+}
+.orderListIndex{
+    width: 30px;
+}
+.orderListOrderDate{
+    width: 150px;
+}
+.orderListProductName{
+    width: 400px;
+}
+.orderListTotalPrice{
+    width: 100px;
+}
+.orderListStatus{
+    width: 100px;
+}
+
+#pointList{
+    width: 700px;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+#pointList > div{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+#pointList > div >div{
+    margin-left: 5px;
+}
+#pointList > div >div:not(div:last-child){
+    border-right: 1px solid lightgray;
+}
+
+.pointListDate{
+    width: 300px;
+}
+.pointListSave{
+    width: 200px;
+}
+.pointListStatus{
+    width: 150px;
+}
+
+#wishProductList{
+    width: 900px;
+    margin: 0 auto;
+}
+
+#wishProductList >div{
+    display: flex;
+    padding: 10px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+#wishProductList >div:last-child{
+    justify-content: center;
+}
+#wishProductList >div:last-child > button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#wishProductList >div >div:not(div:last-child){
+    border-right: 1px solid lightgray;
+    margin-right: 5px;
+}
+
+.wishProductListCheckBox{
+    width: 30px;
+}
+.wishProductListImg{
+    width: 100px;
+}
+.wishProductListImg >a >img{
+    width: 100px;
+}
+
+.wishProductListName{
+    width: 200px;
+    display: flex;
+    flex-direction: column
+}
+.wishProductListQuantity{
+    width: 100px;
+}
+
+.wishProductListQuantity >input{
+    width: 80px;
+}
+.wishProductListStock{
+    width: 50px;
+}
+.wishProductListPoint{
+    width: 100px;
+}
+.wishProductListPrice{
+    width: 100px;
+}
+.wishProductListCart{
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+.wishProductListCart >button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+#postList {
+    width: 600px;
+    margin: 0 auto;
+}
+
+#postList >div{
+    display: flex;
+    padding: 10px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+#postList >div >div:not(div:last-child){
+    border-right: 1px solid lightgray;
+    margin-right: 5px;
+}
+
+.postListIndex{
+    width: 30px;
+}
+.postListType{
+    width: 100px;
+}
+.postListContent{
+    width: 200px;
+}
+.postListModify{
+    width: 100px;
+}
+.postListModify >button{
+    border: none;
+    background-color: #414b5a;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+.postListCreatedAt{
+    width: 150px;
+}

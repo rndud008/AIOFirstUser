@@ -20,6 +20,10 @@
             <th:block th:insert="fragments/inquiryFlagment::inquiryCheck"></th:block>
         </th:block>
 
+        <th:block th:if="${checkInquiryAnswer}">
+            <th:block th:insert="fragments/inquiryFlagment::inquiryAnswerCheck"></th:block>
+        </th:block>
+
     </div>
 </body>
 </html>

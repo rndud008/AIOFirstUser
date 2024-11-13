@@ -6,15 +6,25 @@
     <title>Title</title>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div class="product">
-            <div class="product-name" >
-                <a th:text="${category.categoryName}"
-                   th:href="@{'/product/category?code=' + ${category.id}}"></a>
-                <a th:each="subCategory:${category.subCategories}"
-                   th:text="${subCategory.categoryName}"
-                   th:href="@{'/product/category?code=' + ${subCategory.id} + '&decode=' + ${subCategory.depNo}} ">
+<div layout:fragment="content">
+    <div class="product">
+        <div class="product-name">
+            <a th:href="@{'/product/category?code=' + ${category.id}}">
+                <h3 th:text="${category.categoryName}"></h3>
+            </a><a class="subCategoryName" th:each="subCategory:${category.subCategories}"
+               th:text="${subCategory.categoryName}"
+               th:href="@{'/product/category?code=' + ${subCategory.id} + '&decode=' + ${subCategory.depNo}} ">
+            </a>
+        </div>
+        <div id="productItems">
+            <div class="product-item" th:each="product:${newProducts}">
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
                 </a>
+                <span class="size" th:if="${product.size}" th:text="${product.size}"></span>
+                <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
+                <span class="sellPrice" th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
                 <a th:href="@{'/product/detail/'+ ${product.id} }">
@@ -27,62 +37,78 @@
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
 
                 <span th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
 
                 <span th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
 
                 <span th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
 
                 <span th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
 
                 <span th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
 
                 <span th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
             <div class="product-item" th:each="product:${newProducts}">
-                <img style="width: 200px" th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
                 <span th:if="${product.size}" th:text="${product.size}"></span>
-                <span th:text="${product.consumerPrice} + '원'"></span>
-                <span th:text="${product.sellPrice} + '원'"></span>
+
+                <span th:text="${product.consumerPrice}"></span>
+                <span th:text="${product.sellPrice}"></span>
             </div>
         </div>
     </div>
+</div>
 
 </body>
 </html>

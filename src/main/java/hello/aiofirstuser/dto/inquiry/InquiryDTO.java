@@ -21,4 +21,7 @@ public class InquiryDTO {
     private String img;
     private String createdAt;
 
+    private boolean answer;
+    private String adminContent;
+
 }

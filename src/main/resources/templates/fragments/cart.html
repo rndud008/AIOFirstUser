@@ -7,79 +7,78 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div th:text="${cartList}"></div>
-    <div>
-        <div>장바구니</div>
-        <table style="padding: 10px">
+    <div id="cart">
+        <h2>장바구니</h2>
+        <table >
             <thead>
-            <tr style="line-height: 30px">
-                <th style="width: 30px"><input type="checkbox" oninput="allCheck(this)"></th>
-                <th>사진</th>
-                <th style="width: 300px">제품명</th>
-                <th style="width: 100px">가격</th>
-                <th>수량</th>
-                <th style="width: 100px">합계</th>
-                <th style="width: 50px">적립금</th>
-                <th style="width: 100px">배송비</th>
-                <th>선택</th>
+            <tr>
+                <th class="cartCheckbox" ><input type="checkbox" oninput="allCheck(this)"/></th>
+                <th class="cartProductImg">사진</th>
+                <th class="cartProductName" style="width: 300px">제품명</th>
+                <th class="cartProductPrice" style="width: 100px">가격</th>
+                <th class="cartProductQuantity">수량</th>
+                <th class="cartTotalPrice" style="width: 100px">합계</th>
+                <th class="cartPoint" style="width: 50px">적립금</th>
+                <th class="cartDelivery" style="width: 100px">배송비</th>
+                <th class="cartSelect">선택</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="cart:${cartList.cartResponseDTOS}">
-                <td><input type="checkbox" th:value="${cart.cartId}" oninput="sumTotalPriceUpdate()"/></td>
-                <td>
+                <td class="cartCheckbox"><input type="checkbox" th:value="${cart.cartId}" oninput="sumTotalPriceUpdate()"/></td>
+                <td class="cartProductImg">
                     <a th:href="@{'/product/detail/'+${cart.productId}}">
-                        <img width="100px" th:src="@{${cart.productImg}}"/>
+                        <img  th:src="@{${cart.productImg}}"/>
                     </a>
                 </td>
-                <td>
+                <td class="cartProductName">
                     <div>
                         <span th:text="${cart.productName}">제품이름</span>
                         <p class="option" th:text="${cart.selectOption}">옵션</p>
                         <button onclick="cartOptionModify(this)">옵션변경</button>
                     </div>
                 </td>
-                <td>
-                    <div style="text-align: center">
-                        <p th:text="${cart.consumerPrice}">소비자가</p>
+                <td class="cartProductPrice" >
+                    <div >
+                        <p class="consumerPrice" th:text="${cart.consumerPrice}">소비자가</p>
                         <span class="price" th:text="${cart.price}">판매가</span>
                     </div>
                 </td>
-                <td>
+                <td class="cartProductQuantity">
                     <div>
-                        <div style="display: flex">
-                            <button onclick="cartDecreaseValue(this)">-</button>
-                            <input style="width: 40px" type="number" oninput="cartInputValueChange(this)" th:value="${cart.quantity}"/>
-                            <button onclick="cartIncreaseValue(this)">+</button>
+                        <div >
+                            <button onclick="cartDecreaseValue(this)"><i class="fa-solid fa-minus"></i></button>
+                            <input  type="number" oninput="cartInputValueChange(this)" th:value="${cart.quantity}"/>
+                            <button onclick="cartIncreaseValue(this)"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
                 </td>
-                <td  style="text-align: center;" >
+                <td class="cartTotalPrice"   >
                     <span class="totalPrice" th:text="${cart.totalPrice}">합계</span>
                 </td>
-                <td style="text-align: center">
+                <td class="cartPoint" >
                     <span class="point" th:text="${cart.point}">적립금</span>
                 </td>
-                <td style=" text-align: center">
+                <td class="cartDelivery" >
                     <span >
                         [기본배송]
                         <br/>
                         조건
                     </span>
                 </td>
-                <td>
-                    <div style="display: flex; flex-direction: column">
+                <td class="cartSelect">
+                    <div >
                         <input type="hidden" th:value="${cart.productVariantId}">
-                        <button th:if="${cart.wishItem}" style="white-space: nowrap" disabled >이미등록된상품</button>
-                        <button th:unless="${cart.wishItem}" style="white-space: nowrap" onclick="addCartItemToWishlist(this)">관심상품 등록</button>
+                        <button th:if="${cart.wishItem}" disabled >이미등록된상품</button>
+                        <button th:unless="${cart.wishItem}" onclick="addCartItemToWishlist(this)">관심상품 등록</button>
                         <button onclick="cartItemDelete(this)">삭제하기</button>
                     </div >
                 </td>
             </tr>
             </tbody>
         </table>
-        <div id="sumTotalPrice" th:utext="${cartList.sumTotalString}"> 토탈</div>
-        <div>
+        <div id="sumTotalPrice" ><h2 th:utext="${cartList.sumTotalString}"></h2></div>
+        <div id="cartSelectDelete">
             <div>
                 <button onclick="selectCartDelete()">선택 상품 삭제</button>
                 <button onclick="cartAllDelete()">장바구니 비우기</button>
@@ -89,7 +88,7 @@
             </div>
         </div>
         <div>
-            <button>계속 쇼핑하기</button>
+            <button onclick="historyBack()" >계속 쇼핑하기</button>
             <button onclick="selectOrder()">선택 상품 주문</button>
             <button onclick="AllOrder()">전체 주문 하기</button>
         </div>

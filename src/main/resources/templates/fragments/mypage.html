@@ -2,46 +2,45 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout.html}">
 <head>
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
 <body>
-    <div layout:fragment="content">
-        <div>
-            <div>마이페이지</div>
-            <div >
-                <a id="myPage" href="/user/mypage">마이페이지</a>
-                <a id="orderList" href="/user/mypage?mypagetype=orderList">주문내역</a>
-                <a id="pointList" href="/user/mypage?mypagetype=pointList">적립금내역</a>
-                <a id="wishList" href="/user/mypage?mypagetype=wishList">관심상품</a>
-                <a id="reviewList" href="/user/mypage?mypagetype=postList">내 게시글 보기</a>
-<!--                <a id="memberInfo" href="/user/mypage?mypagetype=memberInfo">회원정보</a>-->
-<!--                <a onclick="">회원탈퇴</a>-->
-            </div>
+<div id="myPage" layout:fragment="content">
 
-            <th:block th:if="${myPageCheck}">
-                <th:block th:insert="fragments/mypageFlagment::mypage"></th:block>
-            </th:block>
-
-            <th:block th:if="${pointCheck}">
-                <th:block th:insert="fragments/mypageFlagment::point"></th:block>
-            </th:block>
-
-            <th:block th:if="${wishCheck}">
-                <th:block th:insert="fragments/mypageFlagment::wishProduct"></th:block>
-            </th:block>
-
-            <th:block th:if="${postCheck}">
-                <th:block th:insert="fragments/mypageFlagment::postList"></th:block>
-            </th:block>
-
-            <th:block th:if="${orderCheck}">
-                <th:block th:insert="fragments/mypageFlagment::orderList"></th:block>
-            </th:block>
-
-        </div>
-
+    <h2 th:text="${name}">마이페이지</h2>
+    <div>
+        <a href="/user/mypage">마이페이지</a>
+        <a href="/user/mypage?mypagetype=orderList">주문내역</a>
+        <a href="/user/mypage?mypagetype=pointList">적립금내역</a>
+        <a href="/user/mypage?mypagetype=wishList">관심상품</a>
+        <a href="/user/mypage?mypagetype=postList">내 게시글 보기</a>
+        <!--                <a id="memberInfo" href="/user/mypage?mypagetype=memberInfo">회원정보</a>-->
+        <!--                <a onclick="">회원탈퇴</a>-->
     </div>
+
+    <th:block th:if="${myPageCheck}">
+        <th:block th:insert="fragments/mypageFlagment::mypage"></th:block>
+    </th:block>
+
+    <th:block th:if="${pointCheck}">
+        <th:block th:insert="fragments/mypageFlagment::point"></th:block>
+    </th:block>
+
+    <th:block th:if="${wishCheck}">
+        <th:block th:insert="fragments/mypageFlagment::wishProduct"></th:block>
+    </th:block>
+
+    <th:block th:if="${postCheck}">
+        <th:block th:insert="fragments/mypageFlagment::postList"></th:block>
+    </th:block>
+
+    <th:block th:if="${orderCheck}">
+        <th:block th:insert="fragments/mypageFlagment::orderList"></th:block>
+    </th:block>
+
+
+</div>
 </body>
 </html>

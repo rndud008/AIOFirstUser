@@ -19,9 +19,9 @@ public class ProductDetailDTO {
     private Long id;
     private String productName;
 
-    private int consumerPrice;
-    private int sellPrice;
-    private int point;
+    private String consumerPrice;
+    private String sellPrice;
+    private String point;
 
     private String size;
 

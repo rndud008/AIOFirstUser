@@ -14,43 +14,46 @@
 </th:block>
 
 <th:block th:fragment="product">
-    <div th:text="${subCategory}"></div>
-    <ul>
-        <a th:each="subCategory: ${subCategoryList}"
-           th:href="@{'/inquiry?code=' + ${subCategory.id} + '&categoryName=고객센터&decode=' + ${subCategory.depNo}}">
-            <li th:text="${subCategory.categoryName}"></li>
-        </a>
+    <ul id="inquiryCategoryHeader">
+        <li th:each="subCategory: ${subCategoryList}">
+            <a th:text="${subCategory.categoryName}"
+               th:href="@{'/inquiry?code=' + ${subCategory.id} + '&categoryName=고객센터&decode=' + ${subCategory.depNo}}">
+            </a>
+        </li>
     </ul>
-    <div th:text="${inquiryList}"></div>
-    <div>
+    <div id="inquiryList">
         <div>
-            <div>#</div>
-            <div>Title</div>
-            <div>Name</div>
-            <div>Date</div>
+            <div><span class="inquiryListIndex">#</span></div>
+            <div><span class="inquiryListTitle">Title</span></div>
+            <div><span class="inquiryListName">Name</span></div>
+            <div><span class="inquiryListDate">Date</span></div>
         </div>
         <th:block th:if="${!#lists.isEmpty(inquiryList)}">
             <div th:each="inquiry:${inquiryList}">
-                <div ><span th:text="${inquiry.index}"></span></div>
+                <div><span class="inquiryListIndex" th:text="${inquiry.index}"></span></div>
                 <div>
-                    <a th:href="@{'/inquiry/detail/'+${inquiry.inquiryId}}">
-                        <span th:text="${inquiry.title}"></span>
-                    </a>
+                    <span th:if="${inquiry.adminContent == null}" class="inquiryListTitle"><a
+                            th:href="@{'/inquiry/detail/'+${inquiry.inquiryId}}" th:text="${inquiry.title}"></a></span>
+                    <span th:unless="${inquiry.adminContent == null}" class="inquiryListTitle"><a
+                            th:href="@{'/inquiryanswer/detail/'+${inquiry.inquiryId}}"
+                            th:text="${inquiry.title}"></a></span>
                 </div>
-                <div> <span th:text="${inquiry.name}"></span></div>
-                <div> <span th:text="${inquiry.createdAt}"></span></div>
+                <div><span class="inquiryListName" th:text="${inquiry.name}"></span></div>
+                <div><span class="inquiryListDate" th:text="${inquiry.createdAt}"></span></div>
             </div>
         </th:block>
         <th:block th:unless="${!#lists.isEmpty(inquiryList)}">
             <div> 작성된 게시글이 없습니다.</div>
         </th:block>
-        <a th:href="@{'/inquiry/saveform?code=' + ${categoryDTO.id} }" th:text="글쓰기"></a>
+        <div>
+            <a th:href="@{'/inquiry/saveform?code=' + ${categoryDTO.id} }" th:text="글쓰기"></a>
+        </div>
     </div>
 </th:block>
 
 <th:block th:fragment="productSaveForm">
     <div>상품문의</div>
-    <div >
+    <div>
         <div>
             <input type="hidden" th:value="${categoryDTO.id}">
             <div><span>NAME</span></div>
@@ -94,9 +97,24 @@
                 <a th:href="@{'/inquiry?code=' + ${inquiry.categoryId} + '&categoryName=고객센터&decode=' + ${inquiry.depno}}">취소</a>
             </div>
         </div>
-
     </div>
+</th:block>
 
+<th:block th:fragment="inquiryAnswerCheck">
+    <div>
+        <div><span th:text="${inquiry.categoryName}"></span></div>
+        <div id="inquiry">
+            <div>
+                <input type="hidden" th:value="${inquiry.inquiryId}">
+                <span>비밀번호</span>
+                <input type="password"/>
+            </div>
+            <div>
+                <button onclick="inquiryAnswerItem()">확인</button>
+                <a th:href="@{'/inquiry?code=' + ${inquiry.categoryId} + '&categoryName=고객센터&decode=' + ${inquiry.depno}}">취소</a>
+            </div>
+        </div>
+    </div>
 </th:block>
 
 <th:block th:fragment="delivery">

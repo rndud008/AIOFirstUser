@@ -14,4 +14,5 @@ public class InquiryCheckResponseDTO {
     private Long inquiryId;
     private Long categoryId;
     private Long depno;
+    private boolean answer;
 }

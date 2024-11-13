@@ -3,6 +3,7 @@ package hello.aiofirstuser.repository;
 import hello.aiofirstuser.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,5 +15,8 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     List<Product> findByCategoryId(Long categoryId);
 
-    List<Product> findByCreatedAtAfter(LocalDate localDate);
+    List<Product> findByCreatedAtAfter(LocalDateTime localDateTime);
+    @Query("select p from Product p " +
+            "where p.productName like concat('%' ,:search ,'%') ")
+    List<Product> getProducts(@Param("search") String search);
 }

@@ -33,27 +33,31 @@ public class MemberController {
         model.addAttribute("inqueryCategory",categoryService.InqueryCategory());
 
         if(myPageType == null){
+            model.addAttribute("name","마이페이지");
             model.addAttribute("myPageCheck",true);
             model.addAttribute("member",memberService.getMyPageMemberDTO(member));
             model.addAttribute("orders",orderService.getOrderList(member,true));
 
         } else if(myPageType.equals("orderList")){
+            model.addAttribute("name","주문내역");
             model.addAttribute("orderCheck",true);
             model.addAttribute("member",memberService.entityToMemberDTO(member));
             model.addAttribute("orders",orderService.getOrderList(member,false));
 
         } else if(myPageType.equals("wishList")){
+            model.addAttribute("name","관심상품");
             model.addAttribute("wishCheck",true);
             model.addAttribute("member",memberService.entityToMemberDTO(member));
             model.addAttribute("wishList",wishProductService.getMemberWishList(member));
 
-
         } else if(myPageType.equals("postList")){
+            model.addAttribute("name","내 게시글 목록");
             model.addAttribute("postCheck",true);
             model.addAttribute("member",memberService.entityToMemberDTO(member));
             model.addAttribute("postList",orderItemReviewService.getPostResponseDTOList(member));
 
         } else if(myPageType.equals("pointList")){
+            model.addAttribute("name","적립금내역");
             model.addAttribute("pointCheck",true);
             model.addAttribute("member",memberService.entityToMemberDTO(member));
             model.addAttribute("pointList",pointService.getMyPagePointDTOS(member));

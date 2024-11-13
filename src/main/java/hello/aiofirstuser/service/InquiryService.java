@@ -2,6 +2,7 @@ package hello.aiofirstuser.service;
 
 import hello.aiofirstuser.domain.Category;
 import hello.aiofirstuser.domain.Inquiry;
+import hello.aiofirstuser.domain.InquiryAnswer;
 import hello.aiofirstuser.dto.inquiry.InquiryCheckResponseDTO;
 import hello.aiofirstuser.dto.inquiry.InquiryDTO;
 import hello.aiofirstuser.dto.inquiry.InquiryDetailRequestDTO;
@@ -13,12 +14,13 @@ import java.util.List;
 public interface InquiryService {
 
     List<InquiryDTO> getInquiryDTOList(Long categoryId);
+    List<InquiryDTO> getProductInquiryDTOList(Long productId);
 
     int save(InquiryRequestDTO inquiryRequestDTO);
 
     InquiryCheckResponseDTO getInquiryCheckResponseDTO(Long inquiryId);
 
-    InquiryDTO getInquiryDTO(InquiryDetailRequestDTO inquiryDetailRequestDTO);
+    InquiryDTO getInquiryDTO(InquiryDetailRequestDTO inquiryDetailRequestDTO,boolean admin);
 
     InquiryDTO modifyInquiryDTO(InquiryRequestDTO inquiryRequestDTO);
 
@@ -30,7 +32,7 @@ public interface InquiryService {
                 .categoryName(inquiry.getCategory().getCategoryName())
                 .build();
     }
-    default InquiryDTO entityToInquiryDTO(Inquiry inquiry,Long index){
+    default InquiryDTO inquiryToInquiryDTO(Inquiry inquiry,Long index){
 
         return InquiryDTO.builder()
                 .inquiryId(inquiry.getId())
@@ -42,6 +44,24 @@ public interface InquiryService {
                 .img(inquiry.getImg())
                 .createdAt(inquiry.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .index(index)
+                .answer(inquiry.isAnswer())
+                .build();
+    }
+
+    default InquiryDTO inquiryAnswerToInquiryDTO(InquiryAnswer inquiryAnswer, Long index){
+
+        return InquiryDTO.builder()
+                .inquiryId(inquiryAnswer.getInquiry().getId())
+                .productId(inquiryAnswer.getInquiry().getProduct() == null ? null : inquiryAnswer.getInquiry().getProduct().getId())
+                .categoryId(inquiryAnswer.getInquiry().getCategory().getId())
+                .name(inquiryAnswer.getName())
+                .title("->"+inquiryAnswer.getInquiry().getTitle())
+                .content(inquiryAnswer.getInquiry().getContent())
+                .img(inquiryAnswer.getInquiry().getImg())
+                .createdAt(inquiryAnswer.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .index(index)
+                .answer(inquiryAnswer.getInquiry().isAnswer())
+                .adminContent(inquiryAnswer.getContent())
                 .build();
     }
 

@@ -147,10 +147,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MyPageMemberDTO getMyPageMemberDTO(Member member) {
-        List<OrderStatus> exCludeOrderStauts = new ArrayList<>();
-        exCludeOrderStauts.addAll(List.of(OrderStatus.ORDER_CANCELED, OrderStatus.ADMIN_ITEM_CHECK));
-        int orderItemCount = orderItemRepository.orderItemCount(member.getId(),exCludeOrderStauts);
-        int writtenReviewCount  = orderItemReviewRepository.orderItemReviewCount(member.getId(),exCludeOrderStauts);
+        int orderItemCount = orderItemRepository.orderItemCount(member.getId(), List.of(OrderStatus.ORDER_CANCELED));
+        int writtenReviewCount  = orderItemReviewRepository.orderItemReviewCount(member.getId(), List.of(OrderStatus.ORDER_CANCELED));
         int unwrittenReviewCount = orderItemCount - writtenReviewCount;
 
         long currentPoint = 0L;

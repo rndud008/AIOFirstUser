@@ -19,6 +19,7 @@ public class OrderDetailDTO {
     private String orderDateTime;
     private String orderStatus;
     private boolean refundCheck;
+    private boolean adminCheck;
 
     private List<OrderDetailItemDTO> orderDetailItemDTOS;
 

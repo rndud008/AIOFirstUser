@@ -10,6 +10,7 @@ import java.util.List;
 public interface OrderService {
 
     OrderWriteResponseListDTO orderWriteResponseList(List<String> cartIdAndQuantity, Member member);
+    OrderWriteResponseListDTO orderWriteResponseList(List<OrderRequestDTO> orderRequestDTOS);
 
     KakaoPayReadyRequestDTO orderSave(String username, OrderWriteRequestDTO orderWriteRequestDTO);
 
@@ -27,7 +28,8 @@ public interface OrderService {
                 .orderDateTime(getFormatDateTime(order))
                 .totalPrice(customString(total))
                 .productNames(productNames)
-                .productStatus(order.getOrderStatus().getDescription())
+                .orderStatus(order.getOrderStatus().getDescription())
+                .adminCheck(!order.isAdminCheck())
                 .build();
     }
 
@@ -72,7 +74,6 @@ public interface OrderService {
                 .totalPriceString(getTotalPriceString(totalPrice))
                 .build();
 
-
         return orderWriteResponseListDTO;
     }
 
@@ -91,6 +92,19 @@ public interface OrderService {
         return orderWriteResponseDTO;
     }
 
+    default OrderWriteResponseDTO productVariantEntityToOrderWriteResponseDTO(ProductVariant productVariant,Long quantity){
+        return OrderWriteResponseDTO.builder()
+                .productImg(productVariant.getProduct().getProductImgs().get(0).getFileName())
+                .productName(productVariant.getProduct().getProductName())
+                .productId(productVariant.getProduct().getId())
+                .productVariantId(productVariant.getId())
+                .quantity(Math.toIntExact(quantity))
+                .selectOption("색상: " + productVariant.getColor() + ", 사이즈: " + productVariant.getSize() + " " + quantity + "개")
+                .combineAndQuantityPrice(String.format("%,d",quantity * (productVariant.getPrice() + productVariant.getProduct().getSellPrice())))
+                .point(String.format("%,d",quantity * (productVariant.getPrice() + productVariant.getProduct().getSellPrice())/100))
+                .build();
+    }
+
     default String getTotalPriceString(int totalPrice) {
 
         String totalString = "";
@@ -99,26 +113,26 @@ public interface OrderService {
             totalString = """
                                         
                         <span>총 상품 금액 </span>
-                        <span>%,d</span>
+                        <span>%,d원</span>
                         <span> + </span>
                         <span>배송료</span>
-                        <span>%,d</span>
+                        <span>%,d원</span>
                         <span> = </span>
                         <span>결제 예정금액 </span>
-                        <span>%,d</span>
+                        <span>%,d원</span>
                                         
                     """.formatted(totalPrice, 0, totalPrice);
         } else {
             totalString = """
                                        
                         <span>총 상품 금액 </span>
-                        <span>%,d</span>
+                        <span>%,d원</span>
                         <span> + </span>
                         <span>배송료</span>
-                        <span>%,d</span>
+                        <span>%,d원</span>
                         <span> = </span>
                         <span>결제 예정금액 </span>
-                        <span>%,d</span>
+                        <span>%,d원</span>
                                         
                     """.formatted(totalPrice, 3000, (totalPrice + 3000));
         }

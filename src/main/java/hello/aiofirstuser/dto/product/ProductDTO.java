@@ -17,8 +17,8 @@ public class ProductDTO {
     private String productName;
     private String size;
 
-    private int consumerPrice;
-    private int sellPrice;
+    private String consumerPrice;
+    private String sellPrice;
 
     private String productImgFileNames;
 }

@@ -33,6 +33,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    private boolean adminCheck;
+
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -51,6 +54,10 @@ public class Order {
 
     public void changeStatus(OrderStatus orderStatus){
         this.orderStatus = orderStatus;
+    }
+
+    public void changeAdmin(boolean check){
+        this.adminCheck = check;
     }
 
 
