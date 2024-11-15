@@ -38,6 +38,7 @@ public interface InquiryService {
                 .inquiryId(inquiry.getId())
                 .productId(inquiry.getProduct() == null ? null : inquiry.getProduct().getId())
                 .categoryId(inquiry.getCategory().getId())
+                .categoryName(inquiry.getCategory().getCategoryName())
                 .name(inquiry.getName())
                 .title(inquiry.getTitle())
                 .content(inquiry.getContent())

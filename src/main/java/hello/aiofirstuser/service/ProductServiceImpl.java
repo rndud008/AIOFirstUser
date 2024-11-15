@@ -1,10 +1,12 @@
 package hello.aiofirstuser.service;
 
+import hello.aiofirstuser.domain.Category;
 import hello.aiofirstuser.domain.Product;
 import hello.aiofirstuser.domain.ProductVariant;
 import hello.aiofirstuser.dto.product.ProductDTO;
 import hello.aiofirstuser.dto.product.ProductDetailDTO;
 import hello.aiofirstuser.repository.CategoryRepository;
+import hello.aiofirstuser.repository.OrderItemRepository;
 import hello.aiofirstuser.repository.ProductRepository;
 import hello.aiofirstuser.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final CategoryRepository categoryRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public ProductDetailDTO getProductDTO(Long productId) {
@@ -62,14 +65,24 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> getCategoryProductDTOS(Long id, boolean mainCategory) {
         List<Product> products = new ArrayList<>();
+        Category category = categoryRepository.findById(id).orElse(null);
 
-        if (mainCategory) {
+        if (category !=null && category.getCategoryName().equals("BEST")){
+            List<Object[]> objects = orderItemRepository.getProductAndCount();
+
+            for (Object[] o : objects){
+                if (o[0] instanceof Product product){
+                    products.add(product);
+                }
+            }
+
+        } else if (mainCategory) {
+
             products = productRepository.findByCategoryDepNo(id);
-
         } else {
             products = productRepository.findByCategoryId(id);
-
         }
+
 
         List<ProductDTO> productDTOS = getProductDTOS(products);
 

@@ -2,6 +2,7 @@ package hello.aiofirstuser.controller;
 
 import hello.aiofirstuser.domain.Category;
 import hello.aiofirstuser.domain.Inquiry;
+import hello.aiofirstuser.domain.Member;
 import hello.aiofirstuser.dto.category.CategoryDTO;
 import hello.aiofirstuser.dto.category.CategoryRequestDTO;
 import hello.aiofirstuser.dto.inquiry.InquiryCheckResponseDTO;
@@ -9,6 +10,7 @@ import hello.aiofirstuser.dto.inquiry.InquiryDTO;
 import hello.aiofirstuser.dto.inquiry.InquiryDetailRequestDTO;
 import hello.aiofirstuser.service.CategoryService;
 import hello.aiofirstuser.service.InquiryService;
+import hello.aiofirstuser.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class InquiryController {
 
     private final CategoryService categoryService;
     private final InquiryService inquiryService;
+    private final MemberService memberService;
 
     @GetMapping("")
     public String inqueryPage(@ModelAttribute CategoryRequestDTO categoryRequestDTO, Model model) {
@@ -96,9 +99,10 @@ public class InquiryController {
         String name;
 
         if (userDetails == null || userDetails.getUsername() == null){
-            name = "aaa";
+            name = "GUEST";
         }else {
-            name = userDetails.getUsername() ;
+            Member member = memberService.findByUsername(userDetails.getUsername());
+            name = member.getNickname() ;
         }
 
         CategoryDTO categoryDTO = categoryService.getCategory(categoryRequestDTO.getCode());

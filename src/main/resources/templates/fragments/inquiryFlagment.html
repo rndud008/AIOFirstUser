@@ -52,46 +52,27 @@
 </th:block>
 
 <th:block th:fragment="productSaveForm">
-    <div>상품문의</div>
-    <div>
+    <div id="productSaveForm">
+        <h3>상품문의</h3>
+        <input type="hidden" th:value="${categoryDTO.id}">
+        <div><label>NAME</label><input id="name" type="text" th:value="${productSaveForm.name}"/></div>
+        <div><label>PASSWORD</label><input id="password" type="password"/></div>
+        <div><label>TITLE</label><input id="title" type="text"/></div>
+        <div><label>CONTENT</label><textarea></textarea></div>
         <div>
-            <input type="hidden" th:value="${categoryDTO.id}">
-            <div><span>NAME</span></div>
-            <div><input id="name" type="text" th:value="${productSaveForm.name}"/></div>
-            <div><span>PASSWORD</span></div>
-            <div><input id="password" type="password"/></div>
-        </div>
-        <div>
-            <div><span>TITLE</span></div>
-            <div><input id="title" type="text"/></div>
-        </div>
-        <div>
-            <div><span>CONTENT</span></div>
-            <div>
-                <textarea>
-아아
-아아ㅏ
-아아아ㅏ아아
-                </textarea>
-            </div>
+            <button onclick="inquirySave()">작성완료</button>
+            <a th:href="@{'/inquiry?code=' + ${categoryDTO.id} + '&categoryName=고객센터&decode=' + ${categoryDTO.depNo}}">목록으로</a>
         </div>
     </div>
-    <div>
-        <div th:text="${categoryDTO}"></div>
-        <button onclick="inquirySave()">작성완료</button>
-        <a th:href="@{'/inquiry?code=' + ${categoryDTO.id} + '&categoryName=고객센터&decode=' + ${categoryDTO.depNo}}">목록으로</a>
-    </div>
+
 </th:block>
 
 <th:block th:fragment="inquiryCheck">
     <div>
-        <div><span th:text="${inquiry.categoryName}"></span></div>
         <div id="inquiry">
-            <div>
+            <h3 th:text="${inquiry.categoryName}"></h3>
                 <input type="hidden" th:value="${inquiry.inquiryId}">
-                <span>비밀번호</span>
-                <input type="password"/>
-            </div>
+            <div><label>비밀번호</label><input type="password"/></div>
             <div>
                 <button onclick="inquiryItem()">확인</button>
                 <a th:href="@{'/inquiry?code=' + ${inquiry.categoryId} + '&categoryName=고객센터&decode=' + ${inquiry.depno}}">취소</a>
@@ -102,13 +83,11 @@
 
 <th:block th:fragment="inquiryAnswerCheck">
     <div>
-        <div><span th:text="${inquiry.categoryName}"></span></div>
+        <div></div>
         <div id="inquiry">
-            <div>
+            <h3 th:text="${inquiry.categoryName}"></h3>
                 <input type="hidden" th:value="${inquiry.inquiryId}">
-                <span>비밀번호</span>
-                <input type="password"/>
-            </div>
+            <div><label>비밀번호</label><input type="password"/></div>
             <div>
                 <button onclick="inquiryAnswerItem()">확인</button>
                 <a th:href="@{'/inquiry?code=' + ${inquiry.categoryId} + '&categoryName=고객센터&decode=' + ${inquiry.depno}}">취소</a>

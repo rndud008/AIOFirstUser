@@ -9,85 +9,18 @@
 
 <div layout:fragment="content">
     <div class="product">
-        <h2 class="product-name">New</h2>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
+        <div id="productItems">
+            <h2 class="product-name">New</h2>
+            <div class="product-item" th:each="product:${newProducts}">
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
+                <span th:if="${product.size}" th:text="${product.size}"></span>
 
-            <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
-        </div>
-        <div class="product-item" th:each="product:${newProducts}">
-            <a th:href="@{'/product/detail/'+ ${product.id} }">
-                <img th:src="@{${product.productImgFileNames}}">
-                <span th:text="${product.productName}"></span>
-            </a>
-            <span th:if="${product.size}" th:text="${product.size}"></span>
-            <span th:text="${product.consumerPrice}"></span>
-            <span th:text="${product.sellPrice}"></span>
+                <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
+                <span th:text="${product.sellPrice}"></span>
+            </div>
         </div>
     </div>
 </div>

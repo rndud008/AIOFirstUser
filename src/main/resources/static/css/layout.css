@@ -1,7 +1,7 @@
 body{
     margin: 0 auto;
-    width: 1000px;
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3), 0px 2px 4px rgba(0, 0, 0, 0.2);
+    width: 1500px;
+    /*box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3), 0px 2px 4px rgba(0, 0, 0, 0.2);*/
 
 }
 body> button{
@@ -18,6 +18,7 @@ body> button{
 #category{
     display: flex;
     flex-direction: column;
+    margin-bottom: 10px;
 }
 
 .subCategory{
@@ -50,7 +51,7 @@ body> button{
 
 .subCategory ul > li > a{
     text-decoration: none;
-    color: black;
+    color: #877b73;
 }
 
 .subCategory > div{
@@ -76,6 +77,7 @@ body> button{
 
 .subCategory > div > div >input{
     border: none;
+    /*background-color: #F7F3EB;*/
 }
 
 .subCategory > div > div >input:focus{
@@ -149,7 +151,7 @@ body> button{
     display: flex;
     flex-wrap: wrap;
     margin: 30px 0 0 70px;
-    width: 930px;
+    width: 1500px;
 }
 
 .product-item{
@@ -158,6 +160,19 @@ body> button{
     width: 20%;
     padding: 0 15px 100px;
 }
+.product-item > a > span{
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
+    width: 300px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.product-item > span:nth-child(2){
+    color: #9E9087;
+    font-size: 15px;
+}
 
 .product-item a {
     text-decoration: none;
@@ -165,8 +180,8 @@ body> button{
 }
 
 .product-item a img{
-    width: 200px;
-    height: 300px;
+    width: 300px;
+    height: 400px;
 }
 
 .product{
@@ -177,7 +192,10 @@ body> button{
 
 .product-name{
     width: 100%;
-    padding-left: 40px;
+    margin-left: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid lightgray;
 }
 
 .product-name > a:first-child {
@@ -548,15 +566,25 @@ button.prev , button.next{
 
 #cart >div:last-child > button{
     border: none;
-    background-color: #414b5a;
     padding: 10px;
     border-radius: 10px;
-    color: white;
     cursor: pointer;
+}
+
+#cart >div:last-child > button:first-child{
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+}
+
+#cart >div:last-child > button:not(button:first-child){
+    background-color: #414b5a;
+    color: white;
 }
 
 #cart >div:last-child > button:not(button:last-child){
     margin-right: 10px;
+
 }
 
 #cart > table{
@@ -587,15 +615,15 @@ button.prev , button.next{
     width: 30px
 }
 .cartProductName{
-    width: 300px
+    width: 700px
 }
 
 .cartProductName > div> button{
     border: none;
-    background-color: #414b5a;
+    background-color: #edf0f5;
     padding: 10px;
     border-radius: 10px;
-    color: white;
+    color: black;
     cursor: pointer;
 }
 
@@ -622,6 +650,7 @@ button.prev , button.next{
 
 .cartProductImg > a > img{
     width: 100px;
+    height: 120px;
 }
 
 .cartProductQuantity >div > div{
@@ -654,16 +683,22 @@ button.prev , button.next{
     white-space: nowrap;
     padding: 10px;
     border: none;
-    background-color: #414b5a;
     border-radius: 10px;
     color: white;
     margin-bottom: 10px;
     align-items: center;
+    cursor: pointer;
 }
 
-.cartSelect > div > button:first-child{
+.cartSelect > div > button:nth-child(2){
+    background-color: darkgrey;
+}
+
+.cartSelect > div > button:last-child{
+    background-color: red;
 
 }
+
 
 #sumTotalPrice{
     height: 200px;
@@ -682,7 +717,7 @@ button.prev , button.next{
 
 #cartSelectDelete > div:first-child > button{
     border: none;
-    background-color: #414b5a;
+    background-color: red;
     border-radius: 10px;
     color: white;
     padding: 10px;
@@ -693,7 +728,7 @@ button.prev , button.next{
     margin-right: 10px;
 }
 #order > div {
-    width: 800px;
+    width: 1500px;
     margin: 0 auto;
 }
 
@@ -740,7 +775,7 @@ button.prev , button.next{
 }
 
 .orderProductName {
-    width: 500px;
+    width: 1000px;
 }
 
 .orderProductName > div{
@@ -758,14 +793,14 @@ button.prev , button.next{
 }
 
 .orderProductQuantity{
-    width: 100px;
+    width: 150px;
 }
 
 .orderProductPrice{
-    width: 100px;
+    width: 200px;
 }
 .orderProductPoint{
-    width: 100px;
+    width: 200px;
 }
 
 #orderMember >div{
@@ -858,9 +893,9 @@ button.prev , button.next{
 
 #deliveryOrderInfo > div:nth-child(4) > div > button{
     border: none;
-    background-color: #414b5a;
+    background-color: #edf0f5;
     border-radius: 10px;
-    color: white;
+    color: black;
     padding: 10px;
     cursor: pointer;
 }
@@ -889,9 +924,9 @@ button.prev , button.next{
 
 #deliveryOrderInfo > div:nth-child(5) > div > button{
     border: none;
-    background-color: #414b5a;
+    background-color: #edf0f5;
     border-radius: 10px;
-    color: white;
+    color: black;
     padding: 10px;
     cursor: pointer;
     margin-left: 10px;
@@ -1025,15 +1060,20 @@ button.prev , button.next{
 
 #orderPayInfo > div > button{
     border: none;
-    background-color: #414b5a;
     border-radius: 10px;
-    color: white;
     padding: 10px;
     cursor: pointer;
 }
 
+#orderPayInfo > div > button:first-child{
+    background-color: #414b5a;
+    color: white;
+}
+
 #orderPayInfo > div > button:last-child{
     margin-left: 10px;
+    background-color: red;
+    color: white;
 }
 
 #myPage > h2{
@@ -1066,7 +1106,7 @@ button.prev , button.next{
     padding: 10px;
     box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    width: 800px;
+    width: 1300px;
     margin: 0 auto 10px auto;
     align-items: center;
 }
@@ -1076,7 +1116,10 @@ button.prev , button.next{
 }
 
 #myPageOrders > h3{
-    margin-left: 10px;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #myPageOrders >div >div{
@@ -1088,7 +1131,7 @@ button.prev , button.next{
 
 }
 .myPageOrderProductName{
-    width: 400px;
+    width: 1000px;
     border-right: 1px solid lightgray;
     border-left: 1px solid lightgray;
     display: flex;
@@ -1133,7 +1176,7 @@ button.prev , button.next{
 
 #orderDetail > div:nth-child(2) >div > button{
     border: none;
-    background-color: #414b5a;
+    background-color: lightgray;
     border-radius: 10px;
     color: white;
     padding: 10px;
@@ -1176,7 +1219,7 @@ button.prev , button.next{
 }
 
 #orderList{
-    width: 800px;
+    width: 1300px;
     margin: 0 auto;
     padding:10px;
 }
@@ -1218,7 +1261,7 @@ button.prev , button.next{
     width: 150px;
 }
 .orderListProductName{
-    width: 400px;
+    width: 1000px;
 }
 .orderListTotalPrice{
     width: 100px;
@@ -1259,11 +1302,11 @@ button.prev , button.next{
 }
 
 #wishProductList{
-    width: 900px;
+    width: 1300px;
     margin: 0 auto;
 }
 
-#wishProductList >div{
+#wishProductList >div:not(div:last-child){
     display: flex;
     padding: 10px;
     box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
@@ -1272,16 +1315,25 @@ button.prev , button.next{
 }
 
 #wishProductList >div:last-child{
+    display: flex;
+    padding: 10px;
+    margin-bottom: 10px;
     justify-content: center;
 }
 #wishProductList >div:last-child > button{
     border: none;
-    background-color: #414b5a;
     border-radius: 10px;
     color: white;
     padding: 10px;
     cursor: pointer;
     margin-left: 10px;
+}
+
+#wishProductList >div:last-child > button:not(button:last-child){
+    background-color: red;
+}
+#wishProductList >div:last-child > button:last-child{
+    background-color: #414b5a;
 }
 
 #wishProductList >div >div:not(div:last-child){
@@ -1300,7 +1352,7 @@ button.prev , button.next{
 }
 
 .wishProductListName{
-    width: 200px;
+    width: 600px;
     display: flex;
     flex-direction: column
 }
@@ -1328,7 +1380,6 @@ button.prev , button.next{
 
 .wishProductListCart >button{
     border: none;
-    background-color: #414b5a;
     border-radius: 10px;
     color: white;
     padding: 10px;
@@ -1337,8 +1388,16 @@ button.prev , button.next{
     margin-bottom: 10px;
 }
 
+.wishProductListCart >button:first-child{
+    background-color: #414b5a;
+}
+
+.wishProductListCart >button:last-child{
+    background-color: red;
+}
+
 #postList {
-    width: 600px;
+    width: 1200px;
     margin: 0 auto;
 }
 
@@ -1362,7 +1421,7 @@ button.prev , button.next{
     width: 100px;
 }
 .postListContent{
-    width: 200px;
+    width: 600px;
 }
 .postListModify{
     width: 100px;
@@ -1377,4 +1436,105 @@ button.prev , button.next{
 }
 .postListCreatedAt{
     width: 150px;
+}
+
+.modalContent > div:first-child{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.modalContent > div:nth-child(2) >textarea{
+    width: 500px;
+    height: 200px;
+    margin: 10px 0;
+}
+.modalContent > div:last-child{
+    display: flex;
+    justify-content: center;
+}
+.modalContent > div:last-child >button{
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.modalContent > div:last-child >button:first-child{
+    background-color: #414b5a;
+    color: white;
+}
+
+.modalContent > div:last-child >button:last-child{
+    margin-left: 10px;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+}
+#inquiry,
+#productSaveForm{
+    width: 500px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    padding:10px;
+    border-radius: 10px;
+}
+
+#inquiry >h3,
+#productSaveForm >h3{
+    text-align: center;
+}
+#inquiry >div,
+#productSaveForm > div{
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#inquiry >div:last-child,
+#productSaveForm > div:last-child{
+    justify-content: center;
+}
+
+#inquiry >div >label,
+#productSaveForm > div >label{
+    width: 100px;
+}
+
+#inquiry > div > input,
+#productSaveForm > div > input{
+    width: 100px;
+    border: 1px solid lightgray;
+    height: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#inquiry >div >textarea,
+#productSaveForm > div > textarea{
+    width: 300px;
+    border: 1px solid lightgray;
+    height: 200px;
+    border-radius: 10px;
+}
+
+#inquiry >div >button,
+#productSaveForm > div > button{
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #414b5a;
+    color: white;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+#inquiry >div >a,
+#productSaveForm > div > a{
+    text-decoration: none;
+    color: black;
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 10px;
 }

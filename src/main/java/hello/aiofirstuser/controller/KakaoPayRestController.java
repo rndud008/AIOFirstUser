@@ -11,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/kakaopay")
@@ -22,11 +24,11 @@ public class KakaoPayRestController {
     private final OrderService orderService;
 
     @GetMapping("/success")
-    public ResponseEntity<?> successKakaoPayRequest(@RequestParam("pg_token") String pgToken, @AuthenticationPrincipal UserDetails userDetails){
+    public String successKakaoPayRequest(Model model, @RequestParam("pg_token") String pgToken, @AuthenticationPrincipal UserDetails userDetails){
 
         KakaoPayApproveResponseDTO kakaoPayApproveResponseDTO = kakaoPayService.kakaoPayApproveResponseDTO(pgToken, userDetails.getUsername());
-
-        return ResponseEntity.ok(kakaoPayApproveResponseDTO);
+        model.addAttribute("response", kakaoPayApproveResponseDTO);
+        return "kakaoPay/approve";
     }
 
     @GetMapping("/fail")

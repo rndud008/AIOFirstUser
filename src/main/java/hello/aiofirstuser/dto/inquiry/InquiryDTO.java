@@ -15,6 +15,7 @@ public class InquiryDTO {
     private Long productId;
     private Long index;
 
+    private String categoryName;
     private String name;
     private String title;
     private String content;
