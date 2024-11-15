@@ -7,13 +7,13 @@ spring:
       client:
         registration:
           kakao:
-            client-id: ${rds.kakaoid}
-            client-secret: ${rds.kakaosecret}
+            client-id: ${rds.kakaoId}
+            client-secret: ${rds.kakaoSecret}
             scope:
               - profile_nickname
             client-name: kakao
             authorization-grant-type: authorization_code
-            redirect-uri: ${rds.kakaoredirect}
+            redirect-uri: ${rds.kakaoRedirect}
             client-authentication-method: client_secret_post
 
         provider:
@@ -28,7 +28,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${rds.hostname}:${rds.port}/${rds.db.name}?useSSL=false&serverTimeZone=Asia/Seoul&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${rds.hostname}:${rds.port}/${rds.database}?useSSL=false&serverTimeZone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: ${rds.username}
     password: ${rds.password}
 
@@ -38,15 +38,13 @@ spring:
       hibernate:
         format_sql: true
     hibernate:
-      ddl-auto: update
-  profiles:
-    include: dev
+      ddl-auto: none
 
 cloud:
   aws:
     credentials:
-      access-key: ${rds.s3accesskey}
-      secret-key: ${rds.s3secretkey}
+      access-key: ${rds.s3AccessKey}
+      secret-key: ${rds.s3SecretKey}
     region:
       static: ap-northeast-2
     stack:
@@ -56,8 +54,8 @@ cloud:
 
 
 kakaopay:
-  secretKey: ${rds.kakaopaysecretkey}
-  cid: ${rds.kakaopaycid}
+  secretKey: ${rds.kakaoPaySecretKey}
+  cid: ${rds.kakaoPayCid}
   readyUrl: https://open-api.kakaopay.com/online/v1/payment/ready
   approveUrl: https://open-api.kakaopay.com/online/v1/payment/approve
   refundUrl: https://open-api.kakaopay.com/online/v1/payment/cancel
