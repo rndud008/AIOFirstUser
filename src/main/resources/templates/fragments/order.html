@@ -30,7 +30,7 @@
                                 <img style="width: 100px" th:src="${cart.productImg}"/>
                             </div>
                             <div>
-                                <a th:href="@{/product/detail/${cart.productId}}">
+                                <a th:href="@{'/product/detail/' + ${cart.productId}}">
                                     <span th:text="${cart.productName}">상품명</span>
                                     <span th:text="${cart.selectOption}">option</span>
                                 </a>

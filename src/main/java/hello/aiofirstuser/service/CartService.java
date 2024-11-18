@@ -111,7 +111,7 @@ public interface CartService {
         return size;
     }
     default int getPrice(Cart cart) {
-        return cart.getQuantity() * (cart.getProductVariant().getProduct().getSellPrice() + cart.getProductVariant().getPrice());
+        return cart.getProductVariant().getProduct().getSellPrice() + cart.getProductVariant().getPrice();
     }
 
     default String getTotalString(Long totalPrice){

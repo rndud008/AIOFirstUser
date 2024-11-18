@@ -471,6 +471,45 @@ button.prev , button.next{
     max-width: 500px;
 }
 
+.cartModalContent{
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.cartModalContent >span{
+    padding: 10px;
+}
+.cartModalContent >div{
+    padding: 10px;
+}
+.cartModalContent >div >button{
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #414b5a;
+    color: white;
+    font-size: 14px;
+}
+
+.cartModalContent >div >a{
+    border: 1px solid lightgray;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    color: black;
+    font-size: 14px;
+}
+
 #inquiryCategoryHeader{
     display: flex;
     list-style: none;

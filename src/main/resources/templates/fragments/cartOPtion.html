@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://kit.fontawesome.com/fcca3fae9a.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/cartOption.css">
+</head>
+<body>
+<div>
+    <div>
+        <a th:href="@{'/product/detail/' + ${cartOption.productId}}">
+            <img th:src="${cartOption.productImg}"/>
+        </a>
+        <div>
+            <span th:text="${cartOption.productName}">${productName}</span>
+            <span id="sellPrice" th:text="${cartOption.productSellPrice}">${productSellPrice}</span>
+        </div>
+    </div>
+
+    <div>
+        <label>색상</label>
+        <select onchange="popupUpdateSizePrice(this)">
+            <option value="">옵션선택</option>
+            <option th:each=" color : ${cartOption.colorSizePrice.keySet()}"
+                    th:text="${color}"
+                    th:value="${color + '-' + cartOption.colorSizePrice.get(color)}"></option>
+        </select>
+    </div>
+
+    <div>
+        <label>사이즈</label>
+        <select id="popupSizePrice" onchange="popupProductAdd()">
+            <option value="">옵션선택</option>
+        </select>
+    </div>
+
+    <ul id="popupProductAddList">
+        <li th:id="${cartOption.option.split(',')[0].trim() + '-' + cartOption.option.split(',')[1].trim()}">
+            <div>
+                <input type="hidden" name="cartId" th:value="${cartOption.cartId}">
+                <span th:text="${cartOption.option}">${option}</span>
+                <button onclick="deleteItem(this)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <div>
+                    <input type="hidden" name="productId[0]" th:value="${cartOption.productId}">
+                    <input type="hidden" name="colorSize[0]"
+                           th:value="${cartOption.option.split(',')[0].trim() + '-' + cartOption.option.split(',')[1].trim()}"/>
+                    <button th:data-price="${cartOption.combinedProductPrice}" onclick="decreaseValue(this)"><i
+                            class="fa-solid fa-minus"></i></button>
+                    <input min="1" type="number" name="quantity[0]"
+                           th:data-price="${cartOption.combinedProductPrice}"
+                           oninput="changeValue(this)"
+                           th:value="${cartOption.quantity}"/>
+                    <button th:data-price="${cartOption.combinedProductPrice}"
+                            onclick="increaseValue(this)"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <span class="price" th:text="${cartOption.totalPrice + '원'}">${totalPrice}</span>
+            </div>
+
+        </li>
+    </ul>
+    <div>
+        <span id="totalPrice">총 상품 금액 <span th:text="${cartOption.totalPrice}">${totalPrice}</span> 원</span>
+    </div>
+    <div>
+        <button onclick="cartModify()">변경하기</button>
+        <button onclick="closePopup()">취소</button>
+    </div>
+
+</div>
+
+</body>
+<script>
+    let deleteCartId = 0;
+
+    const popupUpdateSizePrice = (option) => {
+
+        const select = document.getElementById('popupSizePrice')
+        select.innerHTML = '';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.text = "옵션 선택";
+        defaultOption.value = "";
+        select.add(defaultOption);
+
+
+        if (option.value) {
+            const color = option.value.split("-")[0]
+            const value = option.value.split('-')[1].replace('{', "").replace("}", "").split(",");
+
+
+            value.forEach(item => {
+                const size = item.split('=')[0].trim()
+                const price = item.split('=')[1].trim()
+
+                const option = document.createElement('option');
+                option.text = size;
+                option.value = color + ',' + size + ',' + price
+                select.add(option);
+            })
+
+        }
+    }
+
+    const popupProductAdd = () => {
+        const value = document.getElementById('popupSizePrice').value;
+
+        const color = value.split(',')[0]
+        const size = value.split(',')[1]
+        const price = value.split(',')[2]
+
+        if (!document.getElementById(`${color}-${size}`) && value) {
+            const list = document.getElementById('popupProductAddList');
+            const item = document.createElement('li');
+            const a = document.querySelector('a');
+            const productId = a.href.substring(a.href.lastIndexOf('/')+1);
+
+            const productSellPrice = document.getElementById('sellPrice').textContent;
+
+
+            const index = list.querySelectorAll('li').length;
+            const sellPrice = (parseInt(productSellPrice.replaceAll(',', "")) + parseInt(price)).toLocaleString();
+
+            item.setAttribute('id', `${color}-${size}`)
+
+            item.innerHTML =
+                `
+                            <div>
+                                <span>${color},${size}</span>
+                                <button onclick="deleteItem(this)"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div>
+                                <div>
+                                    <input type="hidden" name="productId[${index}]" value="${productId}"/>
+                                    <input type="hidden" name="colorSize[${index}]" value="${color}-${size}"/>
+                                    <button data-price=${sellPrice} onclick="decreaseValue(this)"><i class="fa-solid fa-minus"></i></button>
+                                    <input  data-price=${sellPrice} type="number" name="quantity[${index}]" value="1" oninput="changeValue(this)"/>
+                                    <button data-price=${sellPrice} onclick="increaseValue(this)"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                                   <span class="price">${sellPrice}원</span>
+                            </div>
+
+                         `
+            list.appendChild(item)
+        }
+        updateTotalPrice()
+    }
+
+    const deleteItem = (button) => {
+        const deleteItem = button.closest('li');
+        const cartId = button.parentNode.querySelector('input[name="cartId"]');
+
+        if (cartId && cartId.value) {
+            deleteCartId = cartId.value;
+        }
+
+        if (deleteItem) {
+            deleteItem.remove()
+        }
+
+        updateTotalPrice()
+    }
+
+    const increaseValue = (button) => {
+        const inputItem = button.parentNode.querySelector('input[type="number"]');
+        const spanItem = button.parentNode.parentNode.querySelector('span');
+        const sellPrice = button.dataset.price;
+
+        inputItem.value < 0 && (inputItem.value = 1)
+
+        inputItem
+        && (inputItem.value = parseInt(inputItem.value) + 1)
+        && (spanItem.textContent = (parseInt(sellPrice.replaceAll(",", "")) * inputItem.value).toLocaleString() + '원');
+
+        updateTotalPrice()
+    }
+
+    const decreaseValue = (button) => {
+        const inputItem = button.parentNode.querySelector('input[type="number"]');
+        const spanItem = button.parentNode.parentNode.querySelector('span');
+        const sellPrice = button.dataset.price;
+
+        inputItem.value <= 0 && (inputItem.value = 1)
+
+        inputItem
+        && inputItem.value > 1
+        && (inputItem.value = parseInt(inputItem.value) - 1)
+        && (spanItem.textContent = parseInt(sellPrice.replaceAll(",", "")) * inputItem.value) ||
+        inputItem
+        && inputItem.value === 1
+        && (spanItem.textContent = (parseInt(sellPrice.replaceAll(",", "")) * inputItem.value).toLocaleString() + '원');
+
+        updateTotalPrice()
+    }
+
+    const changeValue = (input) => {
+
+        const inputItem = input.parentNode.querySelector('input[type="number"]');
+        inputItem.value <= 0 && (inputItem.value = 1);
+        const sellPrice = input.dataset.price;
+
+        const spanItem = input.parentNode.parentNode.querySelector('span');
+
+        inputItem
+        && (spanItem.textContent = (parseInt(sellPrice.replaceAll(",", "")) * inputItem.value).toLocaleString() + '원');
+        updateTotalPrice()
+    }
+
+    const updateTotalPrice = () => {
+        const result = document.getElementsByClassName('price');
+
+        const priceList = Array.from(result).map(span => span.textContent.replace("원", ""))
+
+        const totalPrice = priceList.reduce((total, currentValue) => {
+            return parseInt(total) + parseInt(currentValue.replace(/,/g, ""));
+        }, 0)
+
+        const totalItem = document.getElementById('totalPrice')
+
+        totalItem.textContent = '총 상품 금액 : ' + totalPrice.toLocaleString() + '원';
+
+    }
+
+    const closePopup = () => {
+        window.close();
+    }
+
+    const cartModify = async () => {
+
+        const cartItems = [];
+
+        document.querySelectorAll('#popupProductAddList li').forEach((item, index) => {
+
+            const productId = item.querySelector(`input[name="productId[${index}]"]`).value;
+            const colorSize = item.querySelector(`input[name="colorSize[${index}]"]`).value;
+            const quantity = item.querySelector(`input[name="quantity[${index}]"]`).value;
+
+            cartItems.push({
+                productId: productId,
+                colorSize: colorSize,
+                quantity: quantity
+            });
+        });
+
+
+        const response = await fetch('/user/cart/optionmodify', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({cartRequestDTOS: cartItems, deleteCartId})
+        });
+
+        if (response.status === 200) {
+
+            alert('상품이 변경되었습니다.')
+            closePopup()
+        }
+    }
+
+    window.onbeforeunload = () => {
+    };
+</script>
+</html>

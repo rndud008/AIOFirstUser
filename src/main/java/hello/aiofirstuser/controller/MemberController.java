@@ -1,9 +1,11 @@
 package hello.aiofirstuser.controller;
 
 import hello.aiofirstuser.domain.Member;
+import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseListDTO;
 import hello.aiofirstuser.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -64,6 +66,18 @@ public class MemberController {
         }
 
         return "fragments/mypage";
+    }
+
+    @GetMapping("/addresses")
+    public String getMemberAddresses(@AuthenticationPrincipal UserDetails userDetails, Model model){
+
+        OrderWriteDeliveryResponseListDTO orderWriteDeliveryResponseListDTO
+                = memberService.getOrderMemberAddresses(userDetails.getUsername());
+
+        model.addAttribute("addresses",orderWriteDeliveryResponseListDTO);
+
+        return "fragments/deliveryList";
+
     }
 
 }

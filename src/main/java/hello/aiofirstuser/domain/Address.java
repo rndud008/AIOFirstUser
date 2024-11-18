@@ -32,8 +32,8 @@ public class Address {
     private String orderMessage;
     private String bankTransferDepositor;// 무통장입금자
 
-    private long phoneNumber1;
-    private long phoneNumber2;
+    private String phoneNumber1;
+    private String phoneNumber2;
 
     public void changeAddress(OrderWriteRequestDTO orderWriteRequestDTO){
 

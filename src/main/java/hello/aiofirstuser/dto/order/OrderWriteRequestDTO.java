@@ -18,8 +18,8 @@ public class OrderWriteRequestDTO {
     private Long addressId;
     private String deliveryPlaceStatus;
     private String deliveryMemberName;
-    private long phoneNumber1;
-    private long phoneNumber2;
+    private String phoneNumber1;
+    private String phoneNumber2;
 
     private String zipcode;
     private String addressName;

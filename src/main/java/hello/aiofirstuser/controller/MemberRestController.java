@@ -21,14 +21,7 @@ public class MemberRestController {
 
     private final MemberService memberService;
 
-    @GetMapping("/addresses")
-    public ResponseEntity<?> getMemberAddresses(@AuthenticationPrincipal UserDetails userDetails){
 
-        OrderWriteDeliveryResponseListDTO orderWriteDeliveryResponseListDTO
-                = memberService.getOrderMemberAddresses(userDetails.getUsername());
-
-        return ResponseEntity.ok(orderWriteDeliveryResponseListDTO);
-    }
 
     @GetMapping("/addresses/address")
     public ResponseEntity<?> getMemberAddress(@RequestParam("status") String status, @AuthenticationPrincipal UserDetails userDetails){

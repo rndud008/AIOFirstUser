@@ -7,10 +7,7 @@ import hello.aiofirstuser.dto.member.OAuthResisterMemberDTO;
 import hello.aiofirstuser.dto.member.OrderMemberDTO;
 import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseDTO;
 import hello.aiofirstuser.dto.order.OrderWriteDeliveryResponseListDTO;
-import hello.aiofirstuser.repository.MemberRepository;
-import hello.aiofirstuser.repository.OrderItemRepository;
-import hello.aiofirstuser.repository.OrderItemReviewRepository;
-import hello.aiofirstuser.repository.PointRepository;
+import hello.aiofirstuser.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +27,7 @@ public class MemberServiceImpl implements MemberService {
     private final OrderItemReviewRepository orderItemReviewRepository;
     private final OrderItemRepository orderItemRepository;
     private final PointRepository pointRepository;
+    private final AddressRepository addressRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -104,7 +102,7 @@ public class MemberServiceImpl implements MemberService {
     public OrderWriteDeliveryResponseListDTO getOrderMemberAddresses(String username) {
         Member member = memberRepository.getWithAddresses(username.toUpperCase());
 
-        List<Address> addresses = member.getAddresses();
+        List<Address> addresses = addressRepository.findByMemberId(member.getId());
         List<OrderWriteDeliveryResponseDTO> orderWriteDeliveryResponseDTOS = new ArrayList<>();
 
         if (!addresses.isEmpty()){

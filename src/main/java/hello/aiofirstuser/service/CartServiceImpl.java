@@ -76,7 +76,7 @@ public class CartServiceImpl implements CartService {
             }
             cartResponseDTOS.add(cartResponseDTO);
 
-            totalPrice += getPrice(cart);
+            totalPrice += (getPrice(cart) * cart.getQuantity());
         }
 
 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/deliveryList.css">
+</head>
+<body>
+    <div th:each="address : ${addresses.orderWriteDeliveryResponseDTOS}" onclick="selectAddress(this)">
+        <div>
+            <div>
+                <input type="hidden" th:value="${address.addressId}"/>
+                <span th:text="${address.deliveryMemberName}">${item.deliveryMemberName}</span>
+            </div>
+            <div>
+                <span>연락처 1 <span th:text="${address.phoneNumber1.size() == 2 ? '' : address.phoneNumber1.get(0) + '-' + address.phoneNumber1.get(1) + '-' + address.phoneNumber1.get(2)}"></span></span>
+                <span>연락처 2 <span th:text="${address.phoneNumber2.size() == 2 ? '' : address.phoneNumber2.get(0) + '-' + address.phoneNumber2.get(1) + '-' + address.phoneNumber2.get(2)}"></span></span>
+            </div>
+        </div>
+        <div>
+            <span th:text="${'(' + address.zipcode + ') ' + address.addressName + ' ' + address.addressNameDetail}">${item.addressName} ${item.addressNameDetail}</span>
+        </div>
+    </div>
+</body>
+    <script>
+        const selectAddress = (div) =>{
+
+            const input = div.querySelector('input[type="hidden"]');
+            localStorage.setItem( 'selectedAddress',input.value);
+            closePopup();
+        }
+
+        const closePopup = () =>{
+            window.close();
+        }
+
+        window.onbeforeunload = () =>{ };
+    </script>
+</html>

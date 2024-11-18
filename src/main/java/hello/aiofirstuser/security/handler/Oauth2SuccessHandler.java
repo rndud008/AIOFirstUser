@@ -38,6 +38,7 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setContentType("application/json; charset=UTF-8");
 
         getRedirectStrategy().sendRedirect(request,response,"http://localhost:9001");
+//        getRedirectStrategy().sendRedirect(request,response,"http://13.124.160.75");
 
     }
 

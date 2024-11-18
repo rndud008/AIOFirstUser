@@ -84,18 +84,17 @@ public interface MemberService {
         return false;
     }
 
-    private static List<String> getPhoneNumber(long value){
-        String number = String.valueOf(value);
-        int numberLength = number.length();
+    private static List<String> getPhoneNumber(String value){
+        int numberLength = value.length();
 
         if(numberLength >= 9){
-            String last = number.substring(numberLength-4,numberLength);
+            String last = value.substring(numberLength-4,numberLength);
 
             numberLength -= 4;
-            String middle = number.substring(numberLength-4,numberLength);
+            String middle = value.substring(numberLength-4,numberLength);
 
             numberLength -= 4;
-            String first = number.substring(0,numberLength);
+            String first = value.substring(0,numberLength);
 
             return List.of(first,middle,last);
         }

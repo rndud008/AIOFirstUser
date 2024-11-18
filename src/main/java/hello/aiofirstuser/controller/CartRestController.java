@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,13 +58,7 @@ public class CartRestController {
         return ResponseEntity.ok("cart save success");
     }
 
-    @GetMapping("/optionmodify")
-    public ResponseEntity<CartItemModifyResponseDTO> getOptionModify(@ModelAttribute CartRequestDTO cartRequestDTO) {
 
-        CartItemModifyResponseDTO cartItemModifyResponseDTO = cartService.getCartItemModifyDTO(cartRequestDTO.getCartId());
-
-        return ResponseEntity.ok(cartItemModifyResponseDTO);
-    }
 
     @PostMapping("/optionmodify")
     public String optionModify(@RequestBody CartRequestListDTO cartRequestListDTO, @AuthenticationPrincipal UserDetails userDetails) {
@@ -131,6 +126,7 @@ public class CartRestController {
         }
     }
 
+
     private void optionCartModify(CartRequestListDTO cartRequestListDTO, Member member) {
         CartRequestDTO cartIdDTO = cartRequestListDTO
                 .getCartRequestDTOS().stream().filter(cartRequestDTO -> cartRequestDTO.getCartId() != null).findFirst().orElse(new CartRequestDTO());
@@ -146,6 +142,7 @@ public class CartRestController {
         }
     }
 
+
     private void optionCartNewSave(CartRequestListDTO cartRequestListDTO, Member member) {
         List<CartRequestDTO> cartIdNullList = cartRequestListDTO
                 .getCartRequestDTOS().stream().filter(cartRequestDTO -> cartRequestDTO.getCartId() == null).toList();
@@ -160,7 +157,7 @@ public class CartRestController {
 
                     Cart cart = cartService.findByProductValiantIAndMemberIddOfCart(productVariant.getId(), member.getId());
                     if (cart != null) {
-                        cartService.modify(cartRequestDTO, cart.getId());
+                        cartService.optionModify(cartRequestDTO, cart.getId());
                     } else {
                         cartService.save(cartRequestDTO, member, productVariant);
                     }
