@@ -172,16 +172,12 @@ public class OrderServiceImpl implements OrderService {
 
         if (order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM.name())) {
             order.changeStatus(OrderStatus.ORDER_CANCELED);
-            return order;
-        }
 
-        if (order.getOrderStatus().name().equals(OrderStatus.PREPARING_ITEM_CHECK.name())) {
+        }else {
             order.changeAdmin(true);
 
-            return order;
         }
-
-        return null;
+            return order;
 
     }
 

@@ -384,7 +384,7 @@
         if (response.ok) {
             const data = await response.json();
 
-            kakaopay.ref = window.open('', 'paypopup', 'width=426,height=510,toolbar=no');
+            kakaopay.ref = window.open('/', 'paypopup', 'width=426,height=510,toolbar=no');
             if (kakaopay.ref) {
                 setTimeout(function(){
                     kakaopay.ref.location.href= data.next_redirect_pc_url
@@ -433,8 +433,6 @@
         })
 
         if (response.ok) {
-            const data = await response.text();
-            alert(data);
             window.location.href = currentUrl;
         }
 

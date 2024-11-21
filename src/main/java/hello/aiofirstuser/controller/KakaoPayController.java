@@ -8,7 +8,6 @@ import hello.aiofirstuser.service.KakaoPayService;
 import hello.aiofirstuser.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/kakaopay")
-public class KakaoPayRestController {
+public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
     private final OrderService orderService;
 
@@ -27,6 +26,9 @@ public class KakaoPayRestController {
     public String successKakaoPayRequest(Model model, @RequestParam("pg_token") String pgToken, @AuthenticationPrincipal UserDetails userDetails){
 
         KakaoPayApproveResponseDTO kakaoPayApproveResponseDTO = kakaoPayService.kakaoPayApproveResponseDTO(pgToken, userDetails.getUsername());
+
+        Long.valueOf(kakaoPayApproveResponseDTO.getPartner_order_id());
+
         model.addAttribute("response", kakaoPayApproveResponseDTO);
         return "kakaoPay/approve";
     }
