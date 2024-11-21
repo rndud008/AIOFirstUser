@@ -90,7 +90,7 @@ public class KakaoPayService {
         RestTemplate restTemplate = new RestTemplate();
 
         KakaoCancelResponseDTO kakaoCancelResponseDTO =
-                restTemplate.postForObject("https://open-api.kakaopay.com/online/v1/payment/cancel",requestEntity, KakaoCancelResponseDTO.class);
+                restTemplate.postForObject(kakaoPayProperties.getRefundUrl(),requestEntity, KakaoCancelResponseDTO.class);
 
         log.info("kakaoCancelResponseDTO ={}",kakaoCancelResponseDTO);
         payment.changeStauts(PaymentStatus.CANCEL);

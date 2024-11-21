@@ -343,9 +343,9 @@ public class OrderServiceImpl implements OrderService {
                 .item_name(itemNames)
                 .quantity(itemTotalQuantity)
                 .total_amount(itemTotalAmount)
-                .approval_url("http://localhost:9001/api/kakaopay/success")
-                .cancel_url("http://localhost:9001/api/kakaopay/cancel")
-                .fail_url("http://localhost:9001/api/kakaopay/fail")
+                .approval_url(kakaoPayProperties.getServer() + "/api/kakaopay/success")
+                .cancel_url(kakaoPayProperties.getServer() + "/api/kakaopay/cancel")
+                .fail_url(kakaoPayProperties.getServer() + "/api/kakaopay/fail")
                 .build();
     }
 

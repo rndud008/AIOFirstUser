@@ -16,4 +16,5 @@ public class KakaoPayProperties {
     private String readyUrl;
     private String approveUrl;
     private String refundUrl;
+    private String server;
 }

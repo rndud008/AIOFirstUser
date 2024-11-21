@@ -59,6 +59,7 @@ kakaopay:
   readyUrl: https://open-api.kakaopay.com/online/v1/payment/ready
   approveUrl: https://open-api.kakaopay.com/online/v1/payment/approve
   refundUrl: https://open-api.kakaopay.com/online/v1/payment/cancel
+  server: http://13.124.160.75
 
 jwt:
   secret: ${rds.jwt}
