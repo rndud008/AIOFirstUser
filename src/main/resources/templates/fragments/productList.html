@@ -8,17 +8,22 @@
 <body>
 <div layout:fragment="content">
     <div class="product">
-
-        <div id="productItems">
-            <div class="product-name">
-                <a th:href="@{'/product/category?code=' + ${category.id}}">
-                    <h3 th:text="${category.categoryName}"></h3>
-                </a><a class="subCategoryName" th:each="subCategory:${category.subCategories}"
-                       th:text="${subCategory.categoryName}"
-                       th:href="@{'/product/category?code=' + ${subCategory.id} + '&decode=' + ${subCategory.depNo}} ">
-            </a>
+        <div class="product-name">
+            <a th:href="@{'/product/category?code=' + ${category.id}}">
+                <h3 th:text="${category.categoryName}"></h3>
+            </a><a class="subCategoryName" th:each="subCategory:${category.subCategories}"
+                   th:text="${subCategory.categoryName}"
+                   th:href="@{'/product/category?code=' + ${subCategory.id} + '&decode=' + ${subCategory.depNo}} ">
+        </a>
+            <div>
+                <span onclick="productFilter(this)"><i class="fa-regular fa-square"></i> NEW</span>
+                <span onclick="productFilter(this)"><i class="fa-regular fa-square"></i> HIGH PRICE</span>
+                <span onclick="productFilter(this)"><i class="fa-regular fa-square"></i> LOW PRICE</span>
             </div>
-            <div class="product-item" th:each="product:${newProducts}">
+        </div>
+
+        <div class="productItems">
+            <div class="product-item" th:each="product:${products}">
                 <a th:href="@{'/product/detail/'+ ${product.id} }">
                     <img th:src="@{${product.productImgFileNames}}">
                     <span th:text="${product.productName}"></span>
@@ -27,7 +32,6 @@
                 <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
                 <span class="sellPrice" th:text="${product.sellPrice}"></span>
             </div>
-
         </div>
     </div>
 </div>

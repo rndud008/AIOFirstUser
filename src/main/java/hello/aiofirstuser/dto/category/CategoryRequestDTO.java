@@ -13,4 +13,5 @@ public class CategoryRequestDTO {
     private Long code;
     private Long decode;
     private String categoryName;
+    private String filter;
 }

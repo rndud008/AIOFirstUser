@@ -147,7 +147,7 @@ body> button{
     border-bottom: 1px solid lightgray;
 }
 
-#productItems{
+.productItems{
     display: flex;
     flex-wrap: wrap;
     margin: 30px 0 0 70px;
@@ -192,10 +192,22 @@ body> button{
 
 .product-name{
     width: 100%;
+    margin-left: 70px;
+    padding-bottom: 10px;
+    margin-right: 170px;
+    border-bottom: 1px solid lightgray;
+}
+.product-home-name{
+    width: 100%;
     margin-left: 10px;
     padding-bottom: 10px;
     margin-bottom: 10px;
-    border-bottom: 1px solid lightgray;
+    text-align: center;
+}
+.product > div > span{
+    color: lightgray;
+    font-size: 14px;
+    margin-left: 20px;
 }
 
 .product-name > a:first-child {
@@ -211,6 +223,17 @@ body> button{
 
 .product-name > a:first-child >h3{
     display: inline-block;
+}
+.product-name > div{
+    display: flex;
+    justify-content: flex-end;
+}
+.product-name > div > span {
+    color: lightgray;
+    cursor: pointer;
+}
+.product-name > div > span:not(span:last-child) {
+    margin-right: 10px;
 }
 
 .subCategoryName.on {
@@ -1306,7 +1329,7 @@ button.prev , button.next{
     width: 100px;
 }
 .orderListStatus{
-    width: 100px;
+    width: 140px;
 }
 
 #pointList{

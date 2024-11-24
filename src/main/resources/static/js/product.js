@@ -326,3 +326,61 @@ const buttonModalClose = () => {
     const modal = document.getElementById('modal');
     modal.remove();
 }
+
+const productFilter = async (span) =>{
+    const params = window.location.href.substring(window.location.href.indexOf('?')+1).split('&');
+    console.log(params)
+    console.log(span.textContent.replaceAll(" ","").trim().toLowerCase())
+    let item;
+    let code =null;
+    let decode = null;
+    const filter = span.textContent.replaceAll(" ","").trim().toLowerCase();
+
+    params.forEach(param =>{
+        if (param.split('=')[0] === 'code'){
+            code=param.split('=')[1]
+        } else if (param.split('=')[0] === 'decode'){
+            decode=param.split('=')[1]
+        }
+    })
+
+    item = {
+        code,
+        decode,
+        filter
+    }
+
+    console.log(item)
+
+    const response = await fetch('/api/product/category',{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(item)
+    })
+
+    const data = await response.json();
+    console.log(data)
+
+    const productItemsDiv = document.getElementsByClassName('productItems').item(0);
+
+    let html='';
+    data.forEach(item =>{
+        html +=
+            `
+                <div class="product-item" >
+                <a href='/product/detail/${item.id}'>
+                    <img src='${item.productImgFileNames}'>
+                    <span >${item.productName}</span>
+                </a>
+                <span class="size">${item.size}</span>
+                <span class="consumerPrice" >${item.consumerPrice}</span>
+                <span class="sellPrice" >${item.sellPrice}</span>
+            </div>
+            `
+    })
+    productItemsDiv.innerHTML = html;
+
+
+}

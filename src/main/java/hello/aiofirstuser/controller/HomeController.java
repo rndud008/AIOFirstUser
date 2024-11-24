@@ -25,6 +25,7 @@ public class HomeController {
         model.addAttribute("inqueryCategory",categoryService.InqueryCategory());
 
         model.addAttribute("newProducts",productService.getNewProductDTOS());
+        model.addAttribute("weeklyProducts",productService.getWeeklyProductDTOS());
 
         return "fragments/home";
     }

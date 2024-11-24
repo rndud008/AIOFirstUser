@@ -30,10 +30,10 @@ public class ProductController {
 
         if (categoryRequestDTO.getDecode() == null){
             model.addAttribute("category", categoryService.getCategory(categoryRequestDTO.getCode()));
-            model.addAttribute("newProducts", productService.getCategoryProductDTOS(categoryRequestDTO.getCode(),true));
+            model.addAttribute("products", productService.getCategoryProductDTOS(categoryRequestDTO.getCode(),true));
         }else {
             model.addAttribute("category", categoryService.getCategory(categoryRequestDTO.getDecode()));
-            model.addAttribute("newProducts", productService.getCategoryProductDTOS(categoryRequestDTO.getCode(),false));
+            model.addAttribute("products", productService.getCategoryProductDTOS(categoryRequestDTO.getCode(),false));
         }
 
         return "fragments/productList";

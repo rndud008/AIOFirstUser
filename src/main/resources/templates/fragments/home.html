@@ -9,9 +9,12 @@
 
 <div layout:fragment="content">
     <div class="product">
-        <div id="productItems">
-            <h2 class="product-name">New</h2>
-            <div class="product-item" th:each="product:${newProducts}">
+        <div>
+            <h2 class="product-home-name">WEEKLY BEST</h2>
+            <span>일주일동안 가장 많이 팔린 아이템들을 만나보세요</span>
+        </div>
+        <div class="productItems">
+            <div th:if="${weeklyProducts.size() > 0}" class="product-item" th:each="product:${weeklyProducts}">
                 <a th:href="@{'/product/detail/'+ ${product.id} }">
                     <img th:src="@{${product.productImgFileNames}}">
                     <span th:text="${product.productName}"></span>
@@ -21,7 +24,31 @@
                 <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
                 <span th:text="${product.sellPrice}"></span>
             </div>
+            <div th:unless="${weeklyProducts.size() > 0}">
+                <span>새롭게 등록된 의복이 없습니다.</span>
+            </div>
         </div>
+
+        <div>
+            <h2 class="product-home-name">New</h2>
+            <span>신상 업데이트</span>
+        </div>
+        <div class="productItems">
+            <div th:if="${newProducts.size() > 0}" class="product-item" th:each="product:${newProducts}">
+                <a th:href="@{'/product/detail/'+ ${product.id} }">
+                    <img th:src="@{${product.productImgFileNames}}">
+                    <span th:text="${product.productName}"></span>
+                </a>
+                <span th:if="${product.size}" th:text="${product.size}"></span>
+
+                <span class="consumerPrice" th:text="${product.consumerPrice}"></span>
+                <span th:text="${product.sellPrice}"></span>
+            </div>
+            <div th:unless="${newProducts.size() > 0}">
+                <span>새롭게 등록된 의복이 없습니다.</span>
+            </div>
+        </div>
+
     </div>
 </div>
 

@@ -9,7 +9,7 @@
 <div layout:fragment="content">
     <span id="searchText">총 <span th:text="${products.size()}"></span>개의 상품이 검색되었습니다.</span>
     <div class="product">
-        <div id="productItems">
+        <div class="productItems">
             <div class="product-item" th:each="product:${products}">
                 <a th:href="@{'/product/detail/'+ ${product.id} }">
                     <img th:src="@{${product.productImgFileNames}}">

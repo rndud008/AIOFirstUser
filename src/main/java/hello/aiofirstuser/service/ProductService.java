@@ -4,6 +4,7 @@ import hello.aiofirstuser.domain.Product;
 import hello.aiofirstuser.domain.ProductDescriptionImg;
 import hello.aiofirstuser.domain.ProductImg;
 import hello.aiofirstuser.domain.ProductVariant;
+import hello.aiofirstuser.dto.category.CategoryRequestDTO;
 import hello.aiofirstuser.dto.product.ProductDTO;
 import hello.aiofirstuser.dto.product.ProductDetailDTO;
 
@@ -19,6 +20,8 @@ public interface ProductService {
 
     List<ProductDTO> getNewProductDTOS();
     List<ProductDTO> getSearchProductDTOS(String search);
+    List<ProductDTO> getWeeklyProductDTOS();
+    List<ProductDTO> getFilterProductDTOS(CategoryRequestDTO categoryRequestDTO);
 
     default ProductDTO productDTO(Product product){
         ProductDTO productDTO = ProductDTO.builder()

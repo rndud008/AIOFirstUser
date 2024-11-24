@@ -32,7 +32,7 @@ function subCategoryNameCheck() {
 
         Array.from(document.getElementsByClassName('subCategoryName')).forEach(item => {
 
-            if (item.href.substring(item.href.indexOf("?")) === params) {
+            if (item.href.substring(item.href.indexOf("?")).includes(params)) {
                 item.classList.add("on")
             }
         })

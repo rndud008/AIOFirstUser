@@ -3,6 +3,7 @@ package hello.aiofirstuser.service;
 import hello.aiofirstuser.domain.Category;
 import hello.aiofirstuser.domain.Product;
 import hello.aiofirstuser.domain.ProductVariant;
+import hello.aiofirstuser.dto.category.CategoryRequestDTO;
 import hello.aiofirstuser.dto.product.ProductDTO;
 import hello.aiofirstuser.dto.product.ProductDetailDTO;
 import hello.aiofirstuser.repository.CategoryRepository;
@@ -11,6 +12,8 @@ import hello.aiofirstuser.repository.ProductRepository;
 import hello.aiofirstuser.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -67,11 +70,11 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = new ArrayList<>();
         Category category = categoryRepository.findById(id).orElse(null);
 
-        if (category !=null && category.getCategoryName().equals("BEST")){
+        if (category != null && category.getCategoryName().equals("BEST")) {
             List<Object[]> objects = orderItemRepository.getProductAndCount();
 
-            for (Object[] o : objects){
-                if (o[0] instanceof Product product){
+            for (Object[] o : objects) {
+                if (o[0] instanceof Product product) {
                     products.add(product);
                 }
             }
@@ -113,6 +116,57 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productDTOS;
+    }
+
+    @Override
+    public List<ProductDTO> getWeeklyProductDTOS() {
+        LocalDateTime today = LocalDateTime.now();
+        List<Object[]> objects = productRepository.getWeeklyProducts(today.minusWeeks(1), today, PageRequest.of(0, 12));
+        List<ProductDTO> productDTOS = new ArrayList<>();
+
+        if (!objects.isEmpty()) {
+            List<Product> products= new ArrayList<>();
+            for (Object[] o : objects) {
+                if (o[0] instanceof Product product) {
+                    products.add(product);
+                }
+            }
+            productDTOS = getProductDTOS(products);
+        }
+
+        return productDTOS;
+    }
+
+    @Override
+    public List<ProductDTO> getFilterProductDTOS(CategoryRequestDTO categoryRequestDTO) {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        List<Product> products;
+
+        Long code = categoryRequestDTO.getCode();
+
+        if (categoryRequestDTO.getFilter().equals("new")) {
+            if (categoryRequestDTO.getDecode() == null){
+                products = productRepository
+                        .getDepNoFilterProducts(code, Sort.by(Sort.Direction.DESC, "createdAt"));
+            }else {
+                products = productRepository
+                        .getCodeFilterProducts(code, Sort.by(Sort.Direction.DESC, "createdAt"));
+            }
+        } else {
+            Sort sort = "highprice".equals(categoryRequestDTO.getFilter()) ?
+                    Sort.by(Sort.Direction.DESC, "sellPrice") :
+                    Sort.by(Sort.Direction.ASC, "sellPrice");
+
+            if (categoryRequestDTO.getDecode() == null){
+                products = productRepository
+                        .getDepNoFilterProducts(code, sort);
+            }else {
+                products = productRepository
+                        .getCodeFilterProducts(code, sort);
+            }
+        }
+
+        return getProductDTOS(products);
     }
 
     private List<ProductDTO> getProductDTOS(List<Product> products) {
