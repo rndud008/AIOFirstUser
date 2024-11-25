@@ -360,6 +360,13 @@ const productFilter = async (span) =>{
         body:JSON.stringify(item)
     })
 
+    if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text(); // 응답 본문 확인
+        console.error(errorText); // HTML 문서 내용이 반환될 수 있음
+        return;
+    }
+
     const data = await response.json();
     console.log(data)
 
