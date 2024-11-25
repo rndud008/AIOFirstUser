@@ -34,7 +34,7 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/loginForm","/","/inquiryanswer/**","/user/logout",
-                        "/inquiry/**","/product/**","/api/inquiry/**","/api/inquiryanswer/**").permitAll()
+                        "/inquiry/**","/product/**","/api/inquiry/**","/api/inquiryanswer/**", "/api/product/**").permitAll()
                 .requestMatchers("/js/**", "/css/**").permitAll()
                 .anyRequest().authenticated());
         http.oauth2Login(form -> form

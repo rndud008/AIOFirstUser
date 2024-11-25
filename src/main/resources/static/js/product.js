@@ -329,8 +329,6 @@ const buttonModalClose = () => {
 
 const productFilter = async (span) =>{
     const params = window.location.href.substring(window.location.href.indexOf('?')+1).split('&');
-    console.log(params)
-    console.log(span.textContent.replaceAll(" ","").trim().toLowerCase())
     let item;
     let code =null;
     let decode = null;
@@ -350,7 +348,6 @@ const productFilter = async (span) =>{
         filter
     }
 
-    console.log(item)
 
     const response = await fetch('/api/product/category',{
         method:"POST",
@@ -360,17 +357,7 @@ const productFilter = async (span) =>{
         body:JSON.stringify(item)
     })
 
-    console.log(await response)
-
-    if (!response.ok) {
-        console.error(`HTTP error! status: ${response.status}`);
-        const errorText = await response.text(); // 응답 본문 확인
-        console.error(errorText); // HTML 문서 내용이 반환될 수 있음
-        return;
-    }
-
     const data = await response.json();
-    console.log(data)
 
     const productItemsDiv = document.getElementsByClassName('productItems').item(0);
 
