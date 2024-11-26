@@ -27,7 +27,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             "join oi.productVariant " +
             "join oi.productVariant.product " +
             "where oi.order.orderStatus = 'DELIVERY_COMPLETED' " +
-            "and oi.order.createdAt between :oneWeekAgo and :today " +
+            "and oi.order.updatedAt between :oneWeekAgo and :today " +
             "group by oi.productVariant.product " +
             "order by count(oi.productVariant.product.id) desc ")
     List<Object[]> getWeeklyProducts(@Param("oneWeekAgo") LocalDateTime oneWeekAgo, @Param("today") LocalDateTime today, Pageable pageable);
